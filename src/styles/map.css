@@ -363,7 +363,7 @@
   font-weight: bold;
   letter-spacing: 0.5px;
   padding: 3px 10px;
-  border-radius: 4px;
+  border-radius: 0;
   white-space: nowrap;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.3);
   pointer-events: none;
@@ -396,7 +396,7 @@
   width: 260px;
   background: rgba(20, 13, 7, 0.96);
   border: 1px solid #d4ac0d;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 0.95rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(243, 156, 18, 0.4);
   pointer-events: none;
@@ -475,7 +475,7 @@
   transform: translateX(-50%);
   background: linear-gradient(135deg, rgba(42, 25, 12, 0.95) 0%, rgba(20, 12, 6, 0.95) 100%);
   border: 1px solid #d4ac0d;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 0.65rem 2.2rem;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(243, 156, 18, 0.35);
   z-index: 25;
@@ -549,47 +549,47 @@
   .map-wrapper {
     width: 100%;
     height: 100%;
-    max-width: min(100vw, calc(100vh * (16 / 9)));
-    max-height: min(100vh, calc(100vw * (9 / 16)));
-    aspect-ratio: 16 / 9;
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: auto;
   }
 
   .map-bg-img {
-    object-fit: fill;
+    object-fit: cover;
     object-position: center;
   }
 
   .map-pin {
-    transform: translate(-50%, -50%) scale(0.82);
+    transform: translate(-50%, -50%) scale(0.85);
   }
 
   .map-pin.unlocked:hover {
-    transform: translate(-50%, -55%) scale(1.02);
+    transform: translate(-50%, -55%) scale(1.05);
   }
 
   .pin-click-label {
-    top: 42px;
-    font-size: 0.55rem;
+    top: 44px;
+    font-size: 0.58rem;
     padding: 2px 5px;
   }
 
   .pin-tooltip {
-    width: 200px;
+    width: 210px;
     max-width: 82vw;
-    padding: 0.65rem;
-    font-size: 0.78rem;
-    bottom: 46px;
+    padding: 0.75rem;
+    font-size: 0.8rem;
+    bottom: 48px;
   }
 
   .parchment-scroll-banner {
     bottom: 38px;
     padding: 0.35rem 0.8rem;
-    max-width: 92%;
+    max-width: 90%;
   }
 
   .scroll-quote {
-    font-size: 0.7rem;
-    letter-spacing: 0.8px;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
   }
 
   .map-footer-bar {
