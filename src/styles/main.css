@@ -24,6 +24,11 @@
   --transition-smooth: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -35,8 +40,8 @@ body.odyssey-theme {
   background-color: var(--bg-dark);
   color: #e0d5c1;
   font-family: var(--font-body);
-  overflow-x: hidden;
-  min-height: 100vh;
+  overflow: hidden;
+  height: 100%;
   position: relative;
 }
 
@@ -170,8 +175,9 @@ body.odyssey-theme {
 /* Viewport Layout */
 .odyssey-viewport {
   position: relative;
-  width: 100vw;
+  width: 100%;
   height: calc(100vh - 72px);
+  height: calc(100dvh - 72px);
   margin-top: 72px;
   overflow: hidden;
   z-index: 10;
@@ -223,6 +229,7 @@ body.odyssey-theme {
   .odyssey-viewport {
     width: 100%;
     height: calc(100vh - 64px);
+    height: calc(100dvh - 64px);
     margin-top: 64px;
   }
 }

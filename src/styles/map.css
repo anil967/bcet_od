@@ -5,10 +5,8 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: radial-gradient(circle, #1c120a 0%, #0a0705 100%);
+  background: #0a0705;
   cursor: default;
-  /* Constant map */
-  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.95);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,9 +19,6 @@
   position: relative;
   width: 100%;
   height: 100%;
-  max-width: 1200px;
-  max-height: 960px;
-  aspect-ratio: 1024 / 819;
   margin: auto;
   opacity: 1;
   pointer-events: auto;
@@ -181,13 +176,15 @@
 
 /* Historical Map Image - Constant background with bright golden tint (unshaded) */
 .map-bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: cover;
+  object-position: center;
   display: block;
   filter: sepia(1.0) saturate(2.2) contrast(1.08) brightness(1.02) hue-rotate(-8deg);
-  border-radius: 4px;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
 }
 
 /* SVG Overlay for Clean Brown Foot Path Trail */
