@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>The Odyssey — Journey to Innovation</title>
   <meta name="description"
     content="An interactive constant historical map featuring a progressive brown foot path trail that unlocks serially.">
@@ -22,11 +22,21 @@
 
 <body class="odyssey-theme">
 
-  <!-- FULLSCREEN OPENING PAGE WITH FRONT VIDEO -->
-  <div id="intro-opening-screen" class="intro-opening-screen">
-    <video autoplay playsinline id="intro-bg-video" class="intro-bg-video">
-      <source src="/FRONTvideo.mp4" type="video/mp4">
-    </video>
+  <!-- ANIMATED OPENING LANDING (Poseidon Hero) -->
+  <div id="intro-opening-screen" class="intro-opening-screen" role="dialog" aria-label="Welcome to The Odyssey">
+    <div class="intro-hero-bg" aria-hidden="true"></div>
+    <div class="intro-vignette" aria-hidden="true"></div>
+    <div class="intro-god-rays" aria-hidden="true"></div>
+    <div class="intro-sea-shimmer" aria-hidden="true"></div>
+    <div class="intro-content">
+      <span class="intro-eyebrow">BCET ODYSSEY HACKATHON · TECH FOR BHARAT</span>
+      <h2 class="intro-display-title">THE ODYSSEY</h2>
+      <p class="intro-display-sub">Journey to Innovation · Ἡ Ὀδύσσεια</p>
+      <p class="intro-display-lede">Like Odysseus crossing wine-dark seas, innovators chart bold courses through
+        unmapped challenges — resilience, unity, and mastery lead every crew home to impact.</p>
+      <button type="button" class="gold-action-btn intro-enter-btn" id="intro-enter-btn">Begin the Voyage</button>
+      <span class="intro-skip-hint">Tap anywhere · or wait a few moments to enter the map</span>
+    </div>
   </div>
 
   <!-- AUTOMATIC BACKGROUND SOUNDTRACK -->
@@ -45,10 +55,26 @@
       </div>
     </div>
 
+    <nav class="symbol-nav" aria-label="Odyssey journey steps">
+      <button type="button" class="nav-pill unlocked active" id="pill-voyage" data-symbol="voyage"><span class="pill-icon">I</span> Voyage</button>
+      <button type="button" class="nav-pill locked" id="pill-realms" data-symbol="realms"><span class="pill-icon">II</span> Realms</button>
+      <button type="button" class="nav-pill locked" id="pill-protocols" data-symbol="protocols"><span class="pill-icon">III</span> Protocols</button>
+      <button type="button" class="nav-pill locked" id="pill-legions" data-symbol="legions"><span class="pill-icon">IV</span> Legions</button>
+      <button type="button" class="nav-pill locked" id="pill-odyssey" data-symbol="odyssey"><span class="pill-icon">V</span> Odyssey</button>
+    </nav>
 
+    <nav class="symbol-nav symbol-nav--compact" aria-label="Odyssey steps (mobile)">
+      <button type="button" class="nav-pill unlocked active" data-symbol="voyage"><span class="pill-icon">I</span></button>
+      <button type="button" class="nav-pill locked" data-symbol="realms"><span class="pill-icon">II</span></button>
+      <button type="button" class="nav-pill locked" data-symbol="protocols"><span class="pill-icon">III</span></button>
+      <button type="button" class="nav-pill locked" data-symbol="legions"><span class="pill-icon">IV</span></button>
+      <button type="button" class="nav-pill locked" data-symbol="odyssey"><span class="pill-icon">V</span></button>
+    </nav>
 
-    <!-- Header Controls -->
-    <div class="header-controls"></div>
+    <div class="header-controls">
+      <span class="step-counter-badge" id="step-counter-badge">STEP 1 / 5</span>
+      <button type="button" class="control-btn" id="guide-btn" aria-haspopup="dialog">Guide</button>
+    </div>
   </header>
 
   <!-- MAIN CONTAINER WITH SPA VIEWS -->
@@ -56,36 +82,33 @@
 
     <!-- VIEW 1: INTERACTIVE CONSTANT HISTORICAL MAP -->
     <section id="map-view" class="view-section active">
+      <div class="map-home-layout">
       <div class="map-container unfolded" id="map-container">
 
         <!-- Constant Parchment Map Graphic Frame -->
         <div class="map-wrapper slide-in" id="map-wrapper">
-          <video autoplay loop muted playsinline class="map-bg-img">
+          <div class="map-viewport-area">
+          <div class="map-fit-frame" id="map-fit-frame">
+          <video autoplay loop muted playsinline class="map-bg-img" id="map-bg-video" poster="/images/historical_map_bg.jpg">
             <source src="/Video Project 9.mp4" type="video/mp4">
           </video>
 
-          <!-- SVG Overlay for Clean Brown Foot Path Trail -->
-          <svg class="map-svg-overlay" viewBox="0 0 1000 600" preserveAspectRatio="none">
+          <!-- SVG Overlay for Road Path & Moving Dotted Route -->
+          <svg class="map-svg-overlay" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
             <defs>
-              <linearGradient id="brownFootGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ffd700" stop-opacity="1" />
-                <stop offset="50%" stop-color="#f39c12" stop-opacity="1" />
-                <stop offset="100%" stop-color="#b78103" stop-opacity="1" />
-              </linearGradient>
+              <!-- Progressive reveal mask: uncovers the road forward as nodes are unlocked -->
+              <mask id="road-reveal-mask" maskUnits="userSpaceOnUse">
+                <path id="trail-mask-path" class="road-mask-path" d="" fill="none" stroke="#ffffff" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" />
+              </mask>
             </defs>
 
-            <!-- 4 Clean Brown Foot Path Segments -->
-            <!-- Segment 1: Symbol I -> Symbol II -->
-            <path id="trail-seg-1" d="M 180 260 Q 320 200 450 180" class="brown-footpath-trail" />
-
-            <!-- Segment 2: Symbol II -> Symbol III -->
-            <path id="trail-seg-2" d="M 450 180 T 720 230" class="brown-footpath-trail" />
-
-            <!-- Segment 3: Symbol III -> Symbol IV -->
-            <path id="trail-seg-3" d="M 720 230 Q 560 360 380 420" class="brown-footpath-trail" />
-
-            <!-- Segment 4: Symbol IV -> Symbol V -->
-            <path id="trail-seg-4" d="M 380 420 Q 580 480 760 430" class="brown-footpath-trail" />
+            <!-- Road Path Group: Single Animated Dotted Line (Revealed progressively node by node) -->
+            <g id="road-path-group" class="road-path-group" mask="url(#road-reveal-mask)">
+              <!-- Single Dotted Movement Line (no black border) -->
+              <path id="trail-road-dots" class="single-dotted-trail" d="" />
+              <!-- Hidden compatibility anchor -->
+              <path id="trail-master" class="brown-footpath-trail" d="" style="display:none;" />
+            </g>
           </svg>
 
           <!-- 5 INTERACTIVE CONSTANT MAP EMBLEMS (SERIAL PROGRESSIVE UNLOCK) -->
@@ -222,12 +245,39 @@
               </div>
             </div>
           </div>
+
+          </div><!-- /.map-fit-frame -->
+          </div><!-- /.map-viewport-area -->
+
+          <button type="button" class="map-journey-fab" id="map-journey-fab" aria-expanded="false" aria-controls="map-journey-sidebar">Journey</button>
+
+          <!-- Bottom status bar removed per user request -->
+          <footer class="map-footer-bar" style="display: none;" aria-hidden="true">
+            <span id="trail-status-text" style="display: none;"></span>
+          </footer>
         </div><!-- /.map-wrapper -->
 
-
-
-
       </div><!-- /.map-container -->
+
+      <aside class="map-journey-sidebar" id="map-journey-sidebar" aria-label="Interactive journey details">
+        <button type="button" class="sidebar-mobile-close" id="sidebar-mobile-close" aria-label="Close journey panel">&times;</button>
+        <div class="sidebar-kicker">Interactive Journey</div>
+        <h2 class="sidebar-heading">Chart Your Odyssey</h2>
+        <div class="sidebar-step-label" id="sidebar-step-label">Step I</div>
+        <h3 class="sidebar-realm-title" id="sidebar-realm-title">The Voyage</h3>
+        <p class="sidebar-greek" id="sidebar-greek">Ὁ Πλοῦς καὶ ἡ Καινοτομία</p>
+        <p class="sidebar-tagline" id="sidebar-tagline">Journey to Innovation — Navigating Uncharted Waters</p>
+        <p class="sidebar-overview" id="sidebar-overview"></p>
+        <p class="sidebar-coords" id="sidebar-coords"></p>
+        <div class="sidebar-nav-row">
+          <button type="button" class="sidebar-nav-btn" id="sidebar-prev-btn" aria-label="Previous step">&#8592;</button>
+          <div class="sidebar-dots" id="sidebar-dots" aria-hidden="true"></div>
+          <button type="button" class="sidebar-nav-btn" id="sidebar-next-btn" aria-label="Next step">&#8594;</button>
+        </div>
+        <button type="button" class="sidebar-cta gold-action-btn" id="sidebar-open-btn">Open The Voyage</button>
+        <p class="sidebar-lock-note" id="sidebar-lock-note" hidden>Complete prior steps to unlock this realm on the map.</p>
+      </aside>
+      </div><!-- /.map-home-layout -->
     </section>
 
     <!-- VIEW 2: DESTINATION SUB-PAGE (DYNAMICALLY POPULATED) -->
@@ -597,10 +647,6 @@
             <stop offset="50%" stop-color="#ffd700" />
             <stop offset="100%" stop-color="#ffffff" />
           </linearGradient>
-          <filter id="arrowGlow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
         </defs>
         <!-- Trail Ember particles -->
         <path d="M 0,16 L 30,16" stroke="#f39c12" stroke-width="2" stroke-dasharray="2 4" opacity="0.8" />
@@ -608,17 +654,17 @@
         <path d="M 10,4 L 35,16 L 10,28 M 4,7 L 24,16 L 4,25" fill="none" stroke="#ffd700" stroke-width="3"
           stroke-linecap="round" />
         <!-- Shaft -->
-        <line x1="30" y1="16" x2="140" y2="16" stroke="url(#arrowGold)" stroke-width="4.5" stroke-linecap="round"
-          filter="url(#arrowGlow)" />
+        <line x1="30" y1="16" x2="140" y2="16" stroke="url(#arrowGold)" stroke-width="4.5" stroke-linecap="round" />
         <line x1="30" y1="16" x2="140" y2="16" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" />
         <!-- Arrow Head (Weapon Spearhead) -->
-        <polygon points="160,16 132,3 138,16 132,29" fill="#ffd700" filter="url(#arrowGlow)" />
+        <polygon points="160,16 132,3 138,16 132,29" fill="#ffd700" />
         <polygon points="160,16 138,10 142,16 138,22" fill="#ffffff" />
       </svg>
     </div>
   </div>
 
-  <div style="position:fixed;bottom:10px;right:16px;z-index:9999;font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.12em;color:#c8a84b;opacity:0.85;text-align:right;pointer-events:none;text-transform:uppercase;">Bijaylaxmi Swain<br><span style="font-size:0.6rem;letter-spacing:0.18em;color:#d4b96a;opacity:0.8;">Co-Convenor</span></div>
+
+
 
   <script type="module" src="./src/scripts/app.js"></script>
 </body>

@@ -199,10 +199,68 @@ body.odyssey-theme {
   visibility: visible;
 }
 
+.symbol-nav--compact {
+  display: none;
+  gap: 0.35rem;
+  overflow-x: auto;
+  max-width: 42vw;
+  scrollbar-width: none;
+}
+
+.symbol-nav--compact::-webkit-scrollbar {
+  display: none;
+}
+
+.symbol-nav--compact .nav-pill {
+  padding: 0.4rem 0.55rem;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 980px) {
+  .odyssey-header .symbol-nav:not(.symbol-nav--compact) {
+    display: none;
+  }
+
+  .symbol-nav--compact {
+    display: flex;
+  }
+
+  .header-controls .control-btn {
+    padding: 0.4rem 0.55rem;
+  }
+}
+
 @media (max-width: 780px) {
   .odyssey-header {
-    height: 64px;
-    padding: 0 0.75rem;
+    height: auto;
+    min-height: 56px;
+    padding: 0.45rem 0.65rem;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .header-controls {
+    margin-left: auto;
+  }
+
+  .symbol-nav--compact {
+    max-width: 100%;
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    padding-top: 0.15rem;
+  }
+
+  .intro-content {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding: 1.5rem 1.25rem 2rem;
+  }
+
+  .intro-display-lede {
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .header-brand {
@@ -226,11 +284,15 @@ body.odyssey-theme {
     letter-spacing: 0.7px;
   }
 
+  .odyssey-header {
+    position: fixed;
+  }
+
   .odyssey-viewport {
     width: 100%;
-    height: calc(100vh - 64px);
-    height: calc(100dvh - 64px);
-    margin-top: 64px;
+    height: calc(100vh - 100px);
+    height: calc(100dvh - 100px);
+    margin-top: 100px;
   }
 }
 
@@ -431,15 +493,156 @@ body.odyssey-theme {
   pointer-events: none;
 }
 
-.intro-bg-video {
+.intro-hero-bg {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(1.0) contrast(1.0);
+  inset: 0;
+  background: url('/images/poseidon-landing.png') center 35% / cover no-repeat;
+  animation: introKenBurns 18s ease-in-out infinite alternate;
   z-index: 1;
+}
+
+.intro-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 70% at 22% 55%, rgba(255, 180, 80, 0.22) 0%, transparent 55%),
+    linear-gradient(90deg, rgba(8, 5, 3, 0.92) 0%, rgba(8, 5, 3, 0.35) 42%, rgba(4, 12, 18, 0.75) 100%),
+    linear-gradient(0deg, rgba(5, 3, 2, 0.95) 0%, transparent 35%, transparent 70%, rgba(5, 3, 2, 0.85) 100%);
+  z-index: 2;
+}
+
+.intro-god-rays {
+  position: absolute;
+  inset: -20%;
+  background: conic-gradient(from 200deg at 18% 30%,
+      transparent 0deg,
+      rgba(255, 215, 120, 0.07) 12deg,
+      transparent 24deg,
+      rgba(255, 200, 90, 0.05) 36deg,
+      transparent 48deg);
+  animation: introRaysDrift 14s linear infinite;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.intro-sea-shimmer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 55%;
+  height: 45%;
+  background: linear-gradient(120deg, transparent 40%, rgba(80, 200, 255, 0.06) 50%, transparent 60%);
+  background-size: 200% 200%;
+  animation: introSeaShimmer 6s ease-in-out infinite;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.intro-content {
+  position: relative;
+  z-index: 5;
+  max-width: 520px;
+  margin-right: auto;
+  margin-left: clamp(1.25rem, 6vw, 4rem);
+  padding: 2rem 0;
+  animation: introContentRise 1.2s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+.intro-eyebrow {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--color-gold-primary);
+  margin-bottom: 0.85rem;
+  text-transform: uppercase;
+}
+
+.intro-display-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  letter-spacing: 0.12em;
+  line-height: 1.05;
+  background: linear-gradient(135deg, #fff 0%, var(--color-gold-bright) 45%, var(--color-gold-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.35rem;
+}
+
+.intro-display-sub {
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  letter-spacing: 0.18em;
+  color: #d4b96a;
+  margin-bottom: 1.1rem;
+  text-transform: uppercase;
+}
+
+.intro-display-lede {
+  font-family: var(--font-serif);
+  font-size: 1.08rem;
+  line-height: 1.55;
+  color: #e8dcc8;
+  margin-bottom: 1.6rem;
+  max-width: 46ch;
+}
+
+.intro-enter-btn {
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  padding: 0.85rem 1.8rem;
+  animation: introBtnPulse 2.8s ease-in-out infinite;
+}
+
+.intro-skip-hint {
+  display: block;
+  margin-top: 1rem;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: rgba(201, 187, 168, 0.75);
+  text-transform: uppercase;
+}
+
+body.intro-active .odyssey-header,
+body.intro-active .odyssey-viewport {
+  pointer-events: none;
+}
+
+@keyframes introKenBurns {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.08) translate(-1.5%, -1%); }
+}
+
+@keyframes introRaysDrift {
+  0% { transform: rotate(0deg); opacity: 0.65; }
+  50% { opacity: 1; }
+  100% { transform: rotate(8deg); opacity: 0.65; }
+}
+
+@keyframes introSeaShimmer {
+  0%, 100% { background-position: 0% 50%; opacity: 0.5; }
+  50% { background-position: 100% 50%; opacity: 1; }
+}
+
+@keyframes introContentRise {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes introBtnPulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); }
+  50% { box-shadow: 0 0 22px rgba(255, 215, 0, 0.35); }
+}
+
+.step-counter-badge {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--color-gold-bright);
+  border: 1px solid var(--border-gold);
+  padding: 0.4rem 0.75rem;
+  background: rgba(20, 13, 8, 0.85);
 }
 
 
