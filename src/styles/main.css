@@ -183,6 +183,18 @@ body.odyssey-theme {
   z-index: 10;
 }
 
+/* Hide Top Bar Header on Home Page only */
+body.home-view-active .odyssey-header {
+  display: none !important;
+}
+
+body.home-view-active .odyssey-viewport {
+  margin-top: 0 !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+}
+
+
 .view-section {
   position: absolute;
   top: 0;
@@ -202,28 +214,61 @@ body.odyssey-theme {
 @media (max-width: 780px) {
   .odyssey-header {
     height: 64px;
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
+    gap: 0.5rem;
   }
 
   .header-brand {
-    gap: 0.5rem;
+    gap: 0.4rem;
     min-width: 0;
+    flex-shrink: 0;
   }
 
   .meander-icon {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     flex: 0 0 auto;
   }
 
   .brand-title {
-    font-size: 1rem;
-    letter-spacing: 1px;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
   }
 
   .brand-subtitle {
-    font-size: 0.5rem;
-    letter-spacing: 0.7px;
+    font-size: 0.48rem;
+    letter-spacing: 0.5px;
+  }
+
+  .symbol-nav {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex: 1 1 auto;
+    padding: 0.2rem 0;
+    gap: 0.35rem;
+  }
+
+  .symbol-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-pill {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+  }
+
+  .header-controls {
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+
+  .control-btn {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.7rem;
   }
 
   .odyssey-viewport {
@@ -233,6 +278,22 @@ body.odyssey-theme {
     margin-top: 64px;
   }
 }
+
+@media (max-width: 520px) {
+  .brand-subtitle {
+    display: none;
+  }
+
+  .brand-title {
+    font-size: 0.85rem;
+  }
+
+  .nav-pill {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.68rem;
+  }
+}
+
 
 /* Modals */
 .modal-overlay {
@@ -547,5 +608,44 @@ body.odyssey-theme {
   border-color: var(--color-gold-bright);
   font-weight: bold;
 }
+
+@media (max-width: 600px) {
+  .odyssey-audio-widget {
+    bottom: 12px;
+    right: 12px;
+    padding: 0.35rem 0.75rem;
+    gap: 0.5rem;
+    max-width: calc(100vw - 24px);
+    border-radius: 20px;
+  }
+
+  .audio-track-sub {
+    display: none;
+  }
+
+  .audio-track-title {
+    font-size: 0.72rem;
+  }
+
+  .audio-play-pause-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .audio-download-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+  }
+
+  .modal-card {
+    padding: 1.4rem 1.1rem;
+    max-width: 94vw;
+    max-height: 88vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 
 

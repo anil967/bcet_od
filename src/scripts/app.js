@@ -394,6 +394,11 @@ class OdysseyApp {
 
   handleHashRoute() {
     const hash = window.location.hash.replace('#', '');
+    if (hash === 'register' || hash.startsWith('register-')) {
+      const trackName = hash.includes('-') ? decodeURIComponent(hash.split('-').slice(1).join('-')) : '';
+      this.openRegistrationPage(trackName, false);
+      return;
+    }
     if (SYMBOLS_DATA[hash]) {
       const stepIdx = this.symbolOrder.indexOf(hash) + 1;
       if (stepIdx <= this.unlockedStep) {
@@ -406,10 +411,48 @@ class OdysseyApp {
     }
   }
 
+  openRegistrationPage(trackTitle, updateHash = true) {
+    document.body.classList.remove('home-view-active');
+
+    // Auto-unfold map container if navigating directly
+    const mapContainer = document.getElementById('map-container');
+    const mapWrapper = document.getElementById('map-wrapper');
+    if (mapContainer && !mapContainer.classList.contains('unfolded')) {
+      mapContainer.classList.add('unfolded');
+      mapWrapper?.classList.add('slide-in');
+    }
+
+    this.currentSymbolId = 'register';
+
+    if (updateHash) {
+      window.location.hash = trackTitle ? `register-${encodeURIComponent(trackTitle)}` : 'register';
+    }
+
+    // Highlight top header pill (none active)
+    document.querySelectorAll('.symbol-nav .nav-pill').forEach(pill => pill.classList.remove('active'));
+
+    const container = document.getElementById('subpage-content');
+    if (container) {
+      this.renderRegistrationPageContent(container, trackTitle);
+      container.scrollTop = 0;
+    }
+
+    const mapView = document.getElementById('map-view');
+    const subpageView = document.getElementById('subpage-view');
+
+    mapView?.classList.remove('active');
+    subpageView?.classList.add('active');
+
+    audioSystem.playLyreArpeggio();
+  }
+
+
   showMapView(updateHash = true) {
     if (updateHash) {
       window.history.pushState(null, '', ' ');
     }
+
+    document.body.classList.add('home-view-active');
 
     const mapView = document.getElementById('map-view');
     const subpageView = document.getElementById('subpage-view');
@@ -431,6 +474,8 @@ class OdysseyApp {
   openSymbolPage(symbolId, updateHash = true) {
     const data = SYMBOLS_DATA[symbolId];
     if (!data) return;
+
+    document.body.classList.remove('home-view-active');
 
     // Auto-unfold map container if navigating directly to a subpage
     const mapContainer = document.getElementById('map-container');
@@ -1503,18 +1548,13 @@ class OdysseyApp {
     }
   }
 
-  /* ─── Trigger Weapon Arrow Flight & Open Registration Modal ─── */
+  /* ─── Trigger Weapon Arrow Flight & Open Dedicated Registration Page ─── */
   triggerWeaponArrow(trackTitle) {
-    // audioSystem.playTriumph(); // Disabled clicking sound from realm page KPI cards
-
     const overlay = document.getElementById('weapon-arrow-overlay');
     const wrapper = document.getElementById('weapon-arrow-wrapper');
-    const regModal = document.getElementById('registration-modal');
-    const trackSelect = document.getElementById('reg-track-select');
-    const trackHeading = document.getElementById('reg-track-title');
 
     if (!overlay || !wrapper) {
-      this.openRegistrationModal(trackTitle);
+      this.openRegistrationPage(trackTitle);
       return;
     }
 
@@ -1524,17 +1564,9 @@ class OdysseyApp {
     void wrapper.offsetWidth; // force reflow
     wrapper.classList.add('shoot');
 
-    // As arrow reaches target (~700ms), open registration modal
+    // As arrow reaches target (~650ms), open registration page view
     setTimeout(() => {
-      if (trackSelect) trackSelect.value = trackTitle;
-      if (trackHeading) trackHeading.textContent = `Register: ${trackTitle}`;
-
-      const form = document.getElementById('reg-form');
-      const successMsg = document.getElementById('reg-success-msg');
-      if (form) form.style.display = 'block';
-      if (successMsg) successMsg.style.display = 'none';
-
-      regModal?.classList.add('active');
+      this.openRegistrationPage(trackTitle);
     }, 650);
 
     // Clean up arrow after animation ends
@@ -1545,20 +1577,395 @@ class OdysseyApp {
   }
 
   openRegistrationModal(trackTitle) {
-    const regModal = document.getElementById('registration-modal');
-    const trackSelect = document.getElementById('reg-track-select');
-    const trackHeading = document.getElementById('reg-track-title');
-
-    if (trackSelect) trackSelect.value = trackTitle;
-    if (trackHeading) trackHeading.textContent = `Register: ${trackTitle}`;
-
-    const form = document.getElementById('reg-form');
-    const successMsg = document.getElementById('reg-success-msg');
-    if (form) form.style.display = 'block';
-    if (successMsg) successMsg.style.display = 'none';
-
-    regModal?.classList.add('active');
+    this.openRegistrationPage(trackTitle);
   }
+
+  renderRegistrationPageContent(container, trackTitle) {
+    const displayTrack = trackTitle || 'All Tracks';
+    container.innerHTML = `
+      <div class="realms-cover-wrapper" style="background-image: url('/images/realms_hero.jpg');">
+        <div class="realms-cover-overlay">
+          <div class="voyage-header-bar">
+            <button class="back-map-btn" id="reg-page-back-map-btn">
+              <span>&larr;</span> Return to Map
+            </button>
+          </div>
+
+          <section class="protocols-section reg-page-section">
+            <h1 class="hackathon-heading">QUEST REGISTRATION</h1>
+            <div class="registration-track-badge">TRACK: ${displayTrack}</div>
+
+            <div class="aboutus-divider">
+              <span class="aboutus-divider-icon">📜</span>
+            </div>
+
+            <div class="reg-page-card">
+              <!-- Team Rules Banner -->
+              <div class="reg-rules-banner">
+                <div class="reg-rules-title">📌 Team Rules</div>
+                <ul class="reg-rules-list">
+                  <li>🚫 Inter-college teams are not allowed.</li>
+                  <li>🏫 All team members must belong to the same institution.</li>
+                  <li>👥 Team size: 3–5 members per team.</li>
+                  <li>👩 At least 1 female member is mandatory in every team</li>
+                  <li>💰 The registration fee is ₹500 per team.</li>
+                </ul>
+              </div>
+
+              <form id="reg-page-form">
+                <!-- Team & Leader Info -->
+                <div class="reg-field">
+                  <label for="reg-page-team-name">Legion / Team Name</label>
+                  <input type="text" id="reg-page-team-name" placeholder="e.g. Achaean Innovators" required>
+                </div>
+                <div class="reg-grid-2">
+                  <div class="reg-field">
+                    <label for="reg-page-leader-name">Team Leader Name</label>
+                    <input type="text" id="reg-page-leader-name" placeholder="e.g. Odysseus" required>
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-page-leader-phone">Team Leader Phone No.</label>
+                    <input type="tel" id="reg-page-leader-phone" placeholder="e.g. +91 9876543210" required>
+                  </div>
+                </div>
+                <div class="reg-field">
+                  <label for="reg-page-email">Team Leader Email Address</label>
+                  <input type="email" id="reg-page-email" placeholder="leader@institution.edu" required>
+                </div>
+
+                <div class="reg-field">
+                  <label for="reg-page-team-size">Number of Team Members (including team leader)</label>
+                  <select id="reg-page-team-size" required>
+                    <option value="3" selected>3 members</option>
+                    <option value="4">4 members</option>
+                    <option value="5">5 members</option>
+                  </select>
+                </div>
+
+                <!-- Additional Team Members Section -->
+                <div class="reg-members-section">
+                  <h3 class="reg-members-title">🛡️ Additional Legion Team Members</h3>
+
+                  <div class="member-card" data-member-slot="1">
+                    <h4 class="member-card-heading">Member 1</h4>
+                    <div class="reg-grid-3">
+                      <div class="reg-field">
+                        <label for="reg-page-m1-name">Name</label>
+                        <input type="text" id="reg-page-m1-name" placeholder="Member 1 Name">
+                      </div>
+                      <div class="reg-field">
+                        <label for="reg-page-m1-email">Email</label>
+                        <input type="email" id="reg-page-m1-email" placeholder="member1@email.com">
+                      </div>
+                      <div class="reg-field">
+                        <label for="reg-page-m1-phone">Phone No.</label>
+                        <input type="tel" id="reg-page-m1-phone" placeholder="Phone No.">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="member-card" data-member-slot="2">
+                    <h4 class="member-card-heading">Member 2</h4>
+                    <div class="reg-grid-3">
+                      <div class="reg-field">
+                        <label for="reg-page-m2-name">Name</label>
+                        <input type="text" id="reg-page-m2-name" placeholder="Member 2 Name">
+                      </div>
+                      <div class="reg-field">
+                        <label for="reg-page-m2-email">Email</label>
+                        <input type="email" id="reg-page-m2-email" placeholder="member2@email.com">
+                      </div>
+                      <div class="reg-field">
+                        <label for="reg-page-m2-phone">Phone No.</label>
+                        <input type="tel" id="reg-page-m2-phone" placeholder="Phone No.">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="member-card" data-member-slot="3" hidden>
+                    <h4 class="member-card-heading">Member 3</h4>
+                    <div class="reg-grid-3">
+                      <div class="reg-field">
+                        <label for="reg-page-m3-name">Name</label>
+                        <input type="text" id="reg-page-m3-name" placeholder="Member 3 Name">
+                      </div>
+                      <div class="reg-field">
+                        <label for="reg-page-m3-email">Email</label>
+                        <input type="email" id="reg-page-m3-email" placeholder="member3@email.com">
+                      </div>
+                      <div class="reg-field">
+                        <label for="reg-page-m3-phone">Phone No.</label>
+                        <input type="tel" id="reg-page-m3-phone" placeholder="Phone No.">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="member-card" data-member-slot="4" hidden>
+                    <h4 class="member-card-heading">Member 4</h4>
+                    <div class="reg-grid-3">
+                      <div class="reg-field">
+                        <label for="reg-page-m4-name">Name</label>
+                        <input type="text" id="reg-page-m4-name" placeholder="Member 4 Name">
+                      </div>
+                      <div class="reg-field">
+                        <label for="reg-page-m4-email">Email</label>
+                        <input type="email" id="reg-page-m4-email" placeholder="member4@email.com">
+                      </div>
+                      <div class="reg-field">
+                        <label for="reg-page-m4-phone">Phone No.</label>
+                        <input type="tel" id="reg-page-m4-phone" placeholder="Phone No.">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Accommodation Option -->
+                <div class="reg-field" style="margin-top: 1.2rem;">
+                  <label for="reg-page-accommodation">Accommodation Required?</label>
+                  <select id="reg-page-accommodation" required>
+                    <option value="" disabled selected>Select Accommodation Choice</option>
+                    <option value="Yes">Yes — Accommodation Required</option>
+                    <option value="No">No — Self Arranged</option>
+                  </select>
+                </div>
+
+                <!-- Institution Name -->
+                <div class="reg-field">
+                  <label for="reg-page-institution">Institution / Organization Name</label>
+                  <input type="text" id="reg-page-institution" placeholder="e.g. BCET Odisha" required>
+                </div>
+
+                <!-- Payment Details -->
+                <div class="reg-payment-section">
+                  <h3 class="reg-payment-title">💳 Registration Fee & Payment Details</h3>
+                  <div class="payment-info-box">
+                    <div class="payment-qr-wrap" id="reg-page-payment-qr-trigger" role="button" tabindex="0" title="Click to open Payment QR Scanner">
+                      <div class="payment-qr-thumbnail-box">
+                        <img src="/images/payment-qr.png" alt="Payment QR Code" class="payment-qr-thumb">
+                        <div class="qr-expand-overlay">
+                          <span class="qr-expand-icon">🔍</span>
+                        </div>
+                      </div>
+                      <span>Scan &amp; Pay UPI</span>
+                      <span class="qr-click-hint">Click to enlarge</span>
+                    </div>
+                    <div class="payment-details-text">
+                      <p><strong>UPI ID:</strong> <code>jrrout751@ybl</code></p>
+                      <p><strong>Account Holder:</strong> Odyssey Hackathon BCET</p>
+                      <p class="payment-note">⚡ Pay the registration fee via UPI and upload your payment slip photo below.</p>
+                    </div>
+                  </div>
+
+                  <div class="reg-field" style="margin-top: 1.1rem;">
+                    <label for="reg-page-payment-slip">Upload Payment Slip / Receipt (JPG only)</label>
+                    <input type="file" id="reg-page-payment-slip" accept=".jpg,.jpeg,image/jpeg" required class="file-input-gold">
+                  </div>
+                </div>
+
+                <div class="reg-submit-wrap">
+                  <div id="reg-page-error-msg" style="display:none; color:#ff6b6b; margin-bottom:0.8rem; font-size:0.85rem; text-align:center;"></div>
+                  <button type="submit" class="gold-action-btn" id="reg-page-submit-btn">🏹 Submit Quest Registration</button>
+                </div>
+              </form>
+
+              <!-- Success Screen -->
+              <div id="reg-page-success-msg" class="reg-success-box" style="display: none;">
+                <div class="reg-success-icon">📜</div>
+                <h2 class="reg-success-title">QUEST ENLISTMENT CONFIRMED!</h2>
+                <p class="reg-success-desc">
+                  Hail, Brave Innovators! Your legion <strong id="reg-page-team-name-success" style="color:#ffd700;">your team</strong> has been successfully recorded in the Odyssey database.
+                </p>
+                <div class="reg-id-card" style="margin: 1.2rem 0;">
+                  <span class="reg-id-label">REGISTRATION ID</span>
+                  <strong id="reg-page-id-success" class="reg-id-value"></strong>
+                </div>
+                <p class="reg-confirmation-copy">Your Legion has been registered for the <strong>ODYSSEY Hackathon</strong>. Prepare for the Journey to Innovation!</p>
+                <div class="whatsapp-cta" style="margin-top: 1.5rem;">
+                  <a class="gold-action-btn" href="https://chat.whatsapp.com/CGWQjE5HpHG5QmqTvZR1EB" target="_blank" rel="noopener noreferrer">JOIN OFFICIAL WHATSAPP GROUP</a>
+                  <p class="whatsapp-supporting-text" style="margin-top:0.6rem;">After joining the official WhatsApp group, participants will receive a Google Form link to submit their project abstract and PPT for the shortlisting round.</p>
+                </div>
+                <button class="gold-action-btn" id="reg-page-return-btn" style="margin-top:1.5rem;">🗺️ Return to Odyssey Map</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    `;
+
+    // Bind Back to Map Buttons
+    document.getElementById('reg-page-back-map-btn')?.addEventListener('click', () => {
+      audioSystem.playClick();
+      this.showMapView();
+    });
+
+    document.getElementById('reg-page-return-btn')?.addEventListener('click', () => {
+      audioSystem.playClick();
+      this.showMapView();
+    });
+
+    // Bind Payment QR Trigger
+    document.getElementById('reg-page-payment-qr-trigger')?.addEventListener('click', () => {
+      audioSystem.playClick();
+      document.getElementById('payment-qr-modal')?.classList.add('active');
+    });
+
+    // Team Size Change Listener
+    const teamSizeSelect = document.getElementById('reg-page-team-size');
+    const memberCards = [...container.querySelectorAll('.member-card[data-member-slot]')];
+    const updateMemberPanels = () => {
+      const teamSize = Number(teamSizeSelect?.value || 3);
+      const additionalMemberCount = teamSize - 1;
+      memberCards.forEach((card) => {
+        const slot = Number(card.dataset.memberSlot);
+        const isVisible = slot <= additionalMemberCount;
+        card.style.display = isVisible ? 'block' : 'none';
+        card.hidden = !isVisible;
+
+        const inputs = card.querySelectorAll('input');
+        inputs.forEach((input) => {
+          if (!isVisible) {
+            input.required = false;
+            input.value = '';
+          }
+        });
+      });
+    };
+    teamSizeSelect?.addEventListener('change', updateMemberPanels);
+    updateMemberPanels();
+
+    // Form Submit Handler
+    const regFormPage = document.getElementById('reg-page-form');
+    regFormPage?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('reg-page-submit-btn');
+      const errorEl = document.getElementById('reg-page-error-msg');
+      if (errorEl) {
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+      }
+
+      const teamName = document.getElementById('reg-page-team-name')?.value?.trim() || '';
+      const leaderName = document.getElementById('reg-page-leader-name')?.value?.trim() || '';
+      const leaderPhone = document.getElementById('reg-page-leader-phone')?.value?.trim() || '';
+      const leaderEmail = document.getElementById('reg-page-email')?.value?.trim() || '';
+      const teamSize = Number(teamSizeSelect?.value || 0);
+
+      const members = [];
+      for (let i = 1; i <= teamSize - 1; i++) {
+        const mName = document.getElementById(`reg-page-m${i}-name`)?.value?.trim() || '';
+        const mEmail = document.getElementById(`reg-page-m${i}-email`)?.value?.trim() || '';
+        const mPhone = document.getElementById(`reg-page-m${i}-phone`)?.value?.trim() || '';
+        if (mName || mEmail || mPhone) {
+          members.push({ memberSlot: i, name: mName, email: mEmail, phone: mPhone });
+        }
+      }
+
+      const accommodation = document.getElementById('reg-page-accommodation')?.value || '';
+      const institution = document.getElementById('reg-page-institution')?.value?.trim() || '';
+      const paymentSlipInput = document.getElementById('reg-page-payment-slip');
+      const paymentSlipFile = paymentSlipInput?.files?.[0];
+
+      if (paymentSlipFile) {
+        const fileName = paymentSlipFile.name.toLowerCase();
+        const isJpg = /\.(jpg|jpeg)$/.test(fileName) && paymentSlipFile.type === 'image/jpeg';
+        if (!isJpg) {
+          if (errorEl) {
+            errorEl.textContent = '⚠️ Please upload the payment slip in JPG format only.';
+            errorEl.style.display = 'block';
+          }
+          return;
+        }
+      }
+
+      const readFileAsBase64 = (file) => new Promise((resolve, reject) => {
+        if (!file) return resolve(null);
+        const reader = new FileReader();
+        reader.onload = () => resolve({
+          fileName: file.name,
+          fileSize: file.size,
+          fileType: file.type,
+          dataUrl: reader.result
+        });
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      let paymentSlip = null;
+      if (paymentSlipFile) {
+        try {
+          paymentSlip = await readFileAsBase64(paymentSlipFile);
+        } catch (fileErr) {
+          console.warn('Could not read payment slip file:', fileErr);
+        }
+      }
+
+      const payload = {
+        teamName,
+        leaderName,
+        leaderPhone,
+        leaderEmail,
+        teamSize,
+        members,
+        accommodation,
+        institution,
+        paymentSlip
+      };
+
+      const originalBtnText = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⚔️ ENLISTING YOUR LEGION INTO ODYSSEY...';
+      }
+
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const responseBody = await response.text();
+        let result;
+        try {
+          result = JSON.parse(responseBody);
+        } catch {
+          throw new Error(
+            response.status === 404
+              ? 'Registration service is not available on this server. Please deploy the Node.js server and try again.'
+              : `Registration service returned an unexpected response (${response.status}).`
+          );
+        }
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Registration submission failed');
+        }
+
+        audioSystem.playTriumph();
+        const teamNameEl = document.getElementById('reg-page-team-name-success');
+        if (teamNameEl) teamNameEl.textContent = teamName || 'your team';
+        const registrationIdEl = document.getElementById('reg-page-id-success');
+        if (registrationIdEl) registrationIdEl.textContent = result.insertedId || '';
+
+        regFormPage.style.display = 'none';
+        const successBox = document.getElementById('reg-page-success-msg');
+        if (successBox) successBox.style.display = 'block';
+      } catch (err) {
+        console.error('Registration failed:', err);
+        if (errorEl) {
+          errorEl.textContent = `⚠️ Error saving registration: ${err.message || 'Please check connection'}`;
+          errorEl.style.display = 'block';
+        } else {
+          alert(`Registration Error: ${err.message}`);
+        }
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+        }
+      }
+    });
+  }
+
 
   openArtifactModal(artifact) {
     document.getElementById('art-badge').textContent = artifact.badge;

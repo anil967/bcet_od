@@ -3585,3 +3585,43 @@
     min-height: 520px !important;
   }
 }
+
+/* Dedicated Registration Page Styles */
+.reg-page-section {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+}
+
+.registration-track-badge {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  color: var(--color-gold-bright);
+  background: rgba(243, 156, 18, 0.15);
+  border: 1px solid var(--color-gold-primary);
+  padding: 0.35rem 1.2rem;
+  border-radius: 20px;
+  margin-top: 0.6rem;
+  text-transform: uppercase;
+}
+
+.reg-page-card {
+  max-width: 820px;
+  margin: 1.8rem auto 0 auto;
+  text-align: left;
+  background: rgba(15, 10, 6, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid var(--border-gold-solid);
+  border-radius: 14px;
+  padding: 2.4rem 2.2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(243, 156, 18, 0.25);
+}
+
+@media (max-width: 650px) {
+  .reg-page-card {
+    padding: 1.4rem 1.1rem;
+  }
+}
