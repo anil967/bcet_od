@@ -1,0 +1,547 @@
+/* Constant Sepia Parchment Map & Clean Brown Foot Path Trail */
+
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle, #1c120a 0%, #0a0705 100%);
+  cursor: default;
+  /* Constant map */
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1500px;
+  /* Enable 3D space for folding effect */
+}
+
+/* Constant Map Wrapper */
+.map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 1200px;
+  max-height: 960px;
+  aspect-ratio: 1024 / 819;
+  margin: auto;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+/* Ancient Parchment Folding Flaps Overlay (Opens Vertically via Rolling) */
+.map-fold-flap {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: 150;
+  /* Above map contents */
+  transition: height 4.5s cubic-bezier(0.25, 1, 0.3, 1), opacity 3.0s ease, visibility 0s linear;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  visibility: visible;
+}
+
+.flap-top {
+  top: 0;
+  height: 50%;
+}
+
+.flap-bottom {
+  bottom: 0;
+  height: 50%;
+}
+
+/* Transition to shrink height to 0 to unroll the map */
+.map-container.unfolded .flap-top {
+  height: 0;
+  opacity: 0;
+}
+
+.map-container.unfolded .flap-bottom {
+  height: 0;
+  opacity: 0;
+}
+
+.map-container.unfolded .map-fold-flap {
+  visibility: hidden;
+  transition-delay: 0s, 0s, 4.5s;
+  /* Wait for animation to finish before hiding */
+}
+
+/* Flap parchment texture */
+.flap-texture {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.flap-top .flap-texture {
+  background: linear-gradient(to bottom,
+      #ebd9b4 0%,
+      #dfcba0 30%,
+      #ccb78b 70%,
+      #bfa87a 100%);
+  border: 3px solid #b78103;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  box-shadow: inset 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.flap-bottom .flap-texture {
+  background: linear-gradient(to top,
+      #ebd9b4 0%,
+      #dfcba0 30%,
+      #ccb78b 70%,
+      #bfa87a 100%);
+  border: 3px solid #b78103;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: inset 0 -10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Rolling Scroll Cylinders */
+.scroll-roll-cylinder {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 48px;
+  z-index: 160;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  transform-style: preserve-3d;
+  transition: transform 4.5s cubic-bezier(0.25, 1, 0.3, 1);
+}
+
+.roll-top-cylinder {
+  bottom: -24px;
+  /* Centered on the seam */
+  background: linear-gradient(to bottom,
+      #2b180a 0%,
+      #5d3b1e 25%,
+      #ffd700 50%,
+      #5d3b1e 75%,
+      #2b180a 100%);
+  border-top: 2px solid #b78103;
+  border-bottom: 2px solid #b78103;
+}
+
+.roll-bottom-cylinder {
+  top: -24px;
+  /* Centered on the seam */
+  background: linear-gradient(to bottom,
+      #2b180a 0%,
+      #5d3b1e 25%,
+      #ffd700 50%,
+      #5d3b1e 75%,
+      #2b180a 100%);
+  border-top: 2px solid #b78103;
+  border-bottom: 2px solid #b78103;
+}
+
+/* Spin animation for rolling effect */
+.map-container.unfolded .roll-top-cylinder {
+  transform: rotateX(-1440deg);
+}
+
+.map-container.unfolded .roll-bottom-cylinder {
+  transform: rotateX(1440deg);
+}
+
+/* Wooden Knobs / Handles at the ends of cylinders */
+.scroll-roll-cylinder::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 32px;
+  background: radial-gradient(circle at left, #ffd700, #8a640f 70%, #2b1d0a 100%);
+  border-radius: 6px 0 0 6px;
+  box-shadow: -3px 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.scroll-roll-cylinder::after {
+  content: "";
+  position: absolute;
+  right: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 32px;
+  background: radial-gradient(circle at right, #ffd700, #8a640f 70%, #2b1d0a 100%);
+  border-radius: 0 6px 6px 0;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Historical Map Image - Constant background with bright golden tint (unshaded) */
+.map-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+  filter: sepia(1.0) saturate(2.2) contrast(1.08) brightness(1.02) hue-rotate(-8deg);
+  border-radius: 4px;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+}
+
+/* SVG Overlay for Clean Brown Foot Path Trail */
+.map-svg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Clean Antique Sepia Brown Foot Path Trail */
+.brown-footpath-trail {
+  stroke: #5c3a1b;
+  stroke-width: 5;
+  fill: none;
+  stroke-dasharray: 6 10;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 0.6s ease, stroke-dashoffset 1.5s ease-in-out;
+  stroke-dashoffset: 400;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+.brown-footpath-trail.active {
+  opacity: 1;
+  stroke: url(#brownFootGlow);
+  stroke-dashoffset: 0;
+  animation: walkTrail 3s linear infinite;
+}
+
+@keyframes walkTrail {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
+/* 5 INTERACTIVE MAP EMBLEMS (SERIAL UNLOCK) */
+.map-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+}
+
+.map-pin.unlocked:hover {
+  transform: translate(-50%, -60%) scale(1.22);
+  z-index: 50;
+}
+
+.map-pin.locked {
+  opacity: 0.55;
+  filter: grayscale(0.6);
+  cursor: not-allowed;
+}
+
+.map-pin.locked .pin-ring {
+  display: none;
+}
+
+.map-pin.locked .pin-badge {
+  border-color: #5c3a1b;
+  background: radial-gradient(circle, #2a190b 0%, #100a04 100%);
+  color: #8e5a2b;
+}
+
+/* Concentric Glowing Sepia Aura Rings for Unlocked Pins */
+.pin-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 52px;
+  height: 52px;
+  transform: translate(-50%, -50%);
+  border: 2px solid #ffd700;
+  border-radius: 50%;
+  opacity: 0;
+  animation: pulseRing 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseRing {
+  0% {
+    width: 22px;
+    height: 22px;
+    opacity: 0.95;
+  }
+
+  100% {
+    width: 82px;
+    height: 82px;
+    opacity: 0;
+  }
+}
+
+/* Pin 3D Wax Seal Badge */
+.pin-badge {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  background: radial-gradient(circle, #5a381a 0%, #241407 100%);
+  border: 2px solid #ffd700;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.95), 0 0 16px rgba(243, 156, 18, 0.65), inset 0 0 10px rgba(255, 215, 0, 0.35);
+  transition: var(--transition-smooth);
+  color: #ffd700;
+}
+
+.map-pin.unlocked:hover .pin-badge {
+  background: radial-gradient(circle, #d4ac0d 0%, #8e5a2b 100%);
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 0 35px rgba(255, 215, 0, 0.95), inset 0 0 14px rgba(255, 255, 255, 0.8);
+}
+
+.pin-number {
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #ffd700;
+  line-height: 1;
+  margin-bottom: 1px;
+}
+
+.emblem-svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Custom Theme Colors */
+.pin-theme-voyage .pin-badge {
+  border-color: #f39c12;
+}
+
+.pin-theme-realms .pin-badge {
+  border-color: #e67e22;
+}
+
+.pin-theme-protocols .pin-badge {
+  border-color: #f1c40f;
+}
+
+.pin-theme-legions .pin-badge {
+  border-color: #d35400;
+}
+
+.pin-theme-odyssey .pin-badge {
+  border-color: #ffd700;
+}
+
+/* Click Here label for Voyage pin */
+.pin-click-label {
+  position: absolute;
+  top: 58px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 13, 7, 0.95);
+  border: 1px solid #ffd700;
+  color: #ffd700;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.3);
+  pointer-events: none;
+  animation: gentlePulse 2s ease-in-out infinite;
+  z-index: 10;
+}
+
+@keyframes gentlePulse {
+
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.3);
+  }
+
+  50% {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 215, 0, 0.6);
+    border-color: #ffffff;
+    color: #ffffff;
+  }
+}
+
+/* Tooltip Hover Cards */
+.pin-tooltip {
+  position: absolute;
+  bottom: 62px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px) scale(0.9);
+  width: 260px;
+  background: rgba(20, 13, 7, 0.96);
+  border: 1px solid #d4ac0d;
+  border-radius: 8px;
+  padding: 0.95rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(243, 156, 18, 0.4);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  z-index: 100;
+}
+
+.map-pin:hover .pin-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.tooltip-tag {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  color: #f39c12;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.tooltip-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: #ffffff;
+  margin: 0.2rem 0 0.4rem 0;
+}
+
+.tooltip-desc {
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
+  color: #d8c7b2;
+  line-height: 1.35;
+  margin-bottom: 0.8rem;
+}
+
+.tooltip-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(243, 156, 18, 0.25);
+  padding-top: 0.5rem;
+}
+
+.coords-badge {
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  color: #a38f78;
+}
+
+.action-prompt {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffd700;
+}
+
+.prompt-status {
+  color: #8e5a2b;
+}
+
+/* Nav Pill Locked States */
+.nav-pill.locked {
+  opacity: 0.45;
+  border-color: rgba(142, 90, 43, 0.3);
+  cursor: not-allowed;
+}
+
+/* Parchment Scroll Banner for JOURNEY TO INNOVATION */
+.parchment-scroll-banner {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(42, 25, 12, 0.95) 0%, rgba(20, 12, 6, 0.95) 100%);
+  border: 1px solid #d4ac0d;
+  border-radius: 8px;
+  padding: 0.65rem 2.2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(243, 156, 18, 0.35);
+  z-index: 25;
+  text-align: center;
+  max-width: 500px;
+  width: 85%;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scroll-quote {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #ffffff 0%, #ffd700 50%, #f39c12 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+  display: block;
+}
+
+/* Bottom Status Bar */
+.map-footer-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 38px;
+  background: rgba(10, 6, 3, 0.95);
+  border-top: 1px solid var(--border-gold);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  z-index: 30;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.bar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.bar-label {
+  color: #93806c;
+}
+
+.bar-value {
+  color: #ffd700;
+  font-weight: 600;
+}
+
+.prompt-item {
+  color: #c9bba8;
+  font-style: italic;
+}
+
+/* Map components visibility */
+.map-bg-img,
+.map-svg-overlay,
+.map-pin {
+  opacity: 1;
+  pointer-events: auto;
+}

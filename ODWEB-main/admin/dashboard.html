@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Odyssey Admin Dashboard</title>
+  <link rel="stylesheet" href="/src/styles/admin.css">
+</head>
+<body class="admin-shell dashboard-shell">
+  <header class="dashboard-header">
+    <div>
+      <p class="eyebrow">REGISTRATION CONTROL ROOM</p>
+      <h1>Odyssey Registrations</h1>
+    </div>
+    <button id="logout-button" class="secondary-button">Log out</button>
+  </header>
+  <main class="dashboard-main">
+    <section class="toolbar" aria-label="Registration filters">
+      <label class="search-field"><span>Search</span><input id="search" type="search" placeholder="Name, email, team, or college"></label>
+      <label><span>Payment status</span><select id="payment-filter"><option value="">All statuses</option></select></label>
+      <label><span>Accommodation</span><select id="accommodation-filter"><option value="">All options</option></select></label>
+      <button id="export-button" class="primary-button">Export CSV</button>
+    </section>
+    <div class="summary-row"><span id="result-count">Loading registrations…</span><span id="load-error" class="form-error"></span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th data-sort="leaderName">Name</th><th data-sort="leaderEmail">Email</th><th data-sort="teamName">Team</th><th data-sort="institution">College</th><th data-sort="paymentStatus">Payment</th><th data-sort="accommodation">Accommodation</th><th data-sort="registeredAt">Registered</th><th>Details</th></tr></thead>
+        <tbody id="registrations-body"></tbody>
+      </table>
+      <p id="empty-state" class="empty-state" hidden>No registrations match the selected filters.</p>
+    </div>
+  </main>
+  <dialog id="details-dialog" class="details-dialog">
+    <div class="dialog-header"><h2>Complete registration</h2><button id="close-dialog" class="icon-button" aria-label="Close">&times;</button></div>
+    <div id="details-content" class="details-content"></div>
+    <div class="payment-actions">
+      <button id="verify-payment" class="primary-button">Verify Payment</button>
+      <button id="reject-payment" class="danger-button">Reject Payment</button>
+    </div>
+  </dialog>
+  <script type="module" src="/src/admin/dashboard.js"></script>
+</body>
+</html>

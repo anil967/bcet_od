@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Odyssey Admin Login</title>
+  <link rel="stylesheet" href="/src/styles/admin.css">
+</head>
+<body class="admin-shell">
+  <main class="auth-card">
+    <div class="admin-mark">ODYSSEY</div>
+    <p class="eyebrow">REGISTRATION CONTROL ROOM</p>
+    <h1>Admin Sign In</h1>
+    <p class="muted">Authorized access only.</p>
+    <form id="login-form" class="admin-form">
+      <label for="username">Username</label>
+      <input id="username" name="username" autocomplete="username" required>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button class="primary-button" type="submit">Enter Dashboard</button>
+      <p id="login-error" class="form-error" role="alert"></p>
+    </form>
+  </main>
+  <script type="module" src="/src/admin/login.js"></script>
+</body>
+</html>
