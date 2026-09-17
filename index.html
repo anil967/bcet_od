@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="./src/styles/page.css">
 </head>
 
-<body class="odyssey-theme home-view-active">
+<body class="odyssey-theme">
 
   <!-- FULLSCREEN OPENING PAGE WITH FRONT VIDEO -->
   <div id="intro-opening-screen" class="intro-opening-screen">
@@ -45,6 +45,8 @@
       </div>
     </div>
 
+
+
     <!-- Header Controls -->
     <div class="header-controls"></div>
   </header>
@@ -56,260 +58,439 @@
     <section id="map-view" class="view-section active">
       <div class="map-container unfolded" id="map-container">
 
-        <!-- Parallax Scroll Map Graphic Frame -->
-        <div class="map-wrapper slide-in map-parallax-stage" id="map-wrapper">
+        <!-- Constant Parchment Map Graphic Frame -->
+        <div class="map-wrapper slide-in" id="map-wrapper">
+          <video autoplay loop muted playsinline class="map-bg-img">
+            <source src="/Video Project 9.mp4" type="video/mp4">
+          </video>
 
-          <!-- LAYER 1: BACKGROUND (0.2x) — Mountains, Sky, Decorative Border, Compass Rose -->
-          <div class="map-layer map-layer-bg" id="map-layer-bg" data-depth="0.2">
-            <video autoplay loop muted playsinline class="map-bg-img" poster="/images/historical_map_bg.jpg">
-              <source src="/Video Project 9.mp4" type="video/mp4">
-            </video>
-            <div class="map-bg-layer-tint"></div>
+          <!-- SVG Overlay for Clean Brown Foot Path Trail -->
+          <svg class="map-svg-overlay" viewBox="0 0 1000 600" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="brownFootGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffd700" stop-opacity="1" />
+                <stop offset="50%" stop-color="#f39c12" stop-opacity="1" />
+                <stop offset="100%" stop-color="#b78103" stop-opacity="1" />
+              </linearGradient>
+            </defs>
+
+            <!-- 4 Clean Brown Foot Path Segments -->
+            <!-- Segment 1: Symbol I -> Symbol II -->
+            <path id="trail-seg-1" d="M 180 260 Q 320 200 450 180" class="brown-footpath-trail" />
+
+            <!-- Segment 2: Symbol II -> Symbol III -->
+            <path id="trail-seg-2" d="M 450 180 T 720 230" class="brown-footpath-trail" />
+
+            <!-- Segment 3: Symbol III -> Symbol IV -->
+            <path id="trail-seg-3" d="M 720 230 Q 560 360 380 420" class="brown-footpath-trail" />
+
+            <!-- Segment 4: Symbol IV -> Symbol V -->
+            <path id="trail-seg-4" d="M 380 420 Q 580 480 760 430" class="brown-footpath-trail" />
+          </svg>
+
+          <!-- 5 INTERACTIVE CONSTANT MAP EMBLEMS (SERIAL PROGRESSIVE UNLOCK) -->
+
+          <!-- Symbol I: The Voyage -->
+          <div class="map-pin pin-theme-voyage unlocked" id="pin-voyage" data-symbol="voyage" data-step="1"
+            style="left: 18%; top: 43%;">
+            <div class="pin-ring"></div>
+            <div class="pin-badge">
+              <span class="pin-number">I</span>
+              <div class="emblem-svg">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" />
+                  <polygon points="12,4 14.5,10.5 21,12 14.5,13.5 12,20 9.5,13.5 3,12 9.5,10.5" fill="currentColor" />
+                </svg>
+              </div>
+            </div>
+            <div class="pin-click-label">Click Here</div>
+            <div class="pin-tooltip">
+              <div class="tooltip-header">
+                <span class="tooltip-tag">Step I • Active Start</span>
+                <h3 class="tooltip-title">The Voyage</h3>
+              </div>
+              <p class="tooltip-desc">Click to visit Symbol I and reveal the brown foot path to Symbol II!</p>
+              <div class="tooltip-footer">
+                <span class="coords-badge">37°58'N 23°43'E</span>
+                <span class="action-prompt">Click Here &rarr;</span>
+              </div>
+            </div>
           </div>
 
-          <!-- LAYER 2: MIDGROUND (0.5x) — Mythic Islands & Halos (Top-Down Aegean Route) -->
-          <div class="map-layer map-layer-mg" id="map-layer-mg" data-depth="0.5">
-            <svg class="map-midground-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
-              <defs>
-                <filter id="mgIslandGlow" x="-30%" y="-30%" width="160%" height="160%">
-                  <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#2a1608" flood-opacity="0.45" />
-                </filter>
-                <radialGradient id="islandHalo" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#ffd700" stop-opacity="0.18" />
-                  <stop offset="65%" stop-color="#f39c12" stop-opacity="0.06" />
-                  <stop offset="100%" stop-color="#b78103" stop-opacity="0" />
-                </radialGradient>
-              </defs>
-              <g class="midground-islands" filter="url(#mgIslandGlow)">
-                <!-- Halo I: The Voyage (460, 160) -->
-                <ellipse cx="460" cy="160" rx="72" ry="42" fill="url(#islandHalo)" />
-                <!-- Halo II: The Realms (560, 330) -->
-                <ellipse cx="560" cy="330" rx="76" ry="42" fill="url(#islandHalo)" />
-                <!-- Halo III: Realm Protocols (420, 500) -->
-                <ellipse cx="420" cy="500" rx="74" ry="40" fill="url(#islandHalo)" />
-                <!-- Halo IV: The Legions (580, 670) -->
-                <ellipse cx="580" cy="670" rx="76" ry="42" fill="url(#islandHalo)" />
-                <!-- Halo V: The Odyssey (480, 840) -->
-                <ellipse cx="480" cy="840" rx="86" ry="48" fill="url(#islandHalo)" />
-              </g>
-            </svg>
-            <div class="map-mg-sea-shimmer"></div>
+          <!-- Symbol II: The Realms -->
+          <div class="map-pin pin-theme-realms locked" id="pin-realms" data-symbol="realms" data-step="2"
+            style="left: 45%; top: 30%;">
+            <div class="pin-ring"></div>
+            <div class="pin-badge">
+              <span class="pin-number">II</span>
+              <div class="emblem-svg">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 20h20M4 20V10M8 20V10M12 20V10M16 20V10M20 20V10M2 10l10-6 10 6" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+            <div class="pin-tooltip">
+              <div class="tooltip-header">
+                <span class="tooltip-tag">Step II • The Realms</span>
+                <h3 class="tooltip-title">The Realms</h3>
+              </div>
+              <p class="tooltip-desc">Explore Symbol I first to reveal the brown foot path trail to this sanctuary!</p>
+              <div class="tooltip-footer">
+                <span class="coords-badge">36°25'N 25°26'E</span>
+                <span class="action-prompt prompt-status">Click Symbol I First &rarr;</span>
+              </div>
+            </div>
           </div>
 
-          <!-- LAYER 3: FOREGROUND (1.0x) — Waypoint Nodes (I–V), Route Line, Tooltips & Labels -->
-          <div class="map-layer map-layer-fg" id="map-layer-fg" data-depth="1.0">
-
-            <!-- SVG Overlay for Clean Brown Foot Path Trail (Top-Down Aegean Serpentine) -->
-            <svg class="map-svg-overlay" viewBox="0 0 1000 1000" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="brownFootGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#ffd700" stop-opacity="1" />
-                  <stop offset="50%" stop-color="#f39c12" stop-opacity="1" />
-                  <stop offset="100%" stop-color="#b78103" stop-opacity="1" />
-                </linearGradient>
-              </defs>
-
-              <!-- 4 Clean Brown Foot Path Segments (Top-to-Bottom Flow) -->
-              <!-- Segment 1: Symbol I -> Symbol II -->
-              <path id="trail-seg-1" d="M 460 160 C 510 210, 550 270, 560 330" class="brown-footpath-trail" />
-
-              <!-- Segment 2: Symbol II -> Symbol III -->
-              <path id="trail-seg-2" d="M 560 330 C 560 390, 430 430, 420 500" class="brown-footpath-trail" />
-
-              <!-- Segment 3: Symbol III -> Symbol IV -->
-              <path id="trail-seg-3" d="M 420 500 C 410 570, 570 610, 580 670" class="brown-footpath-trail" />
-
-              <!-- Segment 4: Symbol IV -> Symbol V -->
-              <path id="trail-seg-4" d="M 580 670 C 580 740, 490 780, 480 840" class="brown-footpath-trail" />
-            </svg>
-
-            <!-- 5 INTERACTIVE CONSTANT MAP EMBLEMS (TOP-DOWN PROGRESSIVE UNLOCK) -->
-
-            <!-- Symbol I: The Voyage (North) -->
-            <div class="map-pin pin-theme-voyage unlocked" id="pin-voyage" data-symbol="voyage" data-step="1"
-              style="left: 46%; top: 16%;">
-              <div class="pin-ring"></div>
-              <div class="pin-badge">
-                <span class="pin-number">I</span>
-                <div class="emblem-svg">
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" />
-                    <polygon points="12,4 14.5,10.5 21,12 14.5,13.5 12,20 9.5,13.5 3,12 9.5,10.5" fill="currentColor" />
-                  </svg>
-                </div>
-              </div>
-              <div class="pin-click-label" role="button" aria-label="Explore Symbol I The Voyage">
-                <span class="click-label-glow"></span>
-                <span class="click-label-icon">✦</span>
-                <span class="click-label-text">CLICK HERE</span>
-                <span class="click-label-arrow">&rarr;</span>
-              </div>
-              <div class="pin-tooltip">
-                <div class="tooltip-header">
-                  <span class="tooltip-tag">Step I • Active Start</span>
-                  <h3 class="tooltip-title">The Voyage</h3>
-                </div>
-                <p class="tooltip-desc">Click to visit Symbol I and reveal the charted sea trail south to Symbol II!</p>
-                <div class="tooltip-footer">
-                  <span class="coords-badge">37°58'N 23°43'E</span>
-                  <span class="action-prompt">Click Here &rarr;</span>
-                </div>
+          <!-- Symbol III: Realm Protocols -->
+          <div class="map-pin pin-theme-protocols locked" id="pin-protocols" data-symbol="protocols" data-step="3"
+            style="left: 72%; top: 38%;">
+            <div class="pin-ring"></div>
+            <div class="pin-badge">
+              <span class="pin-number">III</span>
+              <div class="emblem-svg">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"
+                    stroke-linecap="round" />
+                  <path d="M9 7h6M9 11h6M9 15h4" stroke-linecap="round" />
+                </svg>
               </div>
             </div>
-
-            <!-- Symbol II: The Realms -->
-            <div class="map-pin pin-theme-realms locked" id="pin-realms" data-symbol="realms" data-step="2"
-              style="left: 56%; top: 33%;">
-              <div class="pin-ring"></div>
-              <div class="pin-badge">
-                <span class="pin-number">II</span>
-                <div class="emblem-svg">
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M2 20h20M4 20V10M8 20V10M12 20V10M16 20V10M20 20V10M2 10l10-6 10 6" stroke-linecap="round"
-                      stroke-linejoin="round" />
-                  </svg>
-                </div>
+            <div class="pin-tooltip">
+              <div class="tooltip-header">
+                <span class="tooltip-tag">Step III • Protocols</span>
+                <h3 class="tooltip-title">Realm Protocols</h3>
               </div>
-              <div class="pin-click-label" role="button" aria-label="Explore Symbol II The Realms">
-                <span class="click-label-glow"></span>
-                <span class="click-label-icon">✦</span>
-                <span class="click-label-text">EXPLORE</span>
-                <span class="click-label-arrow">&rarr;</span>
-              </div>
-              <div class="pin-tooltip">
-                <div class="tooltip-header">
-                  <span class="tooltip-tag">Step II • The Realms</span>
-                  <h3 class="tooltip-title">The Realms</h3>
-                </div>
-                <p class="tooltip-desc">Explore Symbol I first to reveal the brown foot path trail to this sanctuary!</p>
-                <div class="tooltip-footer">
-                  <span class="coords-badge">36°25'N 25°26'E</span>
-                  <span class="action-prompt prompt-status">Click Symbol I First &rarr;</span>
-                </div>
+              <p class="tooltip-desc">Follow the brown foot path serially to unlock this realm.</p>
+              <div class="tooltip-footer">
+                <span class="coords-badge">38°29'N 22°30'E</span>
+                <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
               </div>
             </div>
+          </div>
 
-            <!-- Symbol III: Realm Protocols -->
-            <div class="map-pin pin-theme-protocols locked" id="pin-protocols" data-symbol="protocols" data-step="3"
-              style="left: 42%; top: 50%;">
-              <div class="pin-ring"></div>
-              <div class="pin-badge">
-                <span class="pin-number">III</span>
-                <div class="emblem-svg">
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"
-                      stroke-linecap="round" />
-                    <path d="M9 7h6M9 11h6M9 15h4" stroke-linecap="round" />
-                  </svg>
-                </div>
-              </div>
-              <div class="pin-click-label" role="button" aria-label="Explore Symbol III Protocols">
-                <span class="click-label-glow"></span>
-                <span class="click-label-icon">✦</span>
-                <span class="click-label-text">EXPLORE</span>
-                <span class="click-label-arrow">&rarr;</span>
-              </div>
-              <div class="pin-tooltip">
-                <div class="tooltip-header">
-                  <span class="tooltip-tag">Step III • Protocols</span>
-                  <h3 class="tooltip-title">Realm Protocols</h3>
-                </div>
-                <p class="tooltip-desc">Follow the charted sea trail south to unlock this sacred domain.</p>
-                <div class="tooltip-footer">
-                  <span class="coords-badge">38°29'N 22°30'E</span>
-                  <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
-                </div>
+          <!-- Symbol IV: The Legions -->
+          <div class="map-pin pin-theme-legions locked" id="pin-legions" data-symbol="legions" data-step="4"
+            style="left: 38%; top: 70%;">
+            <div class="pin-ring"></div>
+            <div class="pin-badge">
+              <span class="pin-number">IV</span>
+              <div class="emblem-svg">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <path d="M12 8v8M8 12h8" stroke-linecap="round" />
+                </svg>
               </div>
             </div>
-
-            <!-- Symbol IV: The Legions -->
-            <div class="map-pin pin-theme-legions locked" id="pin-legions" data-symbol="legions" data-step="4"
-              style="left: 58%; top: 67%;">
-              <div class="pin-ring"></div>
-              <div class="pin-badge">
-                <span class="pin-number">IV</span>
-                <div class="emblem-svg">
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round"
-                      stroke-linejoin="round" />
-                    <path d="M12 8v8M8 12h8" stroke-linecap="round" />
-                  </svg>
-                </div>
+            <div class="pin-tooltip">
+              <div class="tooltip-header">
+                <span class="tooltip-tag">Step IV • Legions</span>
+                <h3 class="tooltip-title">The Legions</h3>
               </div>
-              <div class="pin-click-label" role="button" aria-label="Explore Symbol IV The Legions">
-                <span class="click-label-glow"></span>
-                <span class="click-label-icon">✦</span>
-                <span class="click-label-text">EXPLORE</span>
-                <span class="click-label-arrow">&rarr;</span>
-              </div>
-              <div class="pin-tooltip">
-                <div class="tooltip-header">
-                  <span class="tooltip-tag">Step IV • Legions</span>
-                  <h3 class="tooltip-title">The Legions</h3>
-                </div>
-                <p class="tooltip-desc">Follow the brown foot path serially to unlock this realm.</p>
-                <div class="tooltip-footer">
-                  <span class="coords-badge">37°04'N 22°25'E</span>
-                  <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
-                </div>
+              <p class="tooltip-desc">Follow the brown foot path serially to unlock this realm.</p>
+              <div class="tooltip-footer">
+                <span class="coords-badge">37°04'N 22°25'E</span>
+                <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
               </div>
             </div>
+          </div>
 
-            <!-- Symbol V: The Odyssey (South Destination) -->
-            <div class="map-pin pin-theme-odyssey locked" id="pin-odyssey" data-symbol="odyssey" data-step="5"
-              style="left: 48%; top: 84%;">
-              <div class="pin-ring"></div>
-              <div class="pin-badge">
-                <span class="pin-number">V</span>
-                <div class="emblem-svg">
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 16s3-3 7-3 7 3 7 3V7l-7-3-7 3v9z" stroke-linecap="round" stroke-linejoin="round" />
-                    <circle cx="12" cy="8" r="2" fill="currentColor" />
-                  </svg>
-                </div>
-              </div>
-              <div class="pin-click-label" role="button" aria-label="Explore Symbol V The Odyssey">
-                <span class="click-label-glow"></span>
-                <span class="click-label-icon">✦</span>
-                <span class="click-label-text">EXPLORE</span>
-                <span class="click-label-arrow">&rarr;</span>
-              </div>
-              <div class="pin-tooltip">
-                <div class="tooltip-header">
-                  <span class="tooltip-tag">Step V • The Odyssey</span>
-                  <h3 class="tooltip-title">The Odyssey</h3>
-                </div>
-                <p class="tooltip-desc">Follow all path steps serially to reach the Journey to Innovation!</p>
-                <div class="tooltip-footer">
-                  <span class="coords-badge">38°22'N 20°43'E</span>
-                  <span class="action-prompt prompt-status">Final Destination &rarr;</span>
-                </div>
+          <!-- Symbol V: The Odyssey -->
+          <div class="map-pin pin-theme-odyssey locked" id="pin-odyssey" data-symbol="odyssey" data-step="5"
+            style="left: 76%; top: 71%;">
+            <div class="pin-ring"></div>
+            <div class="pin-badge">
+              <span class="pin-number">V</span>
+              <div class="emblem-svg">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 16s3-3 7-3 7 3 7 3V7l-7-3-7 3v9z" stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="12" cy="8" r="2" fill="currentColor" />
+                </svg>
               </div>
             </div>
-
-          </div><!-- /.map-layer-fg -->
+            <div class="pin-tooltip">
+              <div class="tooltip-header">
+                <span class="tooltip-tag">Step V • The Odyssey</span>
+                <h3 class="tooltip-title">The Odyssey</h3>
+              </div>
+              <p class="tooltip-desc">Follow all path steps serially to reach the Journey to Innovation!</p>
+              <div class="tooltip-footer">
+                <span class="coords-badge">38°22'N 20°43'E</span>
+                <span class="action-prompt prompt-status">Final Destination &rarr;</span>
+              </div>
+            </div>
+          </div>
         </div><!-- /.map-wrapper -->
 
-        <!-- Navigational Scroll & Drag Hint HUD -->
-        <div class="map-scroll-indicator" id="map-scroll-indicator" aria-hidden="true">
-          <span class="indicator-mouse">✥</span>
-          <span class="indicator-text">Scroll or Drag to Sail South</span>
-          <span class="indicator-arrow">&darr;</span>
-        </div>
+
+
 
       </div><!-- /.map-container -->
     </section>
 
     <!-- VIEW 2: DESTINATION SUB-PAGE (DYNAMICALLY POPULATED) -->
     <section id="subpage-view" class="view-section">
-      <!-- Back to Map Button (Fixed Below Top Bar, Below Odyssey Text) -->
-      <button class="subpage-back-btn" id="subpage-back-btn" aria-label="Back to Map" title="Back to Map">
-        <span class="back-btn-arrow">&larr;</span>
-        <span class="back-btn-text">BACK TO MAP</span>
-      </button>
-
       <div class="subpage-container" id="subpage-content">
         <!-- Rendered via JavaScript app.js -->
+      </div>
+    </section>
+
+    <!-- VIEW 3: HACKATHON REGISTRATION FULL PAGE -->
+    <section id="registration-view" class="view-section">
+      <div class="subpage-container reg-page-container" id="reg-page-content">
+        <div class="reg-page-hero">
+          <span class="reg-hero-badge">HACKATHON QUEST REGISTRATION</span>
+          <h1 class="reg-hero-title" id="reg-track-title">REGISTER: TECH FOR BHARAT &amp; SOCIAL IMPACT</h1>
+          <p class="reg-hero-subtitle">Step into ODYSSEY — Begin your Journey to Innovation</p>
+        </div>
+
+        <div class="reg-page-body">
+          <!-- Team Rules Banner -->
+          <div class="reg-rules-banner">
+            <div class="reg-rules-title">📌 Team Rules</div>
+            <ul class="reg-rules-list">
+              <li>🚫 Inter-college teams are not allowed.</li>
+              <li>🏫 All team members must belong to the same institution.</li>
+              <li>👥 Team size: 3–5 members per team.</li>
+              <li>👩 At least 1 female member is mandatory in every team</li>
+              <li>💰 The registration fee is ₹500 per team.</li>
+            </ul>
+          </div>
+
+          <form id="reg-form">
+            <!-- Selected Problem Statement -->
+            <div class="reg-field reg-track-field" style="margin-bottom: 1.5rem;">
+              <label for="reg-track-input">Selected Quest / Problem Statement</label>
+              <input type="text" id="reg-track-input" readonly style="color: var(--color-gold-bright); font-weight: 700; cursor: default; letter-spacing: 0.5px;">
+            </div>
+
+            <!-- Team & Leader Info -->
+            <div class="reg-section-block">
+              <h3 class="reg-block-title">⚔️ Legion &amp; Commander Details</h3>
+              <div class="reg-grid-2">
+                <div class="reg-field">
+                  <label for="reg-team-name">Legion / Team Name</label>
+                  <input type="text" id="reg-team-name" placeholder="e.g. Achaean Innovators" required>
+                </div>
+                <div class="reg-field">
+                  <label for="reg-institution">Institution / Organization Name</label>
+                  <input type="text" id="reg-institution" placeholder="e.g. BCET Odisha" required>
+                </div>
+              </div>
+              <div class="reg-grid-3">
+                <div class="reg-field">
+                  <label for="reg-leader-name">Team Leader Name (Member 1)</label>
+                  <input type="text" id="reg-leader-name" placeholder="e.g. Odysseus" required>
+                </div>
+                <div class="reg-field">
+                  <label for="reg-leader-phone">Team Leader Phone No.</label>
+                  <input type="tel" id="reg-leader-phone" placeholder="e.g. +91 9876543210" required>
+                </div>
+                <div class="reg-field">
+                  <label for="reg-email">Team Leader Email Address</label>
+                  <input type="email" id="reg-email" placeholder="e.g. leader@institution.edu" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Team Members Section -->
+            <div class="reg-members-section">
+              <div class="reg-members-header">
+                <div>
+                  <h3 class="reg-members-title">🛡️ Legion Team Members</h3>
+                  <p class="reg-members-subtitle">3 to 5 members per team (including Leader). Member 2 and Member 3 are required.</p>
+                </div>
+                <div class="team-counter-pill">
+                  Legion Size: <strong id="team-size-counter">3</strong> / 5 Members
+                </div>
+              </div>
+
+              <!-- Member 2 (Slot 1) -->
+              <div class="member-card" data-member-slot="1">
+                <div class="member-card-heading">
+                  <span class="member-num-badge">Member 2</span>
+                  <span class="member-role-tag">Required</span>
+                </div>
+                <div class="reg-grid-3">
+                  <div class="reg-field">
+                    <label for="reg-m1-name">Full Name</label>
+                    <input type="text" id="reg-m1-name" placeholder="Member 2 Name" required>
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m1-email">Email Address</label>
+                    <input type="email" id="reg-m1-email" placeholder="member2@email.com" required>
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m1-phone">Phone No.</label>
+                    <input type="tel" id="reg-m1-phone" placeholder="Phone No." required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Member 3 (Slot 2) -->
+              <div class="member-card" data-member-slot="2">
+                <div class="member-card-heading">
+                  <span class="member-num-badge">Member 3</span>
+                  <span class="member-role-tag">Required</span>
+                </div>
+                <div class="reg-grid-3">
+                  <div class="reg-field">
+                    <label for="reg-m2-name">Full Name</label>
+                    <input type="text" id="reg-m2-name" placeholder="Member 3 Name" required>
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m2-email">Email Address</label>
+                    <input type="email" id="reg-m2-email" placeholder="member3@email.com" required>
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m2-phone">Phone No.</label>
+                    <input type="tel" id="reg-m2-phone" placeholder="Phone No." required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Member 4 (Slot 3) - initially hidden -->
+              <div class="member-card member-card-optional" data-member-slot="3" hidden>
+                <div class="member-card-heading">
+                  <span class="member-num-badge">Member 4</span>
+                  <span class="member-role-tag">Optional</span>
+                  <button type="button" class="remove-member-btn" data-remove-slot="3" title="Remove Member 4" aria-label="Remove Member 4">✕</button>
+                </div>
+                <div class="reg-grid-3">
+                  <div class="reg-field">
+                    <label for="reg-m3-name">Full Name</label>
+                    <input type="text" id="reg-m3-name" placeholder="Member 4 Name">
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m3-email">Email Address</label>
+                    <input type="email" id="reg-m3-email" placeholder="member4@email.com">
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m3-phone">Phone No.</label>
+                    <input type="tel" id="reg-m3-phone" placeholder="Phone No.">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Member 5 (Slot 4) - initially hidden -->
+              <div class="member-card member-card-optional" data-member-slot="4" hidden>
+                <div class="member-card-heading">
+                  <span class="member-num-badge">Member 5</span>
+                  <span class="member-role-tag">Optional</span>
+                  <button type="button" class="remove-member-btn" data-remove-slot="4" title="Remove Member 5" aria-label="Remove Member 5">✕</button>
+                </div>
+                <div class="reg-grid-3">
+                  <div class="reg-field">
+                    <label for="reg-m4-name">Full Name</label>
+                    <input type="text" id="reg-m4-name" placeholder="Member 5 Name">
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m4-email">Email Address</label>
+                    <input type="email" id="reg-m4-email" placeholder="member5@email.com">
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m4-phone">Phone No.</label>
+                    <input type="tel" id="reg-m4-phone" placeholder="Phone No.">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Add Member Button Container (after Member 3) -->
+              <div class="add-member-control-area">
+                <button type="button" class="add-member-btn" id="add-member-btn">
+                  <span class="add-plus-symbol">+</span>
+                  <span class="add-btn-text">Add Member 4</span>
+                </button>
+                <span class="add-member-hint" id="add-member-hint">Click + to add Member 4 (maximum 5 members per team)</span>
+              </div>
+            </div>
+
+            <!-- Accommodation & Logistical Preferences -->
+            <div class="reg-section-block">
+              <h3 class="reg-block-title">🏛️ Logistics &amp; Accommodation</h3>
+              <div class="reg-field">
+                <label for="reg-accommodation">Accommodation Required?</label>
+                <select id="reg-accommodation" required>
+                  <option value="" disabled selected>Select Accommodation Choice</option>
+                  <option value="Yes">Yes — Accommodation Required</option>
+                  <option value="No">No — Self Arranged</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Payment Details & Receipt Upload -->
+            <div class="reg-payment-section">
+              <h3 class="reg-payment-title">💳 Registration Fee &amp; Payment Verification</h3>
+              <div class="payment-info-box">
+                <div class="payment-qr-wrap" id="payment-qr-trigger" role="button" tabindex="0"
+                  title="Click to open Payment QR Scanner">
+                  <div class="payment-qr-thumbnail-box">
+                    <img src="/images/payment-qr.png" alt="Payment QR Code" class="payment-qr-thumb">
+                    <div class="qr-expand-overlay">
+                      <span class="qr-expand-icon">🔍</span>
+                    </div>
+                  </div>
+                  <span>Scan &amp; Pay UPI</span>
+                  <span class="qr-click-hint">Click to enlarge</span>
+                </div>
+                <div class="payment-details-text">
+                  <p><strong>UPI ID:</strong> <code>jrrout751@ybl</code></p>
+                  <p><strong>Account Holder:</strong> Odyssey Hackathon BCET</p>
+                  <p><strong>Registration Fee:</strong> <span class="fee-badge">₹500 per team</span></p>
+                  <p class="payment-note">⚡ Pay the registration fee via UPI and upload your payment slip photo below.</p>
+                </div>
+              </div>
+
+              <div class="reg-field payment-upload-field">
+                <label for="reg-payment-slip">Upload Payment Slip / Receipt (JPG only)</label>
+                <input type="file" id="reg-payment-slip" accept=".jpg,.jpeg,image/jpeg" required class="file-input-gold">
+              </div>
+            </div>
+
+            <div class="reg-submit-wrap">
+              <div id="reg-error-msg"
+                style="display:none; color:#ff6b6b; margin-bottom:0.8rem; font-size:0.9rem; text-align:center;"></div>
+              <button type="submit" class="gold-action-btn reg-main-submit-btn" id="reg-submit-btn">🏹 Submit Quest Registration</button>
+            </div>
+          </form>
+
+          <!-- SUCCESS VIEW WITH POSEIDON HERO CHARACTER & WEAPON -->
+          <div class="reg-success-container" id="reg-success-msg" style="display:none;">
+            <div class="reg-success-header">
+              <span class="quest-status-badge">📜 QUEST REGISTRATION VERIFIED</span>
+              <p class="reg-success-kicker">Your journey to innovation begins here.</p>
+            </div>
+
+            <div class="odysseus-speech-bubble">
+              <span class="speech-quote">"Thank you for registering <strong id="odysseus-team-name">your team</strong>!
+                May the Gods of Innovation guide your Legion to victory!"</span>
+            </div>
+
+            <div class="poseidon-hero-frame">
+              <img src="/images/poseidon.jpg" alt="Poseidon God of the Oceans" class="poseidon-img">
+              <div class="poseidon-glow-overlay"></div>
+              <div class="hero-sparks">
+                <span>⚡</span><span>🔥</span><span>✨</span>
+              </div>
+            </div>
+
+            <div class="reg-success-details">
+              <div class="reg-id-card">
+                <span class="reg-id-label">REGISTRATION ID</span>
+                <strong id="odyssey-registration-id" class="reg-id-value"></strong>
+              </div>
+              <p class="reg-confirmation-copy">Your Legion has been registered for the <strong>ODYSSEY Hackathon</strong>.
+                Prepare for the Journey to Innovation!</p>
+              <div class="whatsapp-cta">
+                <a class="gold-action-btn" href="https://chat.whatsapp.com/CGWQjE5HpHG5QmqTvZR1EB" target="_blank" rel="noopener noreferrer">JOIN OFFICIAL WHATSAPP GROUP</a>
+                <p class="whatsapp-supporting-text">After joining the official WhatsApp group, participants will receive a Google Form link to submit their project abstract and PPT for the shortlisting round.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
 
@@ -350,16 +531,14 @@
           <div class="step-num">1</div>
           <div class="step-info">
             <h4>Start at Symbol I (The Voyage)</h4>
-            <p>Click <strong>I. The Voyage</strong> to open its page and reveal the brown foot path trail to Symbol II.
-            </p>
+            <p>Click <strong>I. The Voyage</strong> to open its page and reveal the brown foot path trail to Symbol II.</p>
           </div>
         </div>
         <div class="guide-step">
           <div class="step-num">2</div>
           <div class="step-info">
             <h4>Constant Map View</h4>
-            <p>The map remains stationary and constant while the brown foot path reveals serially across the parchment.
-            </p>
+            <p>The map remains stationary and constant while the brown foot path reveals serially across the parchment.</p>
           </div>
         </div>
         <div class="guide-step">
@@ -372,245 +551,6 @@
       </div>
       <div class="modal-footer">
         <button class="gold-action-btn" id="guide-confirm-btn">Begin Journey</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- HACKATHON REGISTRATION MODAL -->
-  <div class="modal-overlay" id="registration-modal">
-    <div class="modal-card reg-card">
-      <button class="modal-close" id="reg-close-btn">&times;</button>
-      <div class="modal-header">
-        <span class="modal-badge">HACKATHON QUEST REGISTRATION</span>
-        <h2 class="modal-title" id="reg-track-title">Join the Quest</h2>
-        <span class="modal-origin">Step into ODYSSEY — Begin your Journey to Innovation</span>
-      </div>
-      <div class="modal-body reg-body">
-        <!-- Team Rules Banner -->
-        <div class="reg-rules-banner">
-          <div class="reg-rules-title">📌 Team Rules</div>
-          <ul class="reg-rules-list">
-            <li>🚫 Inter-college teams are not allowed.</li>
-            <li>🏫 All team members must belong to the same institution.</li>
-            <li>👥 Team size: 3–5 members per team.</li>
-            <li>👩 At least 1 female member is mandatory in every team</li>
-            <li>💰 The registration fee is ₹500 per team.</li>
-          </ul>
-        </div>
-
-        <form id="reg-form">
-          <!-- Team & Leader Info -->
-          <div class="reg-field">
-            <label for="reg-team-name">Legion / Team Name</label>
-            <input type="text" id="reg-team-name" placeholder="e.g. Achaean Innovators" required>
-          </div>
-          <div class="reg-grid-2">
-            <div class="reg-field">
-              <label for="reg-leader-name">Team Leader Name</label>
-              <input type="text" id="reg-leader-name" placeholder="e.g. Odysseus" required>
-            </div>
-            <div class="reg-field">
-              <label for="reg-leader-phone">Team Leader Phone No.</label>
-              <input type="tel" id="reg-leader-phone" placeholder="e.g. +91 9876543210" required>
-            </div>
-          </div>
-          <div class="reg-field">
-            <label for="reg-email">Team Leader Email Address</label>
-            <input type="email" id="reg-email" placeholder="leader@institution.edu" required>
-          </div>
-
-          <!-- Team Members Section -->
-          <div class="reg-members-section">
-            <div class="reg-members-header">
-              <div class="reg-members-title-wrap">
-                <h3 class="reg-members-title">🛡️ Legion Team Members</h3>
-                <span class="reg-members-sub">Minimum 3, maximum 5 members (including Team Leader)</span>
-              </div>
-              <div class="team-size-counter-badge" id="reg-team-size-badge">
-                <span>👥</span>
-                <span>Team Size: <strong id="reg-current-count">3</strong> / 5 Members</span>
-              </div>
-            </div>
-
-            <div class="member-card" data-member-slot="1">
-              <div class="member-card-header-row">
-                <h4 class="member-card-heading">Member 1</h4>
-                <span class="required-member-tag">Required</span>
-              </div>
-              <div class="reg-grid-3">
-                <div class="reg-field">
-                  <label for="reg-m1-name">Name *</label>
-                  <input type="text" id="reg-m1-name" placeholder="Member 1 Name" required>
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m1-email">Email *</label>
-                  <input type="email" id="reg-m1-email" placeholder="member1@email.com" required>
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m1-phone">Phone No. *</label>
-                  <input type="tel" id="reg-m1-phone" placeholder="Phone No." required>
-                </div>
-              </div>
-            </div>
-
-            <div class="member-card" data-member-slot="2">
-              <div class="member-card-header-row">
-                <h4 class="member-card-heading">Member 2</h4>
-                <span class="required-member-tag">Required</span>
-              </div>
-              <div class="reg-grid-3">
-                <div class="reg-field">
-                  <label for="reg-m2-name">Name *</label>
-                  <input type="text" id="reg-m2-name" placeholder="Member 2 Name" required>
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m2-email">Email *</label>
-                  <input type="email" id="reg-m2-email" placeholder="member2@email.com" required>
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m2-phone">Phone No. *</label>
-                  <input type="tel" id="reg-m2-phone" placeholder="Phone No." required>
-                </div>
-              </div>
-            </div>
-
-            <div class="member-card" data-member-slot="3" style="display:none;" hidden>
-              <div class="member-card-header-row">
-                <h4 class="member-card-heading">Member 3</h4>
-                <button type="button" class="remove-member-btn" id="reg-remove-m3-btn" data-slot="3">✕ Remove Member 3</button>
-              </div>
-              <div class="reg-grid-3">
-                <div class="reg-field">
-                  <label for="reg-m3-name">Name *</label>
-                  <input type="text" id="reg-m3-name" placeholder="Member 3 Name">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m3-email">Email *</label>
-                  <input type="email" id="reg-m3-email" placeholder="member3@email.com">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m3-phone">Phone No. *</label>
-                  <input type="tel" id="reg-m3-phone" placeholder="Phone No.">
-                </div>
-              </div>
-            </div>
-
-            <div class="member-card" data-member-slot="4" style="display:none;" hidden>
-              <div class="member-card-header-row">
-                <h4 class="member-card-heading">Member 4</h4>
-                <button type="button" class="remove-member-btn" id="reg-remove-m4-btn" data-slot="4">✕ Remove Member 4</button>
-              </div>
-              <div class="reg-grid-3">
-                <div class="reg-field">
-                  <label for="reg-m4-name">Name *</label>
-                  <input type="text" id="reg-m4-name" placeholder="Member 4 Name">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m4-email">Email *</label>
-                  <input type="email" id="reg-m4-email" placeholder="member4@email.com">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m4-phone">Phone No. *</label>
-                  <input type="tel" id="reg-m4-phone" placeholder="Phone No.">
-                </div>
-              </div>
-            </div>
-
-            <!-- + Add Member Button -->
-            <div class="add-member-control-wrap">
-              <button type="button" class="add-member-btn" id="reg-add-member-btn">
-                <span class="plus-icon">＋</span>
-                <span class="add-btn-text" id="reg-add-btn-text">Add Member (4th Member)</span>
-              </button>
-              <span class="add-member-hint" id="reg-add-hint">Click + to add team members (up to 5 members maximum)</span>
-            </div>
-          </div>
-
-          <!-- Accommodation Option -->
-          <div class="reg-field" style="margin-top: 1.2rem;">
-            <label for="reg-accommodation">Accommodation Required?</label>
-            <select id="reg-accommodation" required>
-              <option value="" disabled selected>Select Accommodation Choice</option>
-              <option value="Yes">Yes — Accommodation Required</option>
-              <option value="No">No — Self Arranged</option>
-            </select>
-          </div>
-
-          <!-- Institution Name Box after Team Members -->
-          <div class="reg-field">
-            <label for="reg-institution">Institution / Organization Name</label>
-            <input type="text" id="reg-institution" placeholder="e.g. BCET Odisha" required>
-          </div>
-
-          <!-- Payment Option & Payment Slip Photo Upload -->
-          <div class="reg-payment-section">
-            <h3 class="reg-payment-title">💳 Registration Fee & Payment Details</h3>
-            <div class="payment-info-box">
-              <div class="payment-qr-wrap" id="payment-qr-trigger" role="button" tabindex="0"
-                title="Click to open Payment QR Scanner">
-                <div class="payment-qr-thumbnail-box">
-                  <img src="/images/payment-qr.png" alt="Payment QR Code" class="payment-qr-thumb">
-                  <div class="qr-expand-overlay">
-                    <span class="qr-expand-icon">🔍</span>
-                  </div>
-                </div>
-                <span>Scan &amp; Pay UPI</span>
-                <span class="qr-click-hint">Click to enlarge</span>
-              </div>
-              <div class="payment-details-text">
-                <p><strong>UPI ID:</strong> <code>jrrout751@ybl</code></p>
-                <p><strong>Account Holder:</strong> Odyssey Hackathon BCET</p>
-                <p class="payment-note">⚡ Pay the registration fee via UPI and upload your payment slip photo below.</p>
-              </div>
-            </div>
-
-            <div class="reg-field" style="margin-top: 1.1rem;">
-              <label for="reg-payment-slip">Upload Payment Slip / Receipt (JPG only)</label>
-              <input type="file" id="reg-payment-slip" accept=".jpg,.jpeg,image/jpeg" required class="file-input-gold">
-            </div>
-          </div>
-
-          <div class="reg-submit-wrap">
-            <div id="reg-error-msg"
-              style="display:none; color:#ff6b6b; margin-bottom:0.8rem; font-size:0.85rem; text-align:center;"></div>
-            <button type="submit" class="gold-action-btn" id="reg-submit-btn">🏹 Submit Quest Registration</button>
-          </div>
-        </form>
-
-        <!-- SUCCESS VIEW WITH POSEIDON HERO CHARACTER & WEAPON -->
-        <div class="reg-success-container" id="reg-success-msg" style="display:none;">
-          <div class="reg-success-header">
-          <span class="quest-status-badge">📜 QUEST REGISTRATION VERIFIED</span>
-          <p class="reg-success-kicker">Your journey to innovation begins here.</p>
-          </div>
-
-          <div class="odysseus-speech-bubble">
-          <span class="speech-quote">"Thank you for registering <strong id="odysseus-team-name">your team</strong>!
-            May the Gods of Innovation guide your Legion to victory!"</span>
-          </div>
-
-          <div class="poseidon-hero-frame">
-          <img src="/images/poseidon.jpg" alt="Poseidon God of the Oceans" class="poseidon-img">
-          <div class="poseidon-glow-overlay"></div>
-          <div class="hero-sparks">
-            <span>⚡</span><span>🔥</span><span>✨</span>
-          </div>
-          </div>
-
-          <div class="reg-success-details">
-          <div class="reg-id-card">
-            <span class="reg-id-label">REGISTRATION ID</span>
-            <strong id="odyssey-registration-id" class="reg-id-value"></strong>
-          </div>
-          <p class="reg-confirmation-copy">Your Legion has been registered for the <strong>ODYSSEY Hackathon</strong>.
-            Prepare for the Journey to Innovation!</p>
-          <div class="whatsapp-cta">
-            <a class="gold-action-btn" href="https://chat.whatsapp.com/CGWQjE5HpHG5QmqTvZR1EB" target="_blank" rel="noopener noreferrer">JOIN OFFICIAL WHATSAPP GROUP</a>
-            <p class="whatsapp-supporting-text">After joining the official WhatsApp group, participants will receive a Google Form link to submit their project abstract and PPT for the shortlisting round.</p>
-          </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
@@ -677,6 +617,8 @@
       </svg>
     </div>
   </div>
+
+  <div style="position:fixed;bottom:10px;right:16px;z-index:9999;font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.12em;color:#c8a84b;opacity:0.85;text-align:right;pointer-events:none;text-transform:uppercase;">Bijaylaxmi Swain<br><span style="font-size:0.6rem;letter-spacing:0.18em;color:#d4b96a;opacity:0.8;">Co-Convenor</span></div>
 
   <script type="module" src="./src/scripts/app.js"></script>
 </body>

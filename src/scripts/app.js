@@ -7,6 +7,7 @@ import { audioSystem } from './audio.js';
 class OdysseyApp {
   constructor() {
     this.currentSymbolId = null;
+    this.selectedTrack = '';
     this.activeTab = 'lore';
     this.odysseyMap = null;
     this.unlockedStep = 1; // 1 to 5
@@ -79,17 +80,6 @@ class OdysseyApp {
       this.showMapView();
     });
 
-    // 3b. Delegated Return to Map Handlers (Always active on all subpages & views)
-    document.addEventListener('click', (e) => {
-      const backBtn = e.target.closest('#subpage-back-btn, .subpage-back-btn, #subpage-floating-back-btn, #back-to-map-btn, #reg-page-back-map-btn, .back-map-btn, .floating-back-map-btn');
-      if (backBtn) {
-        e.preventDefault();
-        e.stopPropagation();
-        audioSystem.playClick();
-        this.showMapView();
-      }
-    });
-
 
 
     // 5. Guide Modal Toggle
@@ -122,87 +112,93 @@ class OdysseyApp {
       });
     });
 
-    // 6b. Registration Modal Handlers
-    const regModal = document.getElementById('registration-modal');
-    const regCloseBtn = document.getElementById('reg-close-btn');
+    // 6b. Registration Full-Page & Dynamic Member Handlers
     const regForm = document.getElementById('reg-form');
     const regSuccessMsg = document.getElementById('reg-success-msg');
-    const modalCurrentCountEl = document.getElementById('reg-current-count');
-    const modalAddMemberBtn = document.getElementById('reg-add-member-btn');
-    const modalAddBtnText = document.getElementById('reg-add-btn-text');
-    const modalAddHint = document.getElementById('reg-add-hint');
-    const modalMemberCards = [...(regModal ? regModal.querySelectorAll('.member-card[data-member-slot]') : [])];
+    const addMemberBtn = document.getElementById('add-member-btn');
+    const addMemberHint = document.getElementById('add-member-hint');
+    const teamSizeCounter = document.getElementById('team-size-counter');
+    const memberCards = [...document.querySelectorAll('.member-card[data-member-slot]')];
+    const removeMemberBtns = document.querySelectorAll('.remove-member-btn');
 
-    let modalCurrentTeamSize = 3;
+    let currentTeamSize = 3; // Minimum 3 members (Leader + Member 2 + Member 3)
 
-    const updateModalMemberPanels = () => {
-      const additionalMemberCount = modalCurrentTeamSize - 1;
-      modalMemberCards.forEach((card) => {
+    const updateTeamMemberUI = () => {
+      // Slot 1 (Member 2) and Slot 2 (Member 3) are always visible (team size 3)
+      // Slot 3 (Member 4) is visible when currentTeamSize >= 4
+      // Slot 4 (Member 5) is visible when currentTeamSize >= 5
+      memberCards.forEach((card) => {
         const slot = Number(card.dataset.memberSlot);
-        const isVisible = slot <= additionalMemberCount;
-        card.style.display = isVisible ? 'block' : 'none';
-        card.hidden = !isVisible;
-
+        const shouldShow = slot <= currentTeamSize - 1;
+        card.hidden = !shouldShow;
         const inputs = card.querySelectorAll('input');
         inputs.forEach((input) => {
-          input.required = isVisible;
-          if (!isVisible) input.value = '';
+          if (!shouldShow) {
+            input.value = '';
+            input.removeAttribute('required');
+          } else {
+            input.setAttribute('required', 'required');
+          }
         });
       });
 
-      if (modalCurrentCountEl) modalCurrentCountEl.textContent = modalCurrentTeamSize;
+      if (teamSizeCounter) {
+        teamSizeCounter.textContent = String(currentTeamSize);
+      }
 
-      if (modalCurrentTeamSize >= 5) {
-        if (modalAddMemberBtn) modalAddMemberBtn.disabled = true;
-        if (modalAddBtnText) modalAddBtnText.textContent = '✓ Maximum 5 Members Reached';
-        if (modalAddHint) modalAddHint.textContent = 'Teams can have a maximum of 5 members.';
-      } else {
-        if (modalAddMemberBtn) modalAddMemberBtn.disabled = false;
-        const nextNum = modalCurrentTeamSize + 1;
-        if (modalAddBtnText) modalAddBtnText.textContent = `Add Member (${nextNum}th Member)`;
-        if (modalAddHint) modalAddHint.textContent = `Click + to add till 5 members maximum`;
+      if (addMemberBtn) {
+        if (currentTeamSize < 5) {
+          addMemberBtn.disabled = false;
+          const nextMemberNum = currentTeamSize + 1;
+          addMemberBtn.innerHTML = `<span class="add-plus-symbol">+</span><span class="add-btn-text">Add Member ${nextMemberNum}</span>`;
+          if (addMemberHint) {
+            addMemberHint.textContent = `Click + to add Member ${nextMemberNum} (maximum 5 members per team)`;
+          }
+        } else {
+          addMemberBtn.disabled = true;
+          addMemberBtn.innerHTML = `<span class="add-plus-symbol">✓</span><span class="add-btn-text">Maximum Limit (5 Members)</span>`;
+          if (addMemberHint) {
+            addMemberHint.textContent = `Legion team maximum capacity reached (5 members).`;
+          }
+        }
       }
     };
 
-    modalAddMemberBtn?.addEventListener('click', () => {
-      if (modalCurrentTeamSize < 5) {
+    addMemberBtn?.addEventListener('click', () => {
+      if (currentTeamSize < 5) {
         audioSystem.playClick();
-        modalCurrentTeamSize++;
-        updateModalMemberPanels();
+        currentTeamSize++;
+        updateTeamMemberUI();
       }
     });
 
-    document.getElementById('reg-remove-m3-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      if (modalCurrentTeamSize === 5) {
-        const m4Name = document.getElementById('reg-m4-name')?.value || '';
-        const m4Email = document.getElementById('reg-m4-email')?.value || '';
-        const m4Phone = document.getElementById('reg-m4-phone')?.value || '';
-        const m3Name = document.getElementById('reg-m3-name');
-        const m3Email = document.getElementById('reg-m3-email');
-        const m3Phone = document.getElementById('reg-m3-phone');
-        if (m3Name) m3Name.value = m4Name;
-        if (m3Email) m3Email.value = m4Email;
-        if (m3Phone) m3Phone.value = m4Phone;
-        modalCurrentTeamSize = 4;
-      } else {
-        modalCurrentTeamSize = 3;
-      }
-      updateModalMemberPanels();
+    removeMemberBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        audioSystem.playClick();
+        const slotToRemove = Number(btn.dataset.removeSlot);
+        if (slotToRemove === 4 && currentTeamSize === 5) {
+          currentTeamSize = 4;
+        } else if (slotToRemove === 3) {
+          if (currentTeamSize === 5) {
+            // Shift Member 5 values into Member 4 slot
+            const m3Name = document.getElementById('reg-m3-name');
+            const m3Email = document.getElementById('reg-m3-email');
+            const m3Phone = document.getElementById('reg-m3-phone');
+            const m4Name = document.getElementById('reg-m4-name');
+            const m4Email = document.getElementById('reg-m4-email');
+            const m4Phone = document.getElementById('reg-m4-phone');
+            if (m3Name && m4Name) m3Name.value = m4Name.value;
+            if (m3Email && m4Email) m3Email.value = m4Email.value;
+            if (m3Phone && m4Phone) m3Phone.value = m4Phone.value;
+          }
+          currentTeamSize = Math.max(3, currentTeamSize - 1);
+        }
+        updateTeamMemberUI();
+      });
     });
 
-    document.getElementById('reg-remove-m4-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      modalCurrentTeamSize = 4;
-      updateModalMemberPanels();
-    });
-
-    updateModalMemberPanels();
-
-    regCloseBtn?.addEventListener('click', () => {
-      audioSystem.playClick();
-      regModal?.classList.remove('active');
-    });
+    updateTeamMemberUI();
 
     regForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -218,7 +214,7 @@ class OdysseyApp {
       const leaderName = document.getElementById('reg-leader-name')?.value?.trim() || '';
       const leaderPhone = document.getElementById('reg-leader-phone')?.value?.trim() || '';
       const leaderEmail = document.getElementById('reg-email')?.value?.trim() || '';
-      const teamSize = modalCurrentTeamSize;
+      const teamSize = currentTeamSize;
 
       // Gather team members
       const members = [];
@@ -226,9 +222,15 @@ class OdysseyApp {
         const mName = document.getElementById(`reg-m${i}-name`)?.value?.trim() || '';
         const mEmail = document.getElementById(`reg-m${i}-email`)?.value?.trim() || '';
         const mPhone = document.getElementById(`reg-m${i}-phone`)?.value?.trim() || '';
-        if (mName || mEmail || mPhone) {
-          members.push({ memberSlot: i, name: mName, email: mEmail, phone: mPhone });
+
+        if (!mName || !mEmail || !mPhone) {
+          if (errorEl) {
+            errorEl.textContent = `⚠️ Please provide full name, email, and phone for Member ${i + 1}.`;
+            errorEl.style.display = 'block';
+          }
+          return;
         }
+        members.push({ memberSlot: i, name: mName, email: mEmail, phone: mPhone });
       }
 
       const accommodation = document.getElementById('reg-accommodation')?.value || '';
@@ -271,6 +273,8 @@ class OdysseyApp {
         }
       }
 
+      const problemStatement = document.getElementById('reg-track-input')?.value || this.selectedTrack || 'General Track';
+
       const payload = {
         teamName,
         leaderName,
@@ -280,7 +284,9 @@ class OdysseyApp {
         members,
         accommodation,
         institution,
-        paymentSlip
+        paymentSlip,
+        problemStatement,
+        track: problemStatement
       };
 
       // Set loading state on button
@@ -462,9 +468,8 @@ class OdysseyApp {
 
   handleHashRoute() {
     const hash = window.location.hash.replace('#', '');
-    if (hash === 'register' || hash.startsWith('register-')) {
-      const trackName = hash.includes('-') ? decodeURIComponent(hash.split('-').slice(1).join('-')) : '';
-      this.openRegistrationPage(trackName, false);
+    if (hash === 'register') {
+      this.openRegistrationPage(this.selectedTrack || 'Software Deployment with AI Implementation', false);
       return;
     }
     if (SYMBOLS_DATA[hash]) {
@@ -479,48 +484,18 @@ class OdysseyApp {
     }
   }
 
-  openRegistrationPage(trackTitle, updateHash = true) {
-    document.body.classList.remove('home-view-active');
-
-    // Auto-unfold map container if navigating directly
-    const mapContainer = document.getElementById('map-container');
-    const mapWrapper = document.getElementById('map-wrapper');
-    if (mapContainer && !mapContainer.classList.contains('unfolded')) {
-      mapContainer.classList.add('unfolded');
-      mapWrapper?.classList.add('slide-in');
-    }
-
-    this.currentSymbolId = 'register';
-
-    if (updateHash) {
-      window.location.hash = trackTitle ? `register-${encodeURIComponent(trackTitle)}` : 'register';
-    }
-
-    // Highlight top header pill (none active)
-    document.querySelectorAll('.symbol-nav .nav-pill').forEach(pill => pill.classList.remove('active'));
-
-    const container = document.getElementById('subpage-content');
-    if (container) {
-      this.renderRegistrationPageContent(container, trackTitle);
-      container.scrollTop = 0;
-    }
-
-    const subpageView = document.getElementById('subpage-view');
-    subpageView?.classList.add('active');
-
-    audioSystem.playLyreArpeggio();
-  }
-
-
   showMapView(updateHash = true) {
     if (updateHash) {
       window.history.pushState(null, '', ' ');
     }
 
-    document.body.classList.add('home-view-active');
-
+    const mapView = document.getElementById('map-view');
     const subpageView = document.getElementById('subpage-view');
+    const regView = document.getElementById('registration-view');
+
+    mapView?.classList.add('active');
     subpageView?.classList.remove('active');
+    regView?.classList.remove('active');
 
     // Highlight active pill
     document.querySelectorAll('.symbol-nav .nav-pill').forEach(pill => {
@@ -531,27 +506,11 @@ class OdysseyApp {
         pill.classList.remove('active');
       }
     });
-
-    // Center map on the active realm
-    if (this.currentSymbolId && this.odysseyMap) {
-      const stepIdx = this.symbolOrder.indexOf(this.currentSymbolId) + 1;
-      if (stepIdx > 0) {
-        this.odysseyMap.slideToRealm(stepIdx);
-      }
-    }
   }
 
   openSymbolPage(symbolId, updateHash = true) {
     const data = SYMBOLS_DATA[symbolId];
     if (!data) return;
-
-    // Smoothly glide the map camera to focus on this realm
-    const stepIdx = this.symbolOrder.indexOf(symbolId) + 1;
-    if (this.odysseyMap && stepIdx > 0) {
-      this.odysseyMap.slideToRealm(stepIdx);
-    }
-
-    document.body.classList.remove('home-view-active');
 
     // Auto-unfold map container if navigating directly to a subpage
     const mapContainer = document.getElementById('map-container');
@@ -580,12 +539,66 @@ class OdysseyApp {
     // Render Subpage HTML
     this.renderSubpageContent(data);
 
-    // Switch View Visibility with Sliding Transition
+    // Switch View Visibility
+    const mapView = document.getElementById('map-view');
     const subpageView = document.getElementById('subpage-view');
+    const regView = document.getElementById('registration-view');
+
+    mapView?.classList.remove('active');
     subpageView?.classList.add('active');
+    regView?.classList.remove('active');
 
     // Scroll subpage to top
     const container = document.getElementById('subpage-content');
+    if (container) container.scrollTop = 0;
+
+    audioSystem.playLyreArpeggio();
+  }
+
+  openRegistrationPage(trackTitle, updateHash = true) {
+    if (trackTitle && typeof trackTitle === 'string' && trackTitle.trim().length > 0) {
+      this.selectedTrack = trackTitle.trim();
+    } else if (!this.selectedTrack) {
+      this.selectedTrack = 'Software Deployment with AI Implementation';
+    }
+
+    const currentTrack = this.selectedTrack;
+
+    const trackHeading = document.getElementById('reg-track-title');
+    if (trackHeading) {
+      trackHeading.textContent = `REGISTER: ${currentTrack.toUpperCase()}`;
+    }
+
+    const trackInput = document.getElementById('reg-track-input');
+    if (trackInput) {
+      trackInput.value = currentTrack;
+    }
+
+    const form = document.getElementById('reg-form');
+    const successMsg = document.getElementById('reg-success-msg');
+    const errorEl = document.getElementById('reg-error-msg');
+    if (form) form.style.display = 'block';
+    if (successMsg) successMsg.style.display = 'none';
+    if (errorEl) {
+      errorEl.style.display = 'none';
+      errorEl.textContent = '';
+    }
+
+    if (updateHash && window.location.hash !== '#register') {
+      window.history.pushState(null, '', '#register');
+    }
+
+    // Switch View Visibility
+    const mapView = document.getElementById('map-view');
+    const subpageView = document.getElementById('subpage-view');
+    const regView = document.getElementById('registration-view');
+
+    mapView?.classList.remove('active');
+    subpageView?.classList.remove('active');
+    regView?.classList.add('active');
+
+    // Scroll registration page to top
+    const container = document.getElementById('reg-page-content');
     if (container) container.scrollTop = 0;
 
     audioSystem.playLyreArpeggio();
@@ -629,9 +642,6 @@ class OdysseyApp {
       <!-- Hero Section -->
       <section class="page-hero" style="background-image: url('${data.heroImg}');">
         <div class="hero-content">
-          <button class="back-map-btn" id="back-to-map-btn">
-            <span>&larr;</span> Return to Map & Foot Path
-          </button>
           <h1 class="hero-main-title">
             <span class="hero-title-icon">${data.icon}</span>
             ${data.name}
@@ -832,11 +842,6 @@ class OdysseyApp {
     container.innerHTML = `
       <div class="voyage-cover-wrapper" style="background-image: url('${data.heroImg}');">
         <div class="voyage-cover-overlay">
-          <div class="voyage-header-bar">
-            <button class="back-map-btn" id="back-to-map-btn">
-              <span>&larr;</span> Return to Map
-            </button>
-          </div>
 
           <!-- About Us Section with Slow Pop-up from Bottom -->
           <section class="aboutus-section">
@@ -983,11 +988,6 @@ class OdysseyApp {
     container.innerHTML = `
       <div class="realms-cover-wrapper" style="background-image: url('${data.heroImg}');">
         <div class="realms-cover-overlay">
-          <div class="voyage-header-bar">
-            <button class="back-map-btn" id="back-to-map-btn">
-              <span>&larr;</span> Return to Map
-            </button>
-          </div>
 
           <!-- Hackathon Section -->
           <section class="hackathon-section">
@@ -1163,11 +1163,6 @@ class OdysseyApp {
     container.innerHTML = `
       <div class="realms-cover-wrapper" style="background-image: url('${data.heroImg}');">
         <div class="realms-cover-overlay">
-          <div class="voyage-header-bar">
-            <button class="back-map-btn" id="back-to-map-btn">
-              <span>&larr;</span> Return to Map
-            </button>
-          </div>
 
           <section class="protocols-section">
             <h1 class="hackathon-heading">PROTOCOLS</h1>
@@ -1315,11 +1310,6 @@ class OdysseyApp {
     container.innerHTML = `
       <div class="realms-cover-wrapper" style="background-image: url('${data.heroImg}');">
         <div class="realms-cover-overlay">
-          <div class="voyage-header-bar">
-            <button class="back-map-btn" id="back-to-map-btn">
-              <span>&larr;</span> Return to Map
-            </button>
-          </div>
 
           <section class="odyssey-promo-section" style="max-width: 1400px; margin: 1rem auto 4rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2.2rem; padding: 0 1.5rem;">
             <h1 class="hackathon-heading" style="margin-top: 1rem;">THE QUEST TRAILER</h1>
@@ -1363,11 +1353,6 @@ class OdysseyApp {
     container.innerHTML = `
       <div class="realms-cover-wrapper" style="background-image: url('${data.heroImg}');">
         <div class="realms-cover-overlay">
-          <div class="voyage-header-bar">
-            <button class="back-map-btn" id="back-to-map-btn">
-              <span>&larr;</span> Return to Map
-            </button>
-          </div>
 
           <section class="legions-section">
             <h1 class="hackathon-heading">THE LEGIONS</h1>
@@ -1621,7 +1606,7 @@ class OdysseyApp {
     }
   }
 
-  /* ─── Trigger Weapon Arrow Flight & Open Dedicated Registration Page ─── */
+  /* ─── Trigger Weapon Arrow Flight & Open Registration Page ─── */
   triggerWeaponArrow(trackTitle) {
     const overlay = document.getElementById('weapon-arrow-overlay');
     const wrapper = document.getElementById('weapon-arrow-wrapper');
@@ -1637,7 +1622,7 @@ class OdysseyApp {
     void wrapper.offsetWidth; // force reflow
     wrapper.classList.add('shoot');
 
-    // As arrow reaches target (~650ms), open registration page view
+    // As arrow reaches target (~650ms), open registration page
     setTimeout(() => {
       this.openRegistrationPage(trackTitle);
     }, 650);
@@ -1650,464 +1635,9 @@ class OdysseyApp {
   }
 
   openRegistrationModal(trackTitle) {
+    // Backward compatibility helper pointing to the full page registration
     this.openRegistrationPage(trackTitle);
   }
-
-  renderRegistrationPageContent(container, trackTitle) {
-    const displayTrack = trackTitle || 'All Tracks';
-    container.innerHTML = `
-      <div class="realms-cover-wrapper" style="background-image: url('/images/realms_hero.jpg');">
-        <div class="realms-cover-overlay">
-          <div class="voyage-header-bar">
-            <button class="back-map-btn" id="reg-page-back-map-btn">
-              <span>&larr;</span> Return to Map
-            </button>
-          </div>
-
-          <section class="protocols-section reg-page-section">
-            <h1 class="hackathon-heading">QUEST REGISTRATION</h1>
-            <div class="registration-track-badge">TRACK: ${displayTrack}</div>
-
-            <div class="aboutus-divider">
-              <span class="aboutus-divider-icon">📜</span>
-            </div>
-
-            <div class="reg-page-card">
-              <!-- Team Rules Banner -->
-              <div class="reg-rules-banner">
-                <div class="reg-rules-title">📌 Team Rules</div>
-                <ul class="reg-rules-list">
-                  <li>🚫 Inter-college teams are not allowed.</li>
-                  <li>🏫 All team members must belong to the same institution.</li>
-                  <li>👥 Team size: 3–5 members per team.</li>
-                  <li>👩 At least 1 female member is mandatory in every team</li>
-                  <li>💰 The registration fee is ₹500 per team.</li>
-                </ul>
-              </div>
-
-              <form id="reg-page-form">
-                <!-- Team & Leader Info -->
-                <div class="reg-field">
-                  <label for="reg-page-team-name">Legion / Team Name</label>
-                  <input type="text" id="reg-page-team-name" placeholder="e.g. Achaean Innovators" required>
-                </div>
-                <div class="reg-grid-2">
-                  <div class="reg-field">
-                    <label for="reg-page-leader-name">Team Leader Name</label>
-                    <input type="text" id="reg-page-leader-name" placeholder="e.g. Odysseus" required>
-                  </div>
-                  <div class="reg-field">
-                    <label for="reg-page-leader-phone">Team Leader Phone No.</label>
-                    <input type="tel" id="reg-page-leader-phone" placeholder="e.g. +91 9876543210" required>
-                  </div>
-                </div>
-                <div class="reg-field">
-                  <label for="reg-page-email">Team Leader Email Address</label>
-                  <input type="email" id="reg-page-email" placeholder="leader@institution.edu" required>
-                </div>
-
-                <!-- Team Members Section -->
-                <div class="reg-members-section">
-                  <div class="reg-members-header">
-                    <div class="reg-members-title-wrap">
-                      <h3 class="reg-members-title">🛡️ Legion Team Members</h3>
-                      <span class="reg-members-sub">Minimum 3, maximum 5 members (including Team Leader)</span>
-                    </div>
-                    <div class="team-size-counter-badge" id="reg-page-team-size-badge">
-                      <span>👥</span>
-                      <span>Team Size: <strong id="reg-page-current-count">3</strong> / 5 Members</span>
-                    </div>
-                  </div>
-
-                  <div class="member-card" data-member-slot="1">
-                    <div class="member-card-header-row">
-                      <h4 class="member-card-heading">Member 1</h4>
-                      <span class="required-member-tag">Required</span>
-                    </div>
-                    <div class="reg-grid-3">
-                      <div class="reg-field">
-                        <label for="reg-page-m1-name">Name *</label>
-                        <input type="text" id="reg-page-m1-name" placeholder="Member 1 Name" required>
-                      </div>
-                      <div class="reg-field">
-                        <label for="reg-page-m1-email">Email *</label>
-                        <input type="email" id="reg-page-m1-email" placeholder="member1@email.com" required>
-                      </div>
-                      <div class="reg-field">
-                        <label for="reg-page-m1-phone">Phone No. *</label>
-                        <input type="tel" id="reg-page-m1-phone" placeholder="Phone No." required>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="member-card" data-member-slot="2">
-                    <div class="member-card-header-row">
-                      <h4 class="member-card-heading">Member 2</h4>
-                      <span class="required-member-tag">Required</span>
-                    </div>
-                    <div class="reg-grid-3">
-                      <div class="reg-field">
-                        <label for="reg-page-m2-name">Name *</label>
-                        <input type="text" id="reg-page-m2-name" placeholder="Member 2 Name" required>
-                      </div>
-                      <div class="reg-field">
-                        <label for="reg-page-m2-email">Email *</label>
-                        <input type="email" id="reg-page-m2-email" placeholder="member2@email.com" required>
-                      </div>
-                      <div class="reg-field">
-                        <label for="reg-page-m2-phone">Phone No. *</label>
-                        <input type="tel" id="reg-page-m2-phone" placeholder="Phone No." required>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="member-card" data-member-slot="3" style="display:none;" hidden>
-                    <div class="member-card-header-row">
-                      <h4 class="member-card-heading">Member 3</h4>
-                      <button type="button" class="remove-member-btn" id="reg-page-remove-m3-btn" data-slot="3">✕ Remove Member 3</button>
-                    </div>
-                    <div class="reg-grid-3">
-                      <div class="reg-field">
-                        <label for="reg-page-m3-name">Name *</label>
-                        <input type="text" id="reg-page-m3-name" placeholder="Member 3 Name">
-                      </div>
-                      <div class="reg-field">
-                        <label for="reg-page-m3-email">Email *</label>
-                        <input type="email" id="reg-page-m3-email" placeholder="member3@email.com">
-                      </div>
-                      <div class="reg-field">
-                        <label for="reg-page-m3-phone">Phone No. *</label>
-                        <input type="tel" id="reg-page-m3-phone" placeholder="Phone No.">
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="member-card" data-member-slot="4" style="display:none;" hidden>
-                    <div class="member-card-header-row">
-                      <h4 class="member-card-heading">Member 4</h4>
-                      <button type="button" class="remove-member-btn" id="reg-page-remove-m4-btn" data-slot="4">✕ Remove Member 4</button>
-                    </div>
-                    <div class="reg-grid-3">
-                      <div class="reg-field">
-                        <label for="reg-page-m4-name">Name *</label>
-                        <input type="text" id="reg-page-m4-name" placeholder="Member 4 Name">
-                      </div>
-                      <div class="reg-field">
-                        <label for="reg-page-m4-email">Email *</label>
-                        <input type="email" id="reg-page-m4-email" placeholder="member4@email.com">
-                      </div>
-                      <div class="reg-field">
-                        <label for="reg-page-m4-phone">Phone No. *</label>
-                        <input type="tel" id="reg-page-m4-phone" placeholder="Phone No.">
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- + Add Member Button -->
-                  <div class="add-member-control-wrap">
-                    <button type="button" class="add-member-btn" id="reg-page-add-member-btn">
-                      <span class="plus-icon">＋</span>
-                      <span class="add-btn-text" id="reg-page-add-btn-text">Add Member (4th Member)</span>
-                    </button>
-                    <span class="add-member-hint" id="reg-page-add-hint">Click + to add team members (up to 5 members maximum)</span>
-                  </div>
-                </div>
-
-                <!-- Accommodation Option -->
-                <div class="reg-field" style="margin-top: 1.2rem;">
-                  <label for="reg-page-accommodation">Accommodation Required?</label>
-                  <select id="reg-page-accommodation" required>
-                    <option value="" disabled selected>Select Accommodation Choice</option>
-                    <option value="Yes">Yes — Accommodation Required</option>
-                    <option value="No">No — Self Arranged</option>
-                  </select>
-                </div>
-
-                <!-- Institution Name -->
-                <div class="reg-field">
-                  <label for="reg-page-institution">Institution / Organization Name</label>
-                  <input type="text" id="reg-page-institution" placeholder="e.g. BCET Odisha" required>
-                </div>
-
-                <!-- Payment Details -->
-                <div class="reg-payment-section">
-                  <h3 class="reg-payment-title">💳 Registration Fee & Payment Details</h3>
-                  <div class="payment-info-box">
-                    <div class="payment-qr-wrap" id="reg-page-payment-qr-trigger" role="button" tabindex="0" title="Click to open Payment QR Scanner">
-                      <div class="payment-qr-thumbnail-box">
-                        <img src="/images/payment-qr.png" alt="Payment QR Code" class="payment-qr-thumb">
-                        <div class="qr-expand-overlay">
-                          <span class="qr-expand-icon">🔍</span>
-                        </div>
-                      </div>
-                      <span>Scan &amp; Pay UPI</span>
-                      <span class="qr-click-hint">Click to enlarge</span>
-                    </div>
-                    <div class="payment-details-text">
-                      <p><strong>UPI ID:</strong> <code>jrrout751@ybl</code></p>
-                      <p><strong>Account Holder:</strong> Odyssey Hackathon BCET</p>
-                      <p class="payment-note">⚡ Pay the registration fee via UPI and upload your payment slip photo below.</p>
-                    </div>
-                  </div>
-
-                  <div class="reg-field" style="margin-top: 1.1rem;">
-                    <label for="reg-page-payment-slip">Upload Payment Slip / Receipt (JPG only)</label>
-                    <input type="file" id="reg-page-payment-slip" accept=".jpg,.jpeg,image/jpeg" required class="file-input-gold">
-                  </div>
-                </div>
-
-                <div class="reg-submit-wrap">
-                  <div id="reg-page-error-msg" style="display:none; color:#ff6b6b; margin-bottom:0.8rem; font-size:0.85rem; text-align:center;"></div>
-                  <button type="submit" class="gold-action-btn" id="reg-page-submit-btn">🏹 Submit Quest Registration</button>
-                </div>
-              </form>
-
-              <!-- Success Screen -->
-              <div id="reg-page-success-msg" class="reg-success-box" style="display: none;">
-                <div class="reg-success-icon">📜</div>
-                <h2 class="reg-success-title">QUEST ENLISTMENT CONFIRMED!</h2>
-                <p class="reg-success-desc">
-                  Hail, Brave Innovators! Your legion <strong id="reg-page-team-name-success" style="color:#ffd700;">your team</strong> has been successfully recorded in the Odyssey database.
-                </p>
-                <div class="reg-id-card" style="margin: 1.2rem 0;">
-                  <span class="reg-id-label">REGISTRATION ID</span>
-                  <strong id="reg-page-id-success" class="reg-id-value"></strong>
-                </div>
-                <p class="reg-confirmation-copy">Your Legion has been registered for the <strong>ODYSSEY Hackathon</strong>. Prepare for the Journey to Innovation!</p>
-                <div class="whatsapp-cta" style="margin-top: 1.5rem;">
-                  <a class="gold-action-btn" href="https://chat.whatsapp.com/CGWQjE5HpHG5QmqTvZR1EB" target="_blank" rel="noopener noreferrer">JOIN OFFICIAL WHATSAPP GROUP</a>
-                  <p class="whatsapp-supporting-text" style="margin-top:0.6rem;">After joining the official WhatsApp group, participants will receive a Google Form link to submit their project abstract and PPT for the shortlisting round.</p>
-                </div>
-                <button class="gold-action-btn" id="reg-page-return-btn" style="margin-top:1.5rem;">🗺️ Return to Odyssey Map</button>
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
-    `;
-
-    // Bind Back to Map Buttons
-    document.getElementById('reg-page-back-map-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      this.showMapView();
-    });
-
-    document.getElementById('reg-page-return-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      this.showMapView();
-    });
-
-    // Bind Payment QR Trigger
-    document.getElementById('reg-page-payment-qr-trigger')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      document.getElementById('payment-qr-modal')?.classList.add('active');
-    });
-
-    // Dynamic Team Size & Member Slots Management
-    let pageCurrentTeamSize = 3;
-    const pageCurrentCountEl = container.querySelector('#reg-page-current-count');
-    const pageAddMemberBtn = container.querySelector('#reg-page-add-member-btn');
-    const pageAddBtnText = container.querySelector('#reg-page-add-btn-text');
-    const pageAddHint = container.querySelector('#reg-page-add-hint');
-    const memberCards = [...container.querySelectorAll('.member-card[data-member-slot]')];
-
-    const updateMemberPanels = () => {
-      const additionalMemberCount = pageCurrentTeamSize - 1;
-      memberCards.forEach((card) => {
-        const slot = Number(card.dataset.memberSlot);
-        const isVisible = slot <= additionalMemberCount;
-        card.style.display = isVisible ? 'block' : 'none';
-        card.hidden = !isVisible;
-
-        const inputs = card.querySelectorAll('input');
-        inputs.forEach((input) => {
-          input.required = isVisible;
-          if (!isVisible) input.value = '';
-        });
-      });
-
-      if (pageCurrentCountEl) pageCurrentCountEl.textContent = pageCurrentTeamSize;
-
-      if (pageCurrentTeamSize >= 5) {
-        if (pageAddMemberBtn) pageAddMemberBtn.disabled = true;
-        if (pageAddBtnText) pageAddBtnText.textContent = '✓ Maximum 5 Members Reached';
-        if (pageAddHint) pageAddHint.textContent = 'Teams can have a maximum of 5 members (including Team Leader).';
-      } else {
-        if (pageAddMemberBtn) pageAddMemberBtn.disabled = false;
-        const nextNum = pageCurrentTeamSize + 1;
-        if (pageAddBtnText) pageAddBtnText.textContent = `Add Member (${nextNum}th Member)`;
-        if (pageAddHint) pageAddHint.textContent = `Click + to add till 5 members maximum`;
-      }
-    };
-
-    pageAddMemberBtn?.addEventListener('click', () => {
-      if (pageCurrentTeamSize < 5) {
-        audioSystem.playClick();
-        pageCurrentTeamSize++;
-        updateMemberPanels();
-      }
-    });
-
-    container.querySelector('#reg-page-remove-m3-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      if (pageCurrentTeamSize === 5) {
-        const m4Name = container.querySelector('#reg-page-m4-name')?.value || '';
-        const m4Email = container.querySelector('#reg-page-m4-email')?.value || '';
-        const m4Phone = container.querySelector('#reg-page-m4-phone')?.value || '';
-        const m3Name = container.querySelector('#reg-page-m3-name');
-        const m3Email = container.querySelector('#reg-page-m3-email');
-        const m3Phone = container.querySelector('#reg-page-m3-phone');
-        if (m3Name) m3Name.value = m4Name;
-        if (m3Email) m3Email.value = m4Email;
-        if (m3Phone) m3Phone.value = m4Phone;
-        pageCurrentTeamSize = 4;
-      } else {
-        pageCurrentTeamSize = 3;
-      }
-      updateMemberPanels();
-    });
-
-    container.querySelector('#reg-page-remove-m4-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      pageCurrentTeamSize = 4;
-      updateMemberPanels();
-    });
-
-    updateMemberPanels();
-
-    // Form Submit Handler
-    const regFormPage = document.getElementById('reg-page-form');
-    regFormPage?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = document.getElementById('reg-page-submit-btn');
-      const errorEl = document.getElementById('reg-page-error-msg');
-      if (errorEl) {
-        errorEl.style.display = 'none';
-        errorEl.textContent = '';
-      }
-
-      const teamName = document.getElementById('reg-page-team-name')?.value?.trim() || '';
-      const leaderName = document.getElementById('reg-page-leader-name')?.value?.trim() || '';
-      const leaderPhone = document.getElementById('reg-page-leader-phone')?.value?.trim() || '';
-      const leaderEmail = document.getElementById('reg-page-email')?.value?.trim() || '';
-      const teamSize = pageCurrentTeamSize;
-
-      const members = [];
-      for (let i = 1; i <= teamSize - 1; i++) {
-        const mName = document.getElementById(`reg-page-m${i}-name`)?.value?.trim() || '';
-        const mEmail = document.getElementById(`reg-page-m${i}-email`)?.value?.trim() || '';
-        const mPhone = document.getElementById(`reg-page-m${i}-phone`)?.value?.trim() || '';
-        if (mName || mEmail || mPhone) {
-          members.push({ memberSlot: i, name: mName, email: mEmail, phone: mPhone });
-        }
-      }
-
-      const accommodation = document.getElementById('reg-page-accommodation')?.value || '';
-      const institution = document.getElementById('reg-page-institution')?.value?.trim() || '';
-      const paymentSlipInput = document.getElementById('reg-page-payment-slip');
-      const paymentSlipFile = paymentSlipInput?.files?.[0];
-
-      if (paymentSlipFile) {
-        const fileName = paymentSlipFile.name.toLowerCase();
-        const isJpg = /\.(jpg|jpeg)$/.test(fileName) && paymentSlipFile.type === 'image/jpeg';
-        if (!isJpg) {
-          if (errorEl) {
-            errorEl.textContent = '⚠️ Please upload the payment slip in JPG format only.';
-            errorEl.style.display = 'block';
-          }
-          return;
-        }
-      }
-
-      const readFileAsBase64 = (file) => new Promise((resolve, reject) => {
-        if (!file) return resolve(null);
-        const reader = new FileReader();
-        reader.onload = () => resolve({
-          fileName: file.name,
-          fileSize: file.size,
-          fileType: file.type,
-          dataUrl: reader.result
-        });
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      let paymentSlip = null;
-      if (paymentSlipFile) {
-        try {
-          paymentSlip = await readFileAsBase64(paymentSlipFile);
-        } catch (fileErr) {
-          console.warn('Could not read payment slip file:', fileErr);
-        }
-      }
-
-      const payload = {
-        teamName,
-        leaderName,
-        leaderPhone,
-        leaderEmail,
-        teamSize,
-        members,
-        accommodation,
-        institution,
-        paymentSlip
-      };
-
-      const originalBtnText = submitBtn ? submitBtn.textContent : '';
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = '⚔️ ENLISTING YOUR LEGION INTO ODYSSEY...';
-      }
-
-      try {
-        const response = await fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        const responseBody = await response.text();
-        let result;
-        try {
-          result = JSON.parse(responseBody);
-        } catch {
-          throw new Error(
-            response.status === 404
-              ? 'Registration service is not available on this server. Please deploy the Node.js server and try again.'
-              : `Registration service returned an unexpected response (${response.status}).`
-          );
-        }
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || 'Registration submission failed');
-        }
-
-        audioSystem.playTriumph();
-        const teamNameEl = document.getElementById('reg-page-team-name-success');
-        if (teamNameEl) teamNameEl.textContent = teamName || 'your team';
-        const registrationIdEl = document.getElementById('reg-page-id-success');
-        if (registrationIdEl) registrationIdEl.textContent = result.insertedId || '';
-
-        regFormPage.style.display = 'none';
-        const successBox = document.getElementById('reg-page-success-msg');
-        if (successBox) successBox.style.display = 'block';
-      } catch (err) {
-        console.error('Registration failed:', err);
-        if (errorEl) {
-          errorEl.textContent = `⚠️ Error saving registration: ${err.message || 'Please check connection'}`;
-          errorEl.style.display = 'block';
-        } else {
-          alert(`Registration Error: ${err.message}`);
-        }
-      } finally {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalBtnText;
-        }
-      }
-    });
-  }
-
 
   openArtifactModal(artifact) {
     document.getElementById('art-badge').textContent = artifact.badge;
