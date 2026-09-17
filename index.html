@@ -45,8 +45,6 @@
       </div>
     </div>
 
-
-
     <!-- Header Controls -->
     <div class="header-controls"></div>
   </header>
@@ -58,180 +56,258 @@
     <section id="map-view" class="view-section active">
       <div class="map-container unfolded" id="map-container">
 
-        <!-- Constant Parchment Map Graphic Frame -->
-        <div class="map-wrapper slide-in" id="map-wrapper">
-          <video autoplay loop muted playsinline class="map-bg-img">
-            <source src="/Video Project 9.mp4" type="video/mp4">
-          </video>
+        <!-- Parallax Scroll Map Graphic Frame -->
+        <div class="map-wrapper slide-in map-parallax-stage" id="map-wrapper">
 
-          <!-- SVG Overlay for Clean Brown Foot Path Trail -->
-          <svg class="map-svg-overlay" viewBox="0 0 1000 600" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="brownFootGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ffd700" stop-opacity="1" />
-                <stop offset="50%" stop-color="#f39c12" stop-opacity="1" />
-                <stop offset="100%" stop-color="#b78103" stop-opacity="1" />
-              </linearGradient>
-            </defs>
-
-            <!-- 4 Clean Brown Foot Path Segments -->
-            <!-- Segment 1: Symbol I -> Symbol II -->
-            <path id="trail-seg-1" d="M 180 260 Q 320 200 450 180" class="brown-footpath-trail" />
-
-            <!-- Segment 2: Symbol II -> Symbol III -->
-            <path id="trail-seg-2" d="M 450 180 T 720 230" class="brown-footpath-trail" />
-
-            <!-- Segment 3: Symbol III -> Symbol IV -->
-            <path id="trail-seg-3" d="M 720 230 Q 560 360 380 420" class="brown-footpath-trail" />
-
-            <!-- Segment 4: Symbol IV -> Symbol V -->
-            <path id="trail-seg-4" d="M 380 420 Q 580 480 760 430" class="brown-footpath-trail" />
-          </svg>
-
-          <!-- 5 INTERACTIVE CONSTANT MAP EMBLEMS (SERIAL PROGRESSIVE UNLOCK) -->
-
-          <!-- Symbol I: The Voyage -->
-          <div class="map-pin pin-theme-voyage unlocked" id="pin-voyage" data-symbol="voyage" data-step="1"
-            style="left: 18%; top: 43%;">
-            <div class="pin-ring"></div>
-            <div class="pin-badge">
-              <span class="pin-number">I</span>
-              <div class="emblem-svg">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="9" stroke="currentColor" />
-                  <polygon points="12,4 14.5,10.5 21,12 14.5,13.5 12,20 9.5,13.5 3,12 9.5,10.5" fill="currentColor" />
-                </svg>
-              </div>
-            </div>
-            <div class="pin-click-label">Click Here</div>
-            <div class="pin-tooltip">
-              <div class="tooltip-header">
-                <span class="tooltip-tag">Step I • Active Start</span>
-                <h3 class="tooltip-title">The Voyage</h3>
-              </div>
-              <p class="tooltip-desc">Click to visit Symbol I and reveal the brown foot path to Symbol II!</p>
-              <div class="tooltip-footer">
-                <span class="coords-badge">37°58'N 23°43'E</span>
-                <span class="action-prompt">Click Here &rarr;</span>
-              </div>
-            </div>
+          <!-- LAYER 1: BACKGROUND (0.2x) — Mountains, Sky, Decorative Border, Compass Rose -->
+          <div class="map-layer map-layer-bg" id="map-layer-bg" data-depth="0.2">
+            <video autoplay loop muted playsinline class="map-bg-img" poster="/images/historical_map_bg.jpg">
+              <source src="/Video Project 9.mp4" type="video/mp4">
+            </video>
+            <div class="map-bg-layer-tint"></div>
           </div>
 
-          <!-- Symbol II: The Realms -->
-          <div class="map-pin pin-theme-realms locked" id="pin-realms" data-symbol="realms" data-step="2"
-            style="left: 45%; top: 30%;">
-            <div class="pin-ring"></div>
-            <div class="pin-badge">
-              <span class="pin-number">II</span>
-              <div class="emblem-svg">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M2 20h20M4 20V10M8 20V10M12 20V10M16 20V10M20 20V10M2 10l10-6 10 6" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
-              </div>
-            </div>
-            <div class="pin-tooltip">
-              <div class="tooltip-header">
-                <span class="tooltip-tag">Step II • The Realms</span>
-                <h3 class="tooltip-title">The Realms</h3>
-              </div>
-              <p class="tooltip-desc">Explore Symbol I first to reveal the brown foot path trail to this sanctuary!</p>
-              <div class="tooltip-footer">
-                <span class="coords-badge">36°25'N 25°26'E</span>
-                <span class="action-prompt prompt-status">Click Symbol I First &rarr;</span>
-              </div>
-            </div>
+          <!-- LAYER 2: MIDGROUND (0.5x) — Mythic Islands & Halos (Top-Down Aegean Route) -->
+          <div class="map-layer map-layer-mg" id="map-layer-mg" data-depth="0.5">
+            <svg class="map-midground-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+              <defs>
+                <filter id="mgIslandGlow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#2a1608" flood-opacity="0.45" />
+                </filter>
+                <radialGradient id="islandHalo" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#ffd700" stop-opacity="0.18" />
+                  <stop offset="65%" stop-color="#f39c12" stop-opacity="0.06" />
+                  <stop offset="100%" stop-color="#b78103" stop-opacity="0" />
+                </radialGradient>
+              </defs>
+              <g class="midground-islands" filter="url(#mgIslandGlow)">
+                <!-- Halo I: The Voyage (460, 160) -->
+                <ellipse cx="460" cy="160" rx="72" ry="42" fill="url(#islandHalo)" />
+                <!-- Halo II: The Realms (560, 330) -->
+                <ellipse cx="560" cy="330" rx="76" ry="42" fill="url(#islandHalo)" />
+                <!-- Halo III: Realm Protocols (420, 500) -->
+                <ellipse cx="420" cy="500" rx="74" ry="40" fill="url(#islandHalo)" />
+                <!-- Halo IV: The Legions (580, 670) -->
+                <ellipse cx="580" cy="670" rx="76" ry="42" fill="url(#islandHalo)" />
+                <!-- Halo V: The Odyssey (480, 840) -->
+                <ellipse cx="480" cy="840" rx="86" ry="48" fill="url(#islandHalo)" />
+              </g>
+            </svg>
+            <div class="map-mg-sea-shimmer"></div>
           </div>
 
-          <!-- Symbol III: Realm Protocols -->
-          <div class="map-pin pin-theme-protocols locked" id="pin-protocols" data-symbol="protocols" data-step="3"
-            style="left: 72%; top: 38%;">
-            <div class="pin-ring"></div>
-            <div class="pin-badge">
-              <span class="pin-number">III</span>
-              <div class="emblem-svg">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M19 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"
-                    stroke-linecap="round" />
-                  <path d="M9 7h6M9 11h6M9 15h4" stroke-linecap="round" />
-                </svg>
-              </div>
-            </div>
-            <div class="pin-tooltip">
-              <div class="tooltip-header">
-                <span class="tooltip-tag">Step III • Protocols</span>
-                <h3 class="tooltip-title">Realm Protocols</h3>
-              </div>
-              <p class="tooltip-desc">Follow the brown foot path serially to unlock this realm.</p>
-              <div class="tooltip-footer">
-                <span class="coords-badge">38°29'N 22°30'E</span>
-                <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
-              </div>
-            </div>
-          </div>
+          <!-- LAYER 3: FOREGROUND (1.0x) — Waypoint Nodes (I–V), Route Line, Tooltips & Labels -->
+          <div class="map-layer map-layer-fg" id="map-layer-fg" data-depth="1.0">
 
-          <!-- Symbol IV: The Legions -->
-          <div class="map-pin pin-theme-legions locked" id="pin-legions" data-symbol="legions" data-step="4"
-            style="left: 38%; top: 70%;">
-            <div class="pin-ring"></div>
-            <div class="pin-badge">
-              <span class="pin-number">IV</span>
-              <div class="emblem-svg">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                  <path d="M12 8v8M8 12h8" stroke-linecap="round" />
-                </svg>
-              </div>
-            </div>
-            <div class="pin-tooltip">
-              <div class="tooltip-header">
-                <span class="tooltip-tag">Step IV • Legions</span>
-                <h3 class="tooltip-title">The Legions</h3>
-              </div>
-              <p class="tooltip-desc">Follow the brown foot path serially to unlock this realm.</p>
-              <div class="tooltip-footer">
-                <span class="coords-badge">37°04'N 22°25'E</span>
-                <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
-              </div>
-            </div>
-          </div>
+            <!-- SVG Overlay for Clean Brown Foot Path Trail (Top-Down Aegean Serpentine) -->
+            <svg class="map-svg-overlay" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="brownFootGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffd700" stop-opacity="1" />
+                  <stop offset="50%" stop-color="#f39c12" stop-opacity="1" />
+                  <stop offset="100%" stop-color="#b78103" stop-opacity="1" />
+                </linearGradient>
+              </defs>
 
-          <!-- Symbol V: The Odyssey -->
-          <div class="map-pin pin-theme-odyssey locked" id="pin-odyssey" data-symbol="odyssey" data-step="5"
-            style="left: 76%; top: 71%;">
-            <div class="pin-ring"></div>
-            <div class="pin-badge">
-              <span class="pin-number">V</span>
-              <div class="emblem-svg">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M5 16s3-3 7-3 7 3 7 3V7l-7-3-7 3v9z" stroke-linecap="round" stroke-linejoin="round" />
-                  <circle cx="12" cy="8" r="2" fill="currentColor" />
-                </svg>
+              <!-- 4 Clean Brown Foot Path Segments (Top-to-Bottom Flow) -->
+              <!-- Segment 1: Symbol I -> Symbol II -->
+              <path id="trail-seg-1" d="M 460 160 C 510 210, 550 270, 560 330" class="brown-footpath-trail" />
+
+              <!-- Segment 2: Symbol II -> Symbol III -->
+              <path id="trail-seg-2" d="M 560 330 C 560 390, 430 430, 420 500" class="brown-footpath-trail" />
+
+              <!-- Segment 3: Symbol III -> Symbol IV -->
+              <path id="trail-seg-3" d="M 420 500 C 410 570, 570 610, 580 670" class="brown-footpath-trail" />
+
+              <!-- Segment 4: Symbol IV -> Symbol V -->
+              <path id="trail-seg-4" d="M 580 670 C 580 740, 490 780, 480 840" class="brown-footpath-trail" />
+            </svg>
+
+            <!-- 5 INTERACTIVE CONSTANT MAP EMBLEMS (TOP-DOWN PROGRESSIVE UNLOCK) -->
+
+            <!-- Symbol I: The Voyage (North) -->
+            <div class="map-pin pin-theme-voyage unlocked" id="pin-voyage" data-symbol="voyage" data-step="1"
+              style="left: 46%; top: 16%;">
+              <div class="pin-ring"></div>
+              <div class="pin-badge">
+                <span class="pin-number">I</span>
+                <div class="emblem-svg">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" />
+                    <polygon points="12,4 14.5,10.5 21,12 14.5,13.5 12,20 9.5,13.5 3,12 9.5,10.5" fill="currentColor" />
+                  </svg>
+                </div>
+              </div>
+              <div class="pin-click-label" role="button" aria-label="Explore Symbol I The Voyage">
+                <span class="click-label-glow"></span>
+                <span class="click-label-icon">✦</span>
+                <span class="click-label-text">CLICK HERE</span>
+                <span class="click-label-arrow">&rarr;</span>
+              </div>
+              <div class="pin-tooltip">
+                <div class="tooltip-header">
+                  <span class="tooltip-tag">Step I • Active Start</span>
+                  <h3 class="tooltip-title">The Voyage</h3>
+                </div>
+                <p class="tooltip-desc">Click to visit Symbol I and reveal the charted sea trail south to Symbol II!</p>
+                <div class="tooltip-footer">
+                  <span class="coords-badge">37°58'N 23°43'E</span>
+                  <span class="action-prompt">Click Here &rarr;</span>
+                </div>
               </div>
             </div>
-            <div class="pin-tooltip">
-              <div class="tooltip-header">
-                <span class="tooltip-tag">Step V • The Odyssey</span>
-                <h3 class="tooltip-title">The Odyssey</h3>
+
+            <!-- Symbol II: The Realms -->
+            <div class="map-pin pin-theme-realms locked" id="pin-realms" data-symbol="realms" data-step="2"
+              style="left: 56%; top: 33%;">
+              <div class="pin-ring"></div>
+              <div class="pin-badge">
+                <span class="pin-number">II</span>
+                <div class="emblem-svg">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M2 20h20M4 20V10M8 20V10M12 20V10M16 20V10M20 20V10M2 10l10-6 10 6" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                </div>
               </div>
-              <p class="tooltip-desc">Follow all path steps serially to reach the Journey to Innovation!</p>
-              <div class="tooltip-footer">
-                <span class="coords-badge">38°22'N 20°43'E</span>
-                <span class="action-prompt prompt-status">Final Destination &rarr;</span>
+              <div class="pin-click-label" role="button" aria-label="Explore Symbol II The Realms">
+                <span class="click-label-glow"></span>
+                <span class="click-label-icon">✦</span>
+                <span class="click-label-text">EXPLORE</span>
+                <span class="click-label-arrow">&rarr;</span>
+              </div>
+              <div class="pin-tooltip">
+                <div class="tooltip-header">
+                  <span class="tooltip-tag">Step II • The Realms</span>
+                  <h3 class="tooltip-title">The Realms</h3>
+                </div>
+                <p class="tooltip-desc">Explore Symbol I first to reveal the brown foot path trail to this sanctuary!</p>
+                <div class="tooltip-footer">
+                  <span class="coords-badge">36°25'N 25°26'E</span>
+                  <span class="action-prompt prompt-status">Click Symbol I First &rarr;</span>
+                </div>
               </div>
             </div>
-          </div>
+
+            <!-- Symbol III: Realm Protocols -->
+            <div class="map-pin pin-theme-protocols locked" id="pin-protocols" data-symbol="protocols" data-step="3"
+              style="left: 42%; top: 50%;">
+              <div class="pin-ring"></div>
+              <div class="pin-badge">
+                <span class="pin-number">III</span>
+                <div class="emblem-svg">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"
+                      stroke-linecap="round" />
+                    <path d="M9 7h6M9 11h6M9 15h4" stroke-linecap="round" />
+                  </svg>
+                </div>
+              </div>
+              <div class="pin-click-label" role="button" aria-label="Explore Symbol III Protocols">
+                <span class="click-label-glow"></span>
+                <span class="click-label-icon">✦</span>
+                <span class="click-label-text">EXPLORE</span>
+                <span class="click-label-arrow">&rarr;</span>
+              </div>
+              <div class="pin-tooltip">
+                <div class="tooltip-header">
+                  <span class="tooltip-tag">Step III • Protocols</span>
+                  <h3 class="tooltip-title">Realm Protocols</h3>
+                </div>
+                <p class="tooltip-desc">Follow the charted sea trail south to unlock this sacred domain.</p>
+                <div class="tooltip-footer">
+                  <span class="coords-badge">38°29'N 22°30'E</span>
+                  <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Symbol IV: The Legions -->
+            <div class="map-pin pin-theme-legions locked" id="pin-legions" data-symbol="legions" data-step="4"
+              style="left: 58%; top: 67%;">
+              <div class="pin-ring"></div>
+              <div class="pin-badge">
+                <span class="pin-number">IV</span>
+                <div class="emblem-svg">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                    <path d="M12 8v8M8 12h8" stroke-linecap="round" />
+                  </svg>
+                </div>
+              </div>
+              <div class="pin-click-label" role="button" aria-label="Explore Symbol IV The Legions">
+                <span class="click-label-glow"></span>
+                <span class="click-label-icon">✦</span>
+                <span class="click-label-text">EXPLORE</span>
+                <span class="click-label-arrow">&rarr;</span>
+              </div>
+              <div class="pin-tooltip">
+                <div class="tooltip-header">
+                  <span class="tooltip-tag">Step IV • Legions</span>
+                  <h3 class="tooltip-title">The Legions</h3>
+                </div>
+                <p class="tooltip-desc">Follow the brown foot path serially to unlock this realm.</p>
+                <div class="tooltip-footer">
+                  <span class="coords-badge">37°04'N 22°25'E</span>
+                  <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Symbol V: The Odyssey (South Destination) -->
+            <div class="map-pin pin-theme-odyssey locked" id="pin-odyssey" data-symbol="odyssey" data-step="5"
+              style="left: 48%; top: 84%;">
+              <div class="pin-ring"></div>
+              <div class="pin-badge">
+                <span class="pin-number">V</span>
+                <div class="emblem-svg">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 16s3-3 7-3 7 3 7 3V7l-7-3-7 3v9z" stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="12" cy="8" r="2" fill="currentColor" />
+                  </svg>
+                </div>
+              </div>
+              <div class="pin-click-label" role="button" aria-label="Explore Symbol V The Odyssey">
+                <span class="click-label-glow"></span>
+                <span class="click-label-icon">✦</span>
+                <span class="click-label-text">EXPLORE</span>
+                <span class="click-label-arrow">&rarr;</span>
+              </div>
+              <div class="pin-tooltip">
+                <div class="tooltip-header">
+                  <span class="tooltip-tag">Step V • The Odyssey</span>
+                  <h3 class="tooltip-title">The Odyssey</h3>
+                </div>
+                <p class="tooltip-desc">Follow all path steps serially to reach the Journey to Innovation!</p>
+                <div class="tooltip-footer">
+                  <span class="coords-badge">38°22'N 20°43'E</span>
+                  <span class="action-prompt prompt-status">Final Destination &rarr;</span>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /.map-layer-fg -->
         </div><!-- /.map-wrapper -->
 
-
-
+        <!-- Navigational Scroll & Drag Hint HUD -->
+        <div class="map-scroll-indicator" id="map-scroll-indicator" aria-hidden="true">
+          <span class="indicator-mouse">✥</span>
+          <span class="indicator-text">Scroll or Drag to Sail South</span>
+          <span class="indicator-arrow">&darr;</span>
+        </div>
 
       </div><!-- /.map-container -->
     </section>
 
     <!-- VIEW 2: DESTINATION SUB-PAGE (DYNAMICALLY POPULATED) -->
     <section id="subpage-view" class="view-section">
+      <!-- Back to Map Button (Fixed Below Top Bar, Below Odyssey Text) -->
+      <button class="subpage-back-btn" id="subpage-back-btn" aria-label="Back to Map" title="Back to Map">
+        <span class="back-btn-arrow">&larr;</span>
+        <span class="back-btn-text">BACK TO MAP</span>
+      </button>
+
       <div class="subpage-container" id="subpage-content">
         <!-- Rendered via JavaScript app.js -->
       </div>
@@ -343,89 +419,110 @@
             <input type="email" id="reg-email" placeholder="leader@institution.edu" required>
           </div>
 
-          <div class="reg-field">
-            <label for="reg-team-size">Number of Team Members (including team leader)</label>
-            <select id="reg-team-size" required>
-              <option value="3" selected>3 members</option>
-              <option value="4">4 members</option>
-              <option value="5">5 members</option>
-            </select>
-          </div>
-
-          <!-- Additional Team Members Section -->
+          <!-- Team Members Section -->
           <div class="reg-members-section">
-            <h3 class="reg-members-title">🛡️ Additional Legion Team Members</h3>
+            <div class="reg-members-header">
+              <div class="reg-members-title-wrap">
+                <h3 class="reg-members-title">🛡️ Legion Team Members</h3>
+                <span class="reg-members-sub">Minimum 3, maximum 5 members (including Team Leader)</span>
+              </div>
+              <div class="team-size-counter-badge" id="reg-team-size-badge">
+                <span>👥</span>
+                <span>Team Size: <strong id="reg-current-count">3</strong> / 5 Members</span>
+              </div>
+            </div>
 
             <div class="member-card" data-member-slot="1">
-              <h4 class="member-card-heading">Member 1</h4>
+              <div class="member-card-header-row">
+                <h4 class="member-card-heading">Member 1</h4>
+                <span class="required-member-tag">Required</span>
+              </div>
               <div class="reg-grid-3">
                 <div class="reg-field">
-                  <label for="reg-m1-name">Name</label>
-                  <input type="text" id="reg-m1-name" placeholder="Member 1 Name">
+                  <label for="reg-m1-name">Name *</label>
+                  <input type="text" id="reg-m1-name" placeholder="Member 1 Name" required>
                 </div>
                 <div class="reg-field">
-                  <label for="reg-m1-email">Email</label>
-                  <input type="email" id="reg-m1-email" placeholder="member1@email.com">
+                  <label for="reg-m1-email">Email *</label>
+                  <input type="email" id="reg-m1-email" placeholder="member1@email.com" required>
                 </div>
                 <div class="reg-field">
-                  <label for="reg-m1-phone">Phone No.</label>
-                  <input type="tel" id="reg-m1-phone" placeholder="Phone No.">
+                  <label for="reg-m1-phone">Phone No. *</label>
+                  <input type="tel" id="reg-m1-phone" placeholder="Phone No." required>
                 </div>
               </div>
             </div>
 
             <div class="member-card" data-member-slot="2">
-              <h4 class="member-card-heading">Member 2</h4>
+              <div class="member-card-header-row">
+                <h4 class="member-card-heading">Member 2</h4>
+                <span class="required-member-tag">Required</span>
+              </div>
               <div class="reg-grid-3">
                 <div class="reg-field">
-                  <label for="reg-m2-name">Name</label>
-                  <input type="text" id="reg-m2-name" placeholder="Member 2 Name">
+                  <label for="reg-m2-name">Name *</label>
+                  <input type="text" id="reg-m2-name" placeholder="Member 2 Name" required>
                 </div>
                 <div class="reg-field">
-                  <label for="reg-m2-email">Email</label>
-                  <input type="email" id="reg-m2-email" placeholder="member2@email.com">
+                  <label for="reg-m2-email">Email *</label>
+                  <input type="email" id="reg-m2-email" placeholder="member2@email.com" required>
                 </div>
                 <div class="reg-field">
-                  <label for="reg-m2-phone">Phone No.</label>
-                  <input type="tel" id="reg-m2-phone" placeholder="Phone No.">
+                  <label for="reg-m2-phone">Phone No. *</label>
+                  <input type="tel" id="reg-m2-phone" placeholder="Phone No." required>
                 </div>
               </div>
             </div>
 
-            <div class="member-card" data-member-slot="3" hidden>
-              <h4 class="member-card-heading">Member 3</h4>
+            <div class="member-card" data-member-slot="3" style="display:none;" hidden>
+              <div class="member-card-header-row">
+                <h4 class="member-card-heading">Member 3</h4>
+                <button type="button" class="remove-member-btn" id="reg-remove-m3-btn" data-slot="3">✕ Remove Member 3</button>
+              </div>
               <div class="reg-grid-3">
                 <div class="reg-field">
-                  <label for="reg-m3-name">Name</label>
+                  <label for="reg-m3-name">Name *</label>
                   <input type="text" id="reg-m3-name" placeholder="Member 3 Name">
                 </div>
                 <div class="reg-field">
-                  <label for="reg-m3-email">Email</label>
+                  <label for="reg-m3-email">Email *</label>
                   <input type="email" id="reg-m3-email" placeholder="member3@email.com">
                 </div>
                 <div class="reg-field">
-                  <label for="reg-m3-phone">Phone No.</label>
+                  <label for="reg-m3-phone">Phone No. *</label>
                   <input type="tel" id="reg-m3-phone" placeholder="Phone No.">
                 </div>
               </div>
             </div>
 
-            <div class="member-card" data-member-slot="4" hidden>
-              <h4 class="member-card-heading">Member 4</h4>
+            <div class="member-card" data-member-slot="4" style="display:none;" hidden>
+              <div class="member-card-header-row">
+                <h4 class="member-card-heading">Member 4</h4>
+                <button type="button" class="remove-member-btn" id="reg-remove-m4-btn" data-slot="4">✕ Remove Member 4</button>
+              </div>
               <div class="reg-grid-3">
                 <div class="reg-field">
-                  <label for="reg-m4-name">Name</label>
+                  <label for="reg-m4-name">Name *</label>
                   <input type="text" id="reg-m4-name" placeholder="Member 4 Name">
                 </div>
                 <div class="reg-field">
-                  <label for="reg-m4-email">Email</label>
+                  <label for="reg-m4-email">Email *</label>
                   <input type="email" id="reg-m4-email" placeholder="member4@email.com">
                 </div>
                 <div class="reg-field">
-                  <label for="reg-m4-phone">Phone No.</label>
+                  <label for="reg-m4-phone">Phone No. *</label>
                   <input type="tel" id="reg-m4-phone" placeholder="Phone No.">
                 </div>
               </div>
+            </div>
+
+            <!-- + Add Member Button -->
+            <div class="add-member-control-wrap">
+              <button type="button" class="add-member-btn" id="reg-add-member-btn">
+                <span class="plus-icon">＋</span>
+                <span class="add-btn-text" id="reg-add-btn-text">Add Member (4th Member)</span>
+              </button>
+              <span class="add-member-hint" id="reg-add-hint">Click + to add team members (up to 5 members maximum)</span>
             </div>
           </div>
 

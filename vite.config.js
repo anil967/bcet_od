@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { handleApiRequest } from './src/server/api.js';
 import { protectAdminPageRequest } from './src/server/adminAuth.js';
@@ -25,8 +26,16 @@ export default defineConfig({
       name: 'mongodb-api-middleware',
       configureServer(server) {
         server.middlewares.use(async (req, res, next) => {
-          if (protectAdminPageRequest(req, res)) return;
           const requestPath = req.url ? req.url.split('?')[0] : '';
+          if (requestPath === '/admin' || requestPath === '/admin/') {
+            req.url = '/admin/login.html';
+          } else if (requestPath === '/admin/login' || requestPath === '/admin/login/') {
+            req.url = '/admin/login.html';
+          } else if (requestPath === '/admin/dashboard' || requestPath === '/admin/dashboard/') {
+            req.url = '/admin/dashboard.html';
+          }
+
+          if (protectAdminPageRequest(req, res)) return;
           if (requestPath === '/project-submission' || requestPath === '/project-submission/' || requestPath.startsWith('/api/project-submissions')) {
             res.statusCode = 404;
             res.end('Not Found');
@@ -45,6 +54,25 @@ export default defineConfig({
           }
           next();
         });
+      }
+    },
+    {
+      name: 'admin-route-generator',
+      closeBundle() {
+        const dist = path.join(__dirname, 'dist');
+        const loginHtml = path.join(dist, 'admin', 'login.html');
+        const dashboardHtml = path.join(dist, 'admin', 'dashboard.html');
+        const loginDir = path.join(dist, 'admin', 'login');
+        const dashboardDir = path.join(dist, 'admin', 'dashboard');
+
+        if (fs.existsSync(loginHtml)) {
+          fs.mkdirSync(loginDir, { recursive: true });
+          fs.copyFileSync(loginHtml, path.join(loginDir, 'index.html'));
+        }
+        if (fs.existsSync(dashboardHtml)) {
+          fs.mkdirSync(dashboardDir, { recursive: true });
+          fs.copyFileSync(dashboardHtml, path.join(dashboardDir, 'index.html'));
+        }
       }
     }
   ]

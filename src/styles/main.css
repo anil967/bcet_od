@@ -25,8 +25,10 @@
 }
 
 html {
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 * {
@@ -40,8 +42,9 @@ body.odyssey-theme {
   background-color: var(--bg-dark);
   color: #e0d5c1;
   font-family: var(--font-body);
-  overflow: hidden;
-  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100%;
   position: relative;
 }
 
@@ -70,10 +73,9 @@ body.odyssey-theme {
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
-  z-index: 100;
+  z-index: 500;
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
 }
-
 /* Meander Brand Logo */
 .header-brand {
   display: flex;
@@ -87,7 +89,7 @@ body.odyssey-theme {
   height: 38px;
   background: radial-gradient(circle, var(--color-gold-bright) 0%, var(--color-gold-dark) 100%);
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 25%, 75% 25%, 75% 75%, 25% 75%, 25% 50%, 50% 50%);
-  box-shadow: 0 0 12px var(--color-gold-bright);
+  box-shadow: none;
 }
 
 .brand-title {
@@ -136,7 +138,7 @@ body.odyssey-theme {
   background: linear-gradient(135deg, rgba(243, 156, 18, 0.3) 0%, rgba(142, 90, 43, 0.5) 100%);
   border-color: var(--color-gold-bright);
   color: #ffffff;
-  box-shadow: 0 0 15px rgba(243, 156, 18, 0.4), inset 0 0 10px rgba(255, 215, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
   transform: translateY(-2px);
 }
 
@@ -169,46 +171,107 @@ body.odyssey-theme {
 .control-btn:hover {
   border-color: var(--color-gold-primary);
   color: var(--color-gold-bright);
-  box-shadow: 0 0 12px rgba(243, 156, 18, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 /* Viewport Layout */
 .odyssey-viewport {
   position: relative;
   width: 100%;
-  height: calc(100vh - 72px);
-  height: calc(100dvh - 72px);
+  min-height: calc(100vh - 72px);
+  min-height: calc(100dvh - 72px);
   margin-top: 72px;
-  overflow: hidden;
+  overflow-x: hidden;
   z-index: 10;
 }
 
-/* Hide Top Bar Header on Home Page only */
+/* Home View Active: 100vh full-screen dynamic map canvas */
 body.home-view-active .odyssey-header {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+body.home-view-active {
+  overflow: hidden !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  width: 100vw !important;
 }
 
 body.home-view-active .odyssey-viewport {
   margin-top: 0 !important;
   height: 100vh !important;
   height: 100dvh !important;
+  min-height: 100vh !important;
+  overflow: hidden !important;
+  width: 100vw !important;
 }
 
-
 .view-section {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
   height: 100%;
-  opacity: 0;
-  visibility: hidden;
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
-.view-section.active {
+#map-view {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh !important;
+  overflow: hidden !important;
+  display: block !important;
   opacity: 1;
   visibility: visible;
+  transition: opacity 0.6s ease, filter 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body:not(.home-view-active) #map-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  opacity: 0.35;
+  filter: brightness(0.55) blur(3px);
+  transform: scale(0.97);
+  z-index: 0;
+}
+
+#subpage-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 200;
+  display: block !important;
+  background: var(--bg-dark, #0a0705);
+  transform: translateX(100%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease, visibility 0.65s ease;
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.95);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#subpage-view.active {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 @media (max-width: 780px) {
@@ -326,7 +389,7 @@ body.home-view-active .odyssey-viewport {
   max-width: 540px;
   width: 90%;
   position: relative;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(243, 156, 18, 0.3);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
 }
 
 .modal-close {
@@ -418,12 +481,12 @@ body.home-view-active .odyssey-viewport {
   border-radius: 0;
   cursor: pointer;
   transition: var(--transition-smooth);
-  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
 }
 
 .gold-action-btn:hover {
   background: linear-gradient(135deg, var(--color-gold-primary) 0%, var(--color-gold-bright) 100%);
-  box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
   transform: translateY(-2px);
 }
 
@@ -519,13 +582,13 @@ body.home-view-active .odyssey-viewport {
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(243, 156, 18, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9);
   transition: var(--transition-smooth);
 }
 
 .odyssey-audio-widget:hover {
   border-color: var(--color-gold-bright);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95);
   transform: translateY(-2px);
 }
 
@@ -542,7 +605,7 @@ body.home-view-active .odyssey-viewport {
 
 @keyframes audioPulse {
   0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 8px #ffd700); }
+  50% { transform: scale(1.15); opacity: 1; }
 }
 
 .audio-widget-details {
@@ -582,12 +645,12 @@ body.home-view-active .odyssey-viewport {
   justify-content: center;
   font-size: 0.9rem;
   transition: var(--transition-smooth);
-  box-shadow: 0 0 10px rgba(243, 156, 18, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
 }
 
 .audio-play-pause-btn:hover {
   transform: scale(1.1);
-  box-shadow: 0 0 18px rgba(255, 215, 0, 0.7);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8);
 }
 
 .audio-download-btn {

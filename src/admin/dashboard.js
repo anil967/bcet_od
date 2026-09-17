@@ -169,7 +169,7 @@ async function loadRegistrations() {
   try {
     const response = await fetch('/api/admin/registrations', { credentials: 'same-origin' });
     if (response.status === 401) {
-      window.location.replace('/admin/login.html');
+      window.location.replace('/admin/login');
       return;
     }
     const result = await response.json();
@@ -203,7 +203,7 @@ document.querySelectorAll('th[data-sort]').forEach((header) => {
 });
 document.getElementById('logout-button').addEventListener('click', async () => {
   await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
-  window.location.replace('/admin/login.html');
+  window.location.replace('/admin/login');
 });
 
 loadRegistrations();

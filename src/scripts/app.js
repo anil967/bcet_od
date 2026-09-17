@@ -79,6 +79,17 @@ class OdysseyApp {
       this.showMapView();
     });
 
+    // 3b. Delegated Return to Map Handlers (Always active on all subpages & views)
+    document.addEventListener('click', (e) => {
+      const backBtn = e.target.closest('#subpage-back-btn, .subpage-back-btn, #subpage-floating-back-btn, #back-to-map-btn, #reg-page-back-map-btn, .back-map-btn, .floating-back-map-btn');
+      if (backBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        audioSystem.playClick();
+        this.showMapView();
+      }
+    });
+
 
 
     // 5. Guide Modal Toggle
@@ -116,20 +127,77 @@ class OdysseyApp {
     const regCloseBtn = document.getElementById('reg-close-btn');
     const regForm = document.getElementById('reg-form');
     const regSuccessMsg = document.getElementById('reg-success-msg');
-    const teamSizeSelect = document.getElementById('reg-team-size');
-    const memberCards = [...document.querySelectorAll('.member-card[data-member-slot]')];
+    const modalCurrentCountEl = document.getElementById('reg-current-count');
+    const modalAddMemberBtn = document.getElementById('reg-add-member-btn');
+    const modalAddBtnText = document.getElementById('reg-add-btn-text');
+    const modalAddHint = document.getElementById('reg-add-hint');
+    const modalMemberCards = [...(regModal ? regModal.querySelectorAll('.member-card[data-member-slot]') : [])];
 
-    const updateMemberPanels = () => {
-      const teamSize = Number(teamSizeSelect?.value || 3);
-      const additionalMemberCount = teamSize - 1;
-      memberCards.forEach((card) => {
+    let modalCurrentTeamSize = 3;
+
+    const updateModalMemberPanels = () => {
+      const additionalMemberCount = modalCurrentTeamSize - 1;
+      modalMemberCards.forEach((card) => {
         const slot = Number(card.dataset.memberSlot);
-        card.hidden = slot > additionalMemberCount;
+        const isVisible = slot <= additionalMemberCount;
+        card.style.display = isVisible ? 'block' : 'none';
+        card.hidden = !isVisible;
+
+        const inputs = card.querySelectorAll('input');
+        inputs.forEach((input) => {
+          input.required = isVisible;
+          if (!isVisible) input.value = '';
+        });
       });
+
+      if (modalCurrentCountEl) modalCurrentCountEl.textContent = modalCurrentTeamSize;
+
+      if (modalCurrentTeamSize >= 5) {
+        if (modalAddMemberBtn) modalAddMemberBtn.disabled = true;
+        if (modalAddBtnText) modalAddBtnText.textContent = '✓ Maximum 5 Members Reached';
+        if (modalAddHint) modalAddHint.textContent = 'Teams can have a maximum of 5 members.';
+      } else {
+        if (modalAddMemberBtn) modalAddMemberBtn.disabled = false;
+        const nextNum = modalCurrentTeamSize + 1;
+        if (modalAddBtnText) modalAddBtnText.textContent = `Add Member (${nextNum}th Member)`;
+        if (modalAddHint) modalAddHint.textContent = `Click + to add till 5 members maximum`;
+      }
     };
 
-    teamSizeSelect?.addEventListener('change', updateMemberPanels);
-    updateMemberPanels();
+    modalAddMemberBtn?.addEventListener('click', () => {
+      if (modalCurrentTeamSize < 5) {
+        audioSystem.playClick();
+        modalCurrentTeamSize++;
+        updateModalMemberPanels();
+      }
+    });
+
+    document.getElementById('reg-remove-m3-btn')?.addEventListener('click', () => {
+      audioSystem.playClick();
+      if (modalCurrentTeamSize === 5) {
+        const m4Name = document.getElementById('reg-m4-name')?.value || '';
+        const m4Email = document.getElementById('reg-m4-email')?.value || '';
+        const m4Phone = document.getElementById('reg-m4-phone')?.value || '';
+        const m3Name = document.getElementById('reg-m3-name');
+        const m3Email = document.getElementById('reg-m3-email');
+        const m3Phone = document.getElementById('reg-m3-phone');
+        if (m3Name) m3Name.value = m4Name;
+        if (m3Email) m3Email.value = m4Email;
+        if (m3Phone) m3Phone.value = m4Phone;
+        modalCurrentTeamSize = 4;
+      } else {
+        modalCurrentTeamSize = 3;
+      }
+      updateModalMemberPanels();
+    });
+
+    document.getElementById('reg-remove-m4-btn')?.addEventListener('click', () => {
+      audioSystem.playClick();
+      modalCurrentTeamSize = 4;
+      updateModalMemberPanels();
+    });
+
+    updateModalMemberPanels();
 
     regCloseBtn?.addEventListener('click', () => {
       audioSystem.playClick();
@@ -150,7 +218,7 @@ class OdysseyApp {
       const leaderName = document.getElementById('reg-leader-name')?.value?.trim() || '';
       const leaderPhone = document.getElementById('reg-leader-phone')?.value?.trim() || '';
       const leaderEmail = document.getElementById('reg-email')?.value?.trim() || '';
-      const teamSize = Number(teamSizeSelect?.value || 0);
+      const teamSize = modalCurrentTeamSize;
 
       // Gather team members
       const members = [];
@@ -437,10 +505,7 @@ class OdysseyApp {
       container.scrollTop = 0;
     }
 
-    const mapView = document.getElementById('map-view');
     const subpageView = document.getElementById('subpage-view');
-
-    mapView?.classList.remove('active');
     subpageView?.classList.add('active');
 
     audioSystem.playLyreArpeggio();
@@ -454,10 +519,7 @@ class OdysseyApp {
 
     document.body.classList.add('home-view-active');
 
-    const mapView = document.getElementById('map-view');
     const subpageView = document.getElementById('subpage-view');
-
-    mapView?.classList.add('active');
     subpageView?.classList.remove('active');
 
     // Highlight active pill
@@ -469,11 +531,25 @@ class OdysseyApp {
         pill.classList.remove('active');
       }
     });
+
+    // Center map on the active realm
+    if (this.currentSymbolId && this.odysseyMap) {
+      const stepIdx = this.symbolOrder.indexOf(this.currentSymbolId) + 1;
+      if (stepIdx > 0) {
+        this.odysseyMap.slideToRealm(stepIdx);
+      }
+    }
   }
 
   openSymbolPage(symbolId, updateHash = true) {
     const data = SYMBOLS_DATA[symbolId];
     if (!data) return;
+
+    // Smoothly glide the map camera to focus on this realm
+    const stepIdx = this.symbolOrder.indexOf(symbolId) + 1;
+    if (this.odysseyMap && stepIdx > 0) {
+      this.odysseyMap.slideToRealm(stepIdx);
+    }
 
     document.body.classList.remove('home-view-active');
 
@@ -504,11 +580,8 @@ class OdysseyApp {
     // Render Subpage HTML
     this.renderSubpageContent(data);
 
-    // Switch View Visibility
-    const mapView = document.getElementById('map-view');
+    // Switch View Visibility with Sliding Transition
     const subpageView = document.getElementById('subpage-view');
-
-    mapView?.classList.remove('active');
     subpageView?.classList.add('active');
 
     // Scroll subpage to top
@@ -1633,89 +1706,110 @@ class OdysseyApp {
                   <input type="email" id="reg-page-email" placeholder="leader@institution.edu" required>
                 </div>
 
-                <div class="reg-field">
-                  <label for="reg-page-team-size">Number of Team Members (including team leader)</label>
-                  <select id="reg-page-team-size" required>
-                    <option value="3" selected>3 members</option>
-                    <option value="4">4 members</option>
-                    <option value="5">5 members</option>
-                  </select>
-                </div>
-
-                <!-- Additional Team Members Section -->
+                <!-- Team Members Section -->
                 <div class="reg-members-section">
-                  <h3 class="reg-members-title">🛡️ Additional Legion Team Members</h3>
+                  <div class="reg-members-header">
+                    <div class="reg-members-title-wrap">
+                      <h3 class="reg-members-title">🛡️ Legion Team Members</h3>
+                      <span class="reg-members-sub">Minimum 3, maximum 5 members (including Team Leader)</span>
+                    </div>
+                    <div class="team-size-counter-badge" id="reg-page-team-size-badge">
+                      <span>👥</span>
+                      <span>Team Size: <strong id="reg-page-current-count">3</strong> / 5 Members</span>
+                    </div>
+                  </div>
 
                   <div class="member-card" data-member-slot="1">
-                    <h4 class="member-card-heading">Member 1</h4>
+                    <div class="member-card-header-row">
+                      <h4 class="member-card-heading">Member 1</h4>
+                      <span class="required-member-tag">Required</span>
+                    </div>
                     <div class="reg-grid-3">
                       <div class="reg-field">
-                        <label for="reg-page-m1-name">Name</label>
-                        <input type="text" id="reg-page-m1-name" placeholder="Member 1 Name">
+                        <label for="reg-page-m1-name">Name *</label>
+                        <input type="text" id="reg-page-m1-name" placeholder="Member 1 Name" required>
                       </div>
                       <div class="reg-field">
-                        <label for="reg-page-m1-email">Email</label>
-                        <input type="email" id="reg-page-m1-email" placeholder="member1@email.com">
+                        <label for="reg-page-m1-email">Email *</label>
+                        <input type="email" id="reg-page-m1-email" placeholder="member1@email.com" required>
                       </div>
                       <div class="reg-field">
-                        <label for="reg-page-m1-phone">Phone No.</label>
-                        <input type="tel" id="reg-page-m1-phone" placeholder="Phone No.">
+                        <label for="reg-page-m1-phone">Phone No. *</label>
+                        <input type="tel" id="reg-page-m1-phone" placeholder="Phone No." required>
                       </div>
                     </div>
                   </div>
 
                   <div class="member-card" data-member-slot="2">
-                    <h4 class="member-card-heading">Member 2</h4>
+                    <div class="member-card-header-row">
+                      <h4 class="member-card-heading">Member 2</h4>
+                      <span class="required-member-tag">Required</span>
+                    </div>
                     <div class="reg-grid-3">
                       <div class="reg-field">
-                        <label for="reg-page-m2-name">Name</label>
-                        <input type="text" id="reg-page-m2-name" placeholder="Member 2 Name">
+                        <label for="reg-page-m2-name">Name *</label>
+                        <input type="text" id="reg-page-m2-name" placeholder="Member 2 Name" required>
                       </div>
                       <div class="reg-field">
-                        <label for="reg-page-m2-email">Email</label>
-                        <input type="email" id="reg-page-m2-email" placeholder="member2@email.com">
+                        <label for="reg-page-m2-email">Email *</label>
+                        <input type="email" id="reg-page-m2-email" placeholder="member2@email.com" required>
                       </div>
                       <div class="reg-field">
-                        <label for="reg-page-m2-phone">Phone No.</label>
-                        <input type="tel" id="reg-page-m2-phone" placeholder="Phone No.">
+                        <label for="reg-page-m2-phone">Phone No. *</label>
+                        <input type="tel" id="reg-page-m2-phone" placeholder="Phone No." required>
                       </div>
                     </div>
                   </div>
 
-                  <div class="member-card" data-member-slot="3" hidden>
-                    <h4 class="member-card-heading">Member 3</h4>
+                  <div class="member-card" data-member-slot="3" style="display:none;" hidden>
+                    <div class="member-card-header-row">
+                      <h4 class="member-card-heading">Member 3</h4>
+                      <button type="button" class="remove-member-btn" id="reg-page-remove-m3-btn" data-slot="3">✕ Remove Member 3</button>
+                    </div>
                     <div class="reg-grid-3">
                       <div class="reg-field">
-                        <label for="reg-page-m3-name">Name</label>
+                        <label for="reg-page-m3-name">Name *</label>
                         <input type="text" id="reg-page-m3-name" placeholder="Member 3 Name">
                       </div>
                       <div class="reg-field">
-                        <label for="reg-page-m3-email">Email</label>
+                        <label for="reg-page-m3-email">Email *</label>
                         <input type="email" id="reg-page-m3-email" placeholder="member3@email.com">
                       </div>
                       <div class="reg-field">
-                        <label for="reg-page-m3-phone">Phone No.</label>
+                        <label for="reg-page-m3-phone">Phone No. *</label>
                         <input type="tel" id="reg-page-m3-phone" placeholder="Phone No.">
                       </div>
                     </div>
                   </div>
 
-                  <div class="member-card" data-member-slot="4" hidden>
-                    <h4 class="member-card-heading">Member 4</h4>
+                  <div class="member-card" data-member-slot="4" style="display:none;" hidden>
+                    <div class="member-card-header-row">
+                      <h4 class="member-card-heading">Member 4</h4>
+                      <button type="button" class="remove-member-btn" id="reg-page-remove-m4-btn" data-slot="4">✕ Remove Member 4</button>
+                    </div>
                     <div class="reg-grid-3">
                       <div class="reg-field">
-                        <label for="reg-page-m4-name">Name</label>
+                        <label for="reg-page-m4-name">Name *</label>
                         <input type="text" id="reg-page-m4-name" placeholder="Member 4 Name">
                       </div>
                       <div class="reg-field">
-                        <label for="reg-page-m4-email">Email</label>
+                        <label for="reg-page-m4-email">Email *</label>
                         <input type="email" id="reg-page-m4-email" placeholder="member4@email.com">
                       </div>
                       <div class="reg-field">
-                        <label for="reg-page-m4-phone">Phone No.</label>
+                        <label for="reg-page-m4-phone">Phone No. *</label>
                         <input type="tel" id="reg-page-m4-phone" placeholder="Phone No.">
                       </div>
                     </div>
+                  </div>
+
+                  <!-- + Add Member Button -->
+                  <div class="add-member-control-wrap">
+                    <button type="button" class="add-member-btn" id="reg-page-add-member-btn">
+                      <span class="plus-icon">＋</span>
+                      <span class="add-btn-text" id="reg-page-add-btn-text">Add Member (4th Member)</span>
+                    </button>
+                    <span class="add-member-hint" id="reg-page-add-hint">Click + to add team members (up to 5 members maximum)</span>
                   </div>
                 </div>
 
@@ -1809,12 +1903,16 @@ class OdysseyApp {
       document.getElementById('payment-qr-modal')?.classList.add('active');
     });
 
-    // Team Size Change Listener
-    const teamSizeSelect = document.getElementById('reg-page-team-size');
+    // Dynamic Team Size & Member Slots Management
+    let pageCurrentTeamSize = 3;
+    const pageCurrentCountEl = container.querySelector('#reg-page-current-count');
+    const pageAddMemberBtn = container.querySelector('#reg-page-add-member-btn');
+    const pageAddBtnText = container.querySelector('#reg-page-add-btn-text');
+    const pageAddHint = container.querySelector('#reg-page-add-hint');
     const memberCards = [...container.querySelectorAll('.member-card[data-member-slot]')];
+
     const updateMemberPanels = () => {
-      const teamSize = Number(teamSizeSelect?.value || 3);
-      const additionalMemberCount = teamSize - 1;
+      const additionalMemberCount = pageCurrentTeamSize - 1;
       memberCards.forEach((card) => {
         const slot = Number(card.dataset.memberSlot);
         const isVisible = slot <= additionalMemberCount;
@@ -1823,14 +1921,58 @@ class OdysseyApp {
 
         const inputs = card.querySelectorAll('input');
         inputs.forEach((input) => {
-          if (!isVisible) {
-            input.required = false;
-            input.value = '';
-          }
+          input.required = isVisible;
+          if (!isVisible) input.value = '';
         });
       });
+
+      if (pageCurrentCountEl) pageCurrentCountEl.textContent = pageCurrentTeamSize;
+
+      if (pageCurrentTeamSize >= 5) {
+        if (pageAddMemberBtn) pageAddMemberBtn.disabled = true;
+        if (pageAddBtnText) pageAddBtnText.textContent = '✓ Maximum 5 Members Reached';
+        if (pageAddHint) pageAddHint.textContent = 'Teams can have a maximum of 5 members (including Team Leader).';
+      } else {
+        if (pageAddMemberBtn) pageAddMemberBtn.disabled = false;
+        const nextNum = pageCurrentTeamSize + 1;
+        if (pageAddBtnText) pageAddBtnText.textContent = `Add Member (${nextNum}th Member)`;
+        if (pageAddHint) pageAddHint.textContent = `Click + to add till 5 members maximum`;
+      }
     };
-    teamSizeSelect?.addEventListener('change', updateMemberPanels);
+
+    pageAddMemberBtn?.addEventListener('click', () => {
+      if (pageCurrentTeamSize < 5) {
+        audioSystem.playClick();
+        pageCurrentTeamSize++;
+        updateMemberPanels();
+      }
+    });
+
+    container.querySelector('#reg-page-remove-m3-btn')?.addEventListener('click', () => {
+      audioSystem.playClick();
+      if (pageCurrentTeamSize === 5) {
+        const m4Name = container.querySelector('#reg-page-m4-name')?.value || '';
+        const m4Email = container.querySelector('#reg-page-m4-email')?.value || '';
+        const m4Phone = container.querySelector('#reg-page-m4-phone')?.value || '';
+        const m3Name = container.querySelector('#reg-page-m3-name');
+        const m3Email = container.querySelector('#reg-page-m3-email');
+        const m3Phone = container.querySelector('#reg-page-m3-phone');
+        if (m3Name) m3Name.value = m4Name;
+        if (m3Email) m3Email.value = m4Email;
+        if (m3Phone) m3Phone.value = m4Phone;
+        pageCurrentTeamSize = 4;
+      } else {
+        pageCurrentTeamSize = 3;
+      }
+      updateMemberPanels();
+    });
+
+    container.querySelector('#reg-page-remove-m4-btn')?.addEventListener('click', () => {
+      audioSystem.playClick();
+      pageCurrentTeamSize = 4;
+      updateMemberPanels();
+    });
+
     updateMemberPanels();
 
     // Form Submit Handler
@@ -1848,7 +1990,7 @@ class OdysseyApp {
       const leaderName = document.getElementById('reg-page-leader-name')?.value?.trim() || '';
       const leaderPhone = document.getElementById('reg-page-leader-phone')?.value?.trim() || '';
       const leaderEmail = document.getElementById('reg-page-email')?.value?.trim() || '';
-      const teamSize = Number(teamSizeSelect?.value || 0);
+      const teamSize = pageCurrentTeamSize;
 
       const members = [];
       for (let i = 1; i <= teamSize - 1; i++) {

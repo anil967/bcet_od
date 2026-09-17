@@ -1,11 +1,31 @@
 import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
+import dns from 'node:dns';
 
 dotenv.config();
+
+// Ensure Node.js can resolve MongoDB Atlas SRV records when the local DNS resolver (e.g. 127.0.0.1) rejects SRV queries
+try {
+  const currentServers = dns.getServers();
+  if (!currentServers || currentServers.length === 0 || currentServers.every((s) => s.startsWith('127.') || s === '::1')) {
+    dns.setServers(['8.8.8.8', '1.1.1.1']);
+  }
+} catch {
+  // Ignore in environments where setting DNS servers is restricted
+}
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB || 'odyssey';
 const collectionName = process.env.MONGODB_COLLECTION || 'student registration';
+
+const clientOptions = {
+  maxPoolSize: 10,
+  serverSelectionTimeoutMS: 15000,
+  tls: true,
+  tlsAllowInvalidCertificates: false,
+  tlsAllowInvalidHostnames: false,
+  family: 4,
+};
 
 let client = null;
 let clientPromise = null;
@@ -16,16 +36,23 @@ export async function getDbClient() {
   }
 
   if (!clientPromise) {
-    client = new MongoClient(uri, {
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 15000,
-      tls: true,
-      tlsAllowInvalidCertificates: false,
-      tlsAllowInvalidHostnames: false,
-      family: 4,
-    });
-    clientPromise = client.connect().catch((error) => {
+    client = new MongoClient(uri, clientOptions);
+    clientPromise = client.connect().catch(async (error) => {
       clientPromise = null;
+      // If querySrv ECONNREFUSED occurs, fallback to public DNS resolvers and retry
+      if (error?.code === 'ECONNREFUSED' && error?.syscall === 'querySrv') {
+        try {
+          dns.setServers(['8.8.8.8', '1.1.1.1']);
+          client = new MongoClient(uri, clientOptions);
+          clientPromise = client.connect().catch((retryErr) => {
+            clientPromise = null;
+            throw retryErr;
+          });
+          return await clientPromise;
+        } catch {
+          throw error;
+        }
+      }
       throw error;
     });
   }

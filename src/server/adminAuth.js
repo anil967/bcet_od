@@ -101,21 +101,28 @@ export function expiredSessionCookie() {
 }
 
 export function isAdminPageRequest(pathname) {
-  return pathname === '/admin/login.html' || pathname === '/admin/dashboard.html';
+  const clean = (pathname || '').replace(/\/$/, '');
+  return (
+    clean === '/admin' ||
+    clean === '/admin/login' ||
+    clean === '/admin/login.html' ||
+    clean === '/admin/dashboard' ||
+    clean === '/admin/dashboard.html'
+  );
 }
 
 export function protectAdminPageRequest(req, res) {
-  const pathname = new URL(req.url, `http://${req.headers.host || 'localhost'}`).pathname;
+  const pathname = new URL(req.url, `http://${req.headers.host || 'localhost'}`).pathname.replace(/\/$/, '');
   if (!isAdminPageRequest(pathname)) return false;
 
   const session = authenticateAdmin(req);
-  if (pathname === '/admin/dashboard.html' && !session) {
-    res.writeHead(302, { Location: '/admin/login.html' });
+  if ((pathname === '/admin/dashboard' || pathname === '/admin/dashboard.html') && !session) {
+    res.writeHead(302, { Location: '/admin/login' });
     res.end();
     return true;
   }
-  if (pathname === '/admin/login.html' && session) {
-    res.writeHead(302, { Location: '/admin/dashboard.html' });
+  if ((pathname === '/admin/login' || pathname === '/admin/login.html' || pathname === '/admin') && session) {
+    res.writeHead(302, { Location: '/admin/dashboard' });
     res.end();
     return true;
   }

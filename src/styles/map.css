@@ -1,31 +1,136 @@
-/* Constant Sepia Parchment Map & Clean Brown Foot Path Trail */
+/* Dynamic Interactive Odyssey Map & Multi-Layer Depth Styling */
+
+#map-view {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
 
 .map-container {
   position: relative;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: #0a0705;
-  cursor: default;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1500px;
-  /* Enable 3D space for folding effect */
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  display: block;
 }
 
-/* Constant Map Wrapper */
+.map-container.is-dragging {
+  cursor: grabbing !important;
+}
+
+/* Parallax Map Wrapper Stage — Top-Down Voyage Canvas */
 .map-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  max-width: calc(100vh * (16 / 9));
-  max-height: calc(100vw * (9 / 16));
-  aspect-ratio: 16 / 9;
-  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 180vh;
+  min-height: 180vh;
+  margin: 0;
+  padding: 0;
   opacity: 1;
   pointer-events: auto;
   transform: none;
+}
+
+/* 3 Depth Layers */
+.map-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+
+.map-layer-bg {
+  z-index: 1;
+  pointer-events: none;
+}
+
+.map-layer-mg {
+  z-index: 5;
+  pointer-events: none;
+}
+
+.map-layer-fg {
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.map-midground-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.map-bg-layer-tint {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 65%, rgba(10, 7, 5, 0.4) 100%);
+  pointer-events: none;
+}
+
+.map-mg-sea-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.02) 0%, transparent 50%, rgba(183, 129, 3, 0.03) 100%);
+  pointer-events: none;
+}
+
+/* Floating Navigation Hint HUD */
+.map-scroll-indicator {
+  position: absolute;
+  bottom: 24px;
+  right: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(18, 12, 7, 0.88);
+  border: 1px solid rgba(243, 156, 18, 0.55);
+  border-radius: 20px;
+  color: #ffd700;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  z-index: 100;
+  pointer-events: none;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.7);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  animation: floatScrollPrompt 2.4s ease-in-out infinite;
+}
+
+.map-scroll-indicator.faded {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+@keyframes floatScrollPrompt {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 /* Ancient Parchment Folding Flaps Overlay (Opens Vertically via Rolling) */
@@ -184,8 +289,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: fill;
-  object-position: center;
+  object-fit: cover;
+  object-position: left top;
   display: block;
   filter: sepia(1.0) saturate(2.2) contrast(1.08) brightness(1.02) hue-rotate(-8deg);
 }
@@ -263,8 +368,8 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 52px;
-  height: 52px;
+  width: 66px;
+  height: 66px;
   transform: translate(-50%, -50%);
   border: 2px solid #ffd700;
   border-radius: 50%;
@@ -275,31 +380,31 @@
 
 @keyframes pulseRing {
   0% {
-    width: 22px;
-    height: 22px;
+    width: 28px;
+    height: 28px;
     opacity: 0.95;
   }
 
   100% {
-    width: 82px;
-    height: 82px;
+    width: 104px;
+    height: 104px;
     opacity: 0;
   }
 }
 
-/* Pin 3D Wax Seal Badge */
+/* Pin 3D Wax Seal Badge - Prominent & Highly Visible */
 .pin-badge {
   position: relative;
-  width: 52px;
-  height: 52px;
+  width: 64px;
+  height: 64px;
   background: radial-gradient(circle, #5a381a 0%, #241407 100%);
-  border: 2px solid #ffd700;
+  border: 2.5px solid #ffd700;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.95), 0 0 16px rgba(243, 156, 18, 0.65), inset 0 0 10px rgba(255, 215, 0, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.95);
   transition: var(--transition-smooth);
   color: #ffd700;
 }
@@ -308,17 +413,18 @@
   background: radial-gradient(circle, #d4ac0d 0%, #8e5a2b 100%);
   border-color: #ffffff;
   color: #ffffff;
-  box-shadow: 0 0 35px rgba(255, 215, 0, 0.95), inset 0 0 14px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.95);
+  transform: scale(1.06);
 }
 
 .pin-number {
   font-family: var(--font-heading);
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.5px;
   color: #ffd700;
   line-height: 1;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
 }
 
 .emblem-svg {
@@ -326,6 +432,11 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
+}
+
+.emblem-svg svg {
+  width: 26px;
+  height: 26px;
 }
 
 /* Custom Theme Colors */
@@ -349,43 +460,100 @@
   border-color: #ffd700;
 }
 
-/* Click Here label for Voyage pin */
+/* Ornate Greek Cartouche Label for Active/Unlocked Pins */
 .pin-click-label {
   position: absolute;
-  top: 58px;
+  top: 70px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(20, 13, 7, 0.95);
-  border: 1px solid #ffd700;
-  color: #ffd700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, rgba(32, 19, 10, 0.96) 0%, rgba(16, 10, 5, 0.98) 100%);
+  border: 1.5px solid #ffd700;
+  outline: 1px solid rgba(183, 129, 3, 0.5);
+  outline-offset: 1.5px;
+  color: #fff2c8;
   font-family: var(--font-heading);
   font-size: 0.68rem;
-  font-weight: bold;
-  letter-spacing: 0.5px;
-  padding: 3px 10px;
-  border-radius: 0;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 5px 12px;
+  border-radius: 2px;
   white-space: nowrap;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 20;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: cartouchePulse 2.4s ease-in-out infinite;
+}
+
+.map-pin.locked .pin-click-label {
+  display: none !important;
+}
+
+.pin-click-label:hover {
+  background: linear-gradient(135deg, rgba(65, 38, 18, 0.98) 0%, rgba(30, 18, 9, 0.98) 100%);
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.95);
+  transform: translateX(-50%) translateY(-2px) scale(1.04);
+}
+
+.pin-click-label .click-label-icon {
+  color: #ffd700;
+  font-size: 0.65rem;
+  animation: rotateStar 6s linear infinite;
+}
+
+.pin-click-label .click-label-arrow {
+  color: #ffd700;
+  font-size: 0.75rem;
+  transition: transform 0.25s ease;
+}
+
+.pin-click-label:hover .click-label-arrow {
+  transform: translateX(3px);
+  color: #ffffff;
+}
+
+.pin-click-label .click-label-glow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
+  transform: skewX(-25deg);
+  animation: cartoucheShine 3.5s ease-in-out infinite;
   pointer-events: none;
-  animation: gentlePulse 2s ease-in-out infinite;
-  z-index: 10;
 }
 
-@keyframes gentlePulse {
+@keyframes cartoucheShine {
+  0%, 30% { left: -100%; }
+  60%, 100% { left: 160%; }
+}
 
-  0%,
-  100% {
-    transform: translateX(-50%) scale(1);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.3);
+@keyframes rotateStar {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes cartouchePulse {
+  0%, 100% {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
+    border-color: #ffd700;
   }
-
   50% {
-    transform: translateX(-50%) scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 215, 0, 0.6);
-    border-color: #ffffff;
-    color: #ffffff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.95);
+    border-color: #ffe680;
   }
 }
+
+
+
 
 /* Tooltip Hover Cards */
 .pin-tooltip {
@@ -398,7 +566,7 @@
   border: 1px solid #d4ac0d;
   border-radius: 0;
   padding: 0.95rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(243, 156, 18, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95);
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
@@ -477,7 +645,7 @@
   border: 1px solid #d4ac0d;
   border-radius: 0;
   padding: 0.65rem 2.2rem;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.95), 0 0 20px rgba(243, 156, 18, 0.35);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.95);
   z-index: 25;
   text-align: center;
   max-width: 500px;
@@ -547,50 +715,112 @@
 
 @media (max-width: 780px) {
   .map-wrapper {
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    aspect-ratio: auto;
+    width: 100vw;
+    height: 170vh;
+    min-height: 170vh;
   }
 
   .map-bg-img {
     object-fit: cover;
-    object-position: center;
+    object-position: left top;
   }
 
-  .map-pin {
-    transform: translate(-50%, -50%) scale(0.85);
+  .map-vertical-nav {
+    right: 8px;
+    padding: 6px 4px;
+    gap: 4px;
   }
 
-  .map-pin.unlocked:hover {
-    transform: translate(-50%, -55%) scale(1.05);
+  .map-vnav-btn {
+    width: 52px;
+    padding: 6px 4px;
+    font-size: 0.55rem;
   }
 
-  .pin-click-label {
-    top: 44px;
-    font-size: 0.58rem;
-    padding: 2px 5px;
+  .vnav-arrow {
+    font-size: 0.75rem;
   }
 
-  .pin-tooltip {
-    width: 210px;
-    max-width: 82vw;
-    padding: 0.75rem;
-    font-size: 0.8rem;
-    bottom: 48px;
+  .vnav-step-num {
+    font-size: 0.75rem;
   }
 
-  .parchment-scroll-banner {
-    bottom: 38px;
-    padding: 0.35rem 0.8rem;
-    max-width: 90%;
+  .vnav-current-badge {
+    min-width: 42px;
+    padding: 3px 6px;
   }
 
-  .scroll-quote {
+  .map-voyage-title-hud {
+    top: 1.6%;
+    width: 94%;
+  }
+
+  .voyage-main-title {
+    font-size: 1.5rem;
+    letter-spacing: 3px;
+  }
+
+  .voyage-sub-title {
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+  }
+
+  .map-bottom-quote-hud {
+    top: 92%;
+    width: 92%;
+  }
+
+  .quote-parchment-plaque {
+    padding: 6px 14px;
+    gap: 8px;
+  }
+
+  .quote-text {
     font-size: 0.72rem;
     letter-spacing: 1px;
   }
+
+  .map-pin {
+    transform: translate(-50%, -50%) scale(1.0);
+  }
+
+  .map-pin.unlocked:hover {
+    transform: translate(-50%, -55%) scale(1.06);
+  }
+
+  .pin-badge {
+    width: 58px;
+    height: 58px;
+  }
+
+  .pin-number {
+    font-size: 0.7rem;
+  }
+
+  .emblem-svg svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .pin-ring {
+    width: 60px;
+    height: 60px;
+  }
+
+  .pin-click-label {
+    top: 64px;
+    font-size: 0.65rem;
+    padding: 4px 10px;
+  }
+
+  .pin-tooltip {
+    width: 220px;
+    max-width: 82vw;
+    padding: 0.75rem;
+    font-size: 0.8rem;
+    bottom: 56px;
+  }
+
 
   .map-footer-bar {
     height: 30px;
@@ -604,27 +834,43 @@
 }
 
 @media (max-width: 480px) {
+  .map-wrapper {
+    height: 165vh;
+    min-height: 165vh;
+  }
+
+  .map-bg-img {
+    object-fit: cover;
+    object-position: left top;
+  }
+
   .map-pin {
-    transform: translate(-50%, -50%) scale(0.72);
+    transform: translate(-50%, -50%) scale(0.95);
   }
 
   .pin-badge {
-    width: 42px;
-    height: 42px;
+    width: 54px;
+    height: 54px;
   }
 
   .pin-number {
-    font-size: 0.55rem;
+    font-size: 0.68rem;
   }
 
   .emblem-svg svg {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
   }
 
   .pin-ring {
-    width: 42px;
-    height: 42px;
+    width: 56px;
+    height: 56px;
+  }
+
+  .pin-click-label {
+    top: 58px;
+    font-size: 0.62rem;
+    padding: 3px 8px;
   }
 
   .map-footer-bar {
@@ -633,5 +879,31 @@
 
   .bar-label {
     display: none;
+  }
+}
+
+/* Accessibility: prefers-reduced-motion overrides */
+@media (prefers-reduced-motion: reduce) {
+  #map-view {
+    min-height: 100vh !important;
+  }
+
+  .map-container {
+    position: relative !important;
+    justify-content: center !important;
+  }
+
+  .map-wrapper {
+    width: 100% !important;
+    max-width: calc(100vh * (16 / 9)) !important;
+    margin: auto !important;
+  }
+
+  .map-layer {
+    transform: none !important;
+  }
+
+  .map-scroll-indicator {
+    display: none !important;
   }
 }
