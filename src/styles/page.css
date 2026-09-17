@@ -1530,7 +1530,9 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 2.2rem;
-  margin: 2rem 0 3.5rem 0;
+  max-width: 760px;
+  margin: 2rem auto 3.5rem auto;
+  justify-content: center;
 }
 
 .legion-kpi-card {
@@ -1552,9 +1554,9 @@
 .high-king-card {
   border-color: #ffd700;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
-  min-height: 640px !important;
-  height: 640px !important;
-  max-width: 450px !important;
+  min-height: auto !important;
+  height: auto !important;
+  max-width: 360px !important;
   width: 100% !important;
   margin: 0 auto !important;
   display: flex !important;
@@ -1566,56 +1568,67 @@
 
 .high-king-card .card-photo-side {
   width: 100% !important;
-  height: 70% !important;
+  height: 280px !important;
+  overflow: hidden !important;
   border-right: none !important;
   border-bottom: 2px solid rgba(243, 156, 18, 0.25) !important;
+  background: #0d0805;
 }
 
 .high-king-card .card-photo-side img {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
-  object-position: center top !important;
+  object-position: center 8% !important;
 }
 
 .high-king-card .card-text-side {
   width: 100% !important;
-  height: 30% !important;
-  padding: 1.6rem 1.5rem !important;
+  height: auto !important;
+  padding: 1.3rem 1.4rem !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-start !important;
   justify-content: flex-start !important;
   text-align: left !important;
-  gap: 0.5rem !important;
+  gap: 0.4rem !important;
 }
 
 .high-king-card .legion-card-title {
-  font-size: 1.25rem !important;
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.5px !important;
+  color: #ffd700 !important;
+  text-transform: uppercase !important;
   margin: 0 !important;
   line-height: 1.2 !important;
   text-align: left !important;
 }
 
 .high-king-card .legion-name {
-  font-size: 1.4rem !important;
+  font-size: 1.35rem !important;
+  font-family: var(--font-display) !important;
+  color: #ffffff !important;
   margin: 0 !important;
   line-height: 1.2 !important;
   text-align: left !important;
 }
 
 .high-king-card .legion-role {
-  font-size: 0.82rem !important;
+  font-size: 0.88rem !important;
+  color: #cbb483 !important;
   margin: 0 !important;
   line-height: 1.2 !important;
   text-align: left !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
 }
 
 @media (min-width: 781px) {
   .high-king-card {
     grid-column: 1 / span 2;
     justify-self: center;
-    width: 450px !important;
+    width: 360px !important;
   }
 }
 
@@ -1743,8 +1756,10 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2.2rem;
-  margin: 3.5rem 0;
+  max-width: 1100px;
+  margin: 3.5rem auto;
   perspective: 1200px;
+  justify-content: center;
 }
 
 .vanguard-kpi-card {
@@ -1809,7 +1824,7 @@
   box-shadow: 0 16px 45px rgba(0, 0, 0, 0.8);
 }
 
-/* Vanguard & Supreme Command KPI Cards with Photo Layout */
+/* Vanguard & Supreme Command KPI Cards with Professional Photo Layout */
 .vanguard-kpi-card.has-photo,
 .legion-kpi-card.has-photo,
 .ops-kpi-card.has-photo {
@@ -1819,17 +1834,22 @@
   align-items: stretch;
   flex-direction: column !important;
   text-align: left;
-  min-height: 640px;
+  min-height: auto !important;
+  height: auto !important;
+  max-width: 350px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .vanguard-kpi-card.has-photo .card-photo-side,
 .legion-kpi-card.has-photo .card-photo-side,
 .ops-kpi-card.has-photo .card-photo-side {
   position: relative;
-  width: 100%;
-  height: 70% !important;
+  width: 100% !important;
+  height: 275px !important;
   overflow: hidden;
   border-bottom: 2px solid rgba(243, 156, 18, 0.25);
+  background: #0d0805;
 }
 
 .vanguard-kpi-card.has-photo .card-photo-side img,
@@ -1838,27 +1858,35 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 10%;
   display: block;
   transition: transform 0.4s ease;
+}
+
+.commander-card .card-photo-side img {
+  object-position: center 10% !important;
+}
+
+.queen-card .card-photo-side img {
+  object-position: center 8% !important;
 }
 
 .vanguard-kpi-card.has-photo:hover .card-photo-side img,
 .legion-kpi-card.has-photo:hover .card-photo-side img,
 .ops-kpi-card.has-photo:hover .card-photo-side img {
-  transform: scale(1.08);
+  transform: scale(1.04);
 }
 
 .vanguard-kpi-card.has-photo .card-text-side,
 .legion-kpi-card.has-photo .card-text-side,
 .ops-kpi-card.has-photo .card-text-side {
-  padding: 1.6rem 1.5rem;
+  padding: 1.3rem 1.4rem !important;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 0.5rem;
-  height: 30% !important;
+  gap: 0.35rem;
+  height: auto !important;
   flex-grow: 1;
 }
 
@@ -1869,22 +1897,23 @@
   .legion-kpi-card.has-photo,
   .ops-kpi-card.has-photo {
     flex-direction: column !important;
-    min-height: 640px !important;
+    min-height: auto !important;
+    height: auto !important;
   }
 
   .vanguard-kpi-card.has-photo .card-photo-side,
   .legion-kpi-card.has-photo .card-photo-side,
   .ops-kpi-card.has-photo .card-photo-side {
     width: 100% !important;
-    height: 70% !important;
+    height: 275px !important;
   }
 
   .vanguard-kpi-card.has-photo .card-text-side,
   .legion-kpi-card.has-photo .card-text-side,
   .ops-kpi-card.has-photo .card-text-side {
     width: 100% !important;
-    height: 30% !important;
-    padding: 1.6rem 1.5rem !important;
+    height: auto !important;
+    padding: 1.3rem 1.4rem !important;
   }
 }
 
@@ -1894,19 +1923,22 @@
   .vanguard-kpi-card.has-photo,
   .legion-kpi-card.has-photo,
   .ops-kpi-card.has-photo {
-    min-height: 600px !important;
+    min-height: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
   }
 
   .vanguard-kpi-card.has-photo .card-photo-side,
   .legion-kpi-card.has-photo .card-photo-side,
   .ops-kpi-card.has-photo .card-photo-side {
-    height: 70% !important;
+    height: 250px !important;
   }
 
   .vanguard-kpi-card.has-photo .card-text-side,
   .legion-kpi-card.has-photo .card-text-side,
   .ops-kpi-card.has-photo .card-text-side {
-    height: 30% !important;
+    height: auto !important;
+    padding: 1.15rem 1.1rem !important;
   }
 }
 

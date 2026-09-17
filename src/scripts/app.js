@@ -14,6 +14,7 @@ class OdysseyApp {
     this.symbolOrder = ['voyage', 'realms', 'protocols', 'legions', 'odyssey'];
     this.sidebarPreviewStep = 1;
     this.introAutoTimer = null;
+    window.__odysseyApp = this;
   }
 
   init() {
@@ -59,24 +60,7 @@ class OdysseyApp {
     this.initMapSidebarControls();
     this.initMobileJourneyPanel();
 
-    // 2. Setup Top Header Nav Pill Click Handlers
-    const navPills = document.querySelectorAll('.symbol-nav .nav-pill');
-    navPills.forEach(pill => {
-      pill.addEventListener('click', () => {
-        const symbolId = pill.getAttribute('data-symbol');
-        const stepIdx = this.symbolOrder.indexOf(symbolId) + 1;
-
-        if (stepIdx <= this.unlockedStep) {
-          audioSystem.playClick();
-          this.openSymbolPage(symbolId);
-        } else {
-          audioSystem.playClick();
-          this.showLockedNotice(stepIdx);
-        }
-      });
-    });
-
-    // 3. Brand Logo Click -> Return to Map
+    // 2. Brand Logo Click -> Return to Map
     document.getElementById('brand-logo')?.addEventListener('click', () => {
       audioSystem.playClick();
       this.showMapView();
@@ -505,10 +489,6 @@ class OdysseyApp {
       }
     }
 
-    const stepBadge = document.getElementById('step-counter-badge');
-    if (stepBadge) {
-      stepBadge.textContent = `STEP ${this.unlockedStep} / 5`;
-    }
   }
 
   handleSymbolClick(symbolId) {
@@ -527,11 +507,10 @@ class OdysseyApp {
   }
 
   updateSerialUnlockState() {
-    // 1. Update Map Pins & Nav Pills
+    // 1. Update map pins
     this.symbolOrder.forEach((id, idx) => {
       const step = idx + 1;
       const pin = document.getElementById(`pin-${id}`);
-      const pills = document.querySelectorAll(`.symbol-nav .nav-pill[data-symbol="${id}"]`);
 
       pin?.classList.toggle('pin-current', step === this.unlockedStep);
       pin?.classList.toggle('pin-completed', step < this.unlockedStep);
@@ -539,10 +518,6 @@ class OdysseyApp {
       if (step <= this.unlockedStep) {
         pin?.classList.remove('locked');
         pin?.classList.add('unlocked');
-        pills.forEach((pill) => {
-          pill.classList.remove('locked');
-          pill.classList.add('unlocked');
-        });
 
         // Update Tooltip Action Prompt
         const promptEl = pin?.querySelector('.action-prompt');
@@ -557,10 +532,6 @@ class OdysseyApp {
       } else {
         pin?.classList.remove('unlocked', 'pin-current', 'pin-completed');
         pin?.classList.add('locked');
-        pills.forEach((pill) => {
-          pill.classList.remove('unlocked');
-          pill.classList.add('locked');
-        });
       }
     });
 
@@ -619,16 +590,6 @@ class OdysseyApp {
 
     this.currentSymbolId = null;
     this.updateMapSidebar(this.sidebarPreviewStep);
-
-    // Highlight active pill
-    document.querySelectorAll('.symbol-nav .nav-pill').forEach(pill => {
-      const id = pill.getAttribute('data-symbol');
-      if (id === this.currentSymbolId) {
-        pill.classList.add('active');
-      } else {
-        pill.classList.remove('active');
-      }
-    });
   }
 
   openSymbolPage(symbolId, updateHash = true) {
@@ -649,15 +610,6 @@ class OdysseyApp {
     if (updateHash) {
       window.location.hash = symbolId;
     }
-
-    // Highlight top header pill
-    document.querySelectorAll('.symbol-nav .nav-pill').forEach(pill => {
-      if (pill.getAttribute('data-symbol') === symbolId) {
-        pill.classList.add('active');
-      } else {
-        pill.classList.remove('active');
-      }
-    });
 
     // Render Subpage HTML
     this.renderSubpageContent(data);
