@@ -490,6 +490,24 @@
   animation: pulseRing 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }
 
+/* Selected / Focused Node brought to front */
+.map-pin.pin-selected {
+  z-index: 90 !important;
+}
+
+.map-pin.pin-selected .pin-badge {
+  transform: scale(1.18) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.95), 0 0 40px rgba(255, 180, 0, 0.55) !important;
+  animation: pinBeacon 1.2s ease-in-out infinite !important;
+}
+
+.map-pin.pin-selected .pin-ring {
+  display: block !important;
+  border-color: var(--color-gold-bright) !important;
+  animation: pulseRing 1.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite !important;
+}
+
 .map-pin.locked {
   opacity: 0.55;
   filter: grayscale(0.6);

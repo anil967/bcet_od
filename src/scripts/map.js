@@ -295,13 +295,13 @@ export class OdysseyMap {
     this.frame.style.transform = `translate3d(${Math.round(this.panX)}px, ${Math.round(this.panY)}px, 0)`;
   }
 
-  refreshLayout() {
+  refreshLayout(smooth = false) {
     this.syncTrailPaths();
     this.ensureMapVideoPlaying();
     const app = window.__odysseyApp;
     const currentSymbol = app?.symbolOrder?.[(app.sidebarPreviewStep || 1) - 1] || 'voyage';
     requestAnimationFrame(() => {
-      this.centerOnSymbol(currentSymbol, false);
+      this.centerOnSymbol(currentSymbol, smooth);
       if (app?.unlockedStep != null) {
         updateTrailProgress(app.unlockedStep);
       }

@@ -69,8 +69,13 @@ class OdysseyApp {
     this.initMapSidebarControls();
     this.initMobileJourneyPanel();
 
-    // 2. Brand Logo Click -> Return to Map
+    // 2. Brand Logo & Back to Map -> Return to Map
     document.getElementById('brand-logo')?.addEventListener('click', () => {
+      audioSystem.playClick();
+      this.showMapView();
+    });
+
+    document.getElementById('header-back-btn')?.addEventListener('click', () => {
       audioSystem.playClick();
       this.showMapView();
     });
@@ -461,6 +466,10 @@ class OdysseyApp {
     if (!data) return;
 
     this.odysseyMap?.centerOnSymbol(symbolId);
+    this.symbolOrder.forEach((id, idx) => {
+      const pin = document.getElementById(`pin-${id}`);
+      pin?.classList.toggle('pin-selected', idx === (this.sidebarPreviewStep - 1));
+    });
 
     const roman = ['I', 'II', 'III', 'IV', 'V'][this.sidebarPreviewStep - 1];
     const stepLabel = document.getElementById('sidebar-step-label');
@@ -599,8 +608,40 @@ class OdysseyApp {
     subpageView?.classList.remove('active');
     regView?.classList.remove('active');
 
+    // Hide header back button on map view
+    const headerBackBtn = document.getElementById('header-back-btn');
+    if (headerBackBtn) headerBackBtn.style.display = 'none';
+
+    // Auto redirect to next node when backing from a node
+    const exitedNode = this.currentSymbolId || this.lastVisitedSymbolId;
+    let nextStep = this.sidebarPreviewStep;
+
+    if (exitedNode && this.symbolOrder.includes(exitedNode)) {
+      const exitedStep = this.symbolOrder.indexOf(exitedNode) + 1;
+      nextStep = Math.min(5, exitedStep + 1);
+      if (this.unlockedStep < nextStep) {
+        this.unlockedStep = nextStep;
+      }
+    } else if (this.unlockedStep) {
+      nextStep = Math.min(5, this.unlockedStep);
+    }
+
     this.currentSymbolId = null;
+    this.sidebarPreviewStep = nextStep;
+
+    this.updateSerialUnlockState();
     this.updateMapSidebar(this.sidebarPreviewStep);
+
+    // Smoothly pan camera so next node is brought right in front
+    const targetSymbol = this.symbolOrder[this.sidebarPreviewStep - 1];
+    if (targetSymbol && this.odysseyMap) {
+      requestAnimationFrame(() => {
+        this.odysseyMap?.refreshLayout(true);
+        setTimeout(() => {
+          this.odysseyMap?.centerOnSymbol(targetSymbol, true);
+        }, 70);
+      });
+    }
   }
 
   openSymbolPage(symbolId, updateHash = true) {
@@ -615,8 +656,16 @@ class OdysseyApp {
       mapWrapper?.classList.add('slide-in');
     }
 
+    this.lastVisitedSymbolId = symbolId;
     this.currentSymbolId = symbolId;
     this.activeTab = 'lore';
+
+    // Auto-unlock next step progressively when opening current step
+    const stepIdx = this.symbolOrder.indexOf(symbolId) + 1;
+    if (stepIdx === this.unlockedStep && this.unlockedStep < 5) {
+      this.unlockedStep++;
+      this.updateSerialUnlockState();
+    }
 
     if (updateHash) {
       window.location.hash = symbolId;
@@ -633,6 +682,10 @@ class OdysseyApp {
     mapView?.classList.remove('active');
     subpageView?.classList.add('active');
     regView?.classList.remove('active');
+
+    // Show header back button
+    const headerBackBtn = document.getElementById('header-back-btn');
+    if (headerBackBtn) headerBackBtn.style.display = 'inline-flex';
 
     // Scroll subpage to top
     const container = document.getElementById('subpage-content');
@@ -688,6 +741,10 @@ class OdysseyApp {
     subpageView?.classList.remove('active');
     regView?.classList.add('active');
 
+    // Show header back button
+    const headerBackBtn = document.getElementById('header-back-btn');
+    if (headerBackBtn) headerBackBtn.style.display = 'inline-flex';
+
     // Scroll registration page to top
     const container = document.getElementById('reg-page-content');
     if (container) container.scrollTop = 0;
@@ -733,6 +790,7 @@ class OdysseyApp {
       <!-- Hero Section -->
       <section class="page-hero" style="background-image: url('${data.heroImg}');">
         <div class="hero-content">
+          <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 1.25rem;"><span>&larr;</span> Back to Map</button>
           <h1 class="hero-main-title">
             <span class="hero-title-icon">${data.icon}</span>
             ${data.name}
@@ -936,6 +994,7 @@ class OdysseyApp {
 
           <!-- About Us Section with Slow Pop-up from Bottom -->
           <section class="aboutus-section">
+            <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 1.25rem;"><span>&larr;</span> Back to Map</button>
             <h1 class="aboutus-heading">ABOUT US</h1>
 
             <div class="aboutus-divider">
@@ -1082,6 +1141,7 @@ class OdysseyApp {
 
           <!-- Hackathon Section -->
           <section class="hackathon-section">
+            <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 1.25rem;"><span>&larr;</span> Back to Map</button>
             <h1 class="hackathon-heading">HACKATHON</h1>
 
             <div class="hackathon-tagline">Enter the Quest. Create the Future.</div>
@@ -1256,6 +1316,7 @@ class OdysseyApp {
         <div class="realms-cover-overlay">
 
           <section class="protocols-section">
+            <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 1.25rem;"><span>&larr;</span> Back to Map</button>
             <h1 class="hackathon-heading">PROTOCOLS</h1>
 
             <div class="aboutus-divider">
@@ -1403,7 +1464,8 @@ class OdysseyApp {
         <div class="realms-cover-overlay">
 
           <section class="odyssey-promo-section" style="max-width: 1400px; margin: 1rem auto 4rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2.2rem; padding: 0 1.5rem;">
-            <h1 class="hackathon-heading" style="margin-top: 1rem;">THE QUEST TRAILER</h1>
+            <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 0.5rem; align-self: flex-start;"><span>&larr;</span> Back to Map</button>
+            <h1 class="hackathon-heading" style="margin-top: 0.5rem;">THE QUEST TRAILER</h1>
 
             <div class="aboutus-divider">
               <span class="aboutus-divider-icon">🏛️</span>
@@ -1446,6 +1508,7 @@ class OdysseyApp {
         <div class="realms-cover-overlay">
 
           <section class="legions-section">
+            <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 1.25rem;"><span>&larr;</span> Back to Map</button>
             <h1 class="hackathon-heading">THE LEGIONS</h1>
             <div class="hackathon-tagline">The High Command & Vanguard of ODYSSEY</div>
 
