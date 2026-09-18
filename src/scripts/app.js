@@ -4,6 +4,13 @@ import { SYMBOLS_DATA } from './data.js';
 import { OdysseyMap } from './map.js';
 import { audioSystem } from './audio.js';
 
+const TRACK_ABSTRACTS = {
+  'Software Deployment with AI Implementation': 'Build, deploy, and scale intelligent software solutions that integrate Artificial Intelligence into real-world applications. This track focuses on taking AI models from development to production through robust software architectures, APIs, cloud platforms, and deployment pipelines.',
+  'IoT with Software Solutions': 'Develop intelligent IoT ecosystems that connect physical devices with software platforms to collect, process, visualize, and act on real-time data. Participants can combine sensors, microcontrollers, communication protocols, edge computing, and cloud/software systems to solve practical problems.',
+  'Tech for Bharat & Social Impact': 'Create technology-driven solutions addressing real-world challenges faced by communities across India. This track encourages the application of software, AI, IoT, data science, and emerging technologies to improve accessibility, sustainability, inclusion, and quality of life.',
+  'Automation Development & Agentic AI Development': 'Build intelligent systems capable of automating workflows, making decisions, interacting with tools, and executing multi-step tasks with minimal human intervention. This track explores the convergence of AI agents, automation frameworks, APIs, and intelligent software systems.'
+};
+
 class OdysseyApp {
   constructor() {
     this.currentSymbolId = null;
@@ -119,6 +126,15 @@ class OdysseyApp {
     const teamSizeSelect = document.getElementById('reg-team-size');
     const memberCards = [...document.querySelectorAll('.member-card[data-member-slot]')];
 
+    const updateTrackDetails = (trackTitle) => {
+      const normalizedTitle = trackTitle || 'Software Deployment with AI Implementation';
+      const regTrackHeading = document.getElementById('reg-track-title');
+      const regTrackAbstract = document.getElementById('reg-track-abstract');
+
+      if (regTrackHeading) regTrackHeading.textContent = `Register: ${normalizedTitle}`;
+      if (regTrackAbstract) regTrackAbstract.textContent = TRACK_ABSTRACTS[normalizedTitle] || 'No abstract available for this track yet.';
+    };
+
     const updateMemberPanels = () => {
       const teamSize = Number(teamSizeSelect?.value || 3);
       const additionalMemberCount = teamSize - 1;
@@ -130,6 +146,7 @@ class OdysseyApp {
 
     teamSizeSelect?.addEventListener('change', updateMemberPanels);
     updateMemberPanels();
+    updateTrackDetails('Software Deployment with AI Implementation');
 
     regCloseBtn?.addEventListener('click', () => {
       audioSystem.playClick();
@@ -251,6 +268,7 @@ class OdysseyApp {
         const registrationIdEl = document.getElementById('odyssey-registration-id');
         if (registrationIdEl) registrationIdEl.textContent = result.insertedId || '';
         regForm.style.display = 'none';
+        regModal?.classList.add('registration-complete');
         if (regSuccessMsg) regSuccessMsg.style.display = 'flex';
       } catch (err) {
         console.error('Registration failed:', err);
@@ -800,22 +818,6 @@ class OdysseyApp {
                 </article>
 
                 <article class="contact-card">
-                  <div class="contact-card-badge">Event Coordinator</div>
-                  <h3 class="contact-name">Bijayalaxmi Swain</h3>
-                  <p class="contact-role">Event Coordinator</p>
-                  <a class="contact-phone" href="tel:+919438007678">
-                    <svg class="contact-phone-icon" viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
-                      <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                    </svg>
-                    9438007678
-                  </a>
-                  <a class="contact-call-btn" href="tel:+919438007678">
-                    <span>Call Now</span>
-                    <span class="contact-btn-arrow">&rarr;</span>
-                  </a>
-                </article>
-
-                <article class="contact-card">
                   <div class="contact-card-badge">Creative &amp; Design Lead</div>
                   <h3 class="contact-name">Ariyan S.S. Acharya</h3>
                   <p class="contact-role">Creative &amp; Design Lead</p>
@@ -826,6 +828,22 @@ class OdysseyApp {
                     7735376968
                   </a>
                   <a class="contact-call-btn" href="tel:+917735376968">
+                    <span>Call Now</span>
+                    <span class="contact-btn-arrow">&rarr;</span>
+                  </a>
+                </article>
+
+                <article class="contact-card">
+                  <div class="contact-card-badge">Event Coordinator</div>
+                  <h3 class="contact-name">Bijaylaxmi Swain</h3>
+                  <p class="contact-role">Event Coordinator</p>
+                  <a class="contact-phone" href="tel:+919438007678">
+                    <svg class="contact-phone-icon" viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                      <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                    </svg>
+                    9438007678
+                  </a>
+                  <a class="contact-call-btn" href="tel:+919438007678">
                     <span>Call Now</span>
                     <span class="contact-btn-arrow">&rarr;</span>
                   </a>
@@ -909,19 +927,19 @@ class OdysseyApp {
 
               <div class="hack-kpi-card">
                 <div class="hack-kpi-number">II</div>
-                <h2 class="hack-kpi-title">IOT with Software Solutions</h2>
+                <h2 class="hack-kpi-title">IoT with Software Solutions</h2>
                 <div class="hack-kpi-cta">Join the Quest</div>
               </div>
 
               <div class="hack-kpi-card">
                 <div class="hack-kpi-number">III</div>
-                <h2 class="hack-kpi-title">Tech for Bharat & Social Impact</h2>
+                <h2 class="hack-kpi-title">Tech for Bharat &amp; Social Impact</h2>
                 <div class="hack-kpi-cta">Join the Quest</div>
               </div>
 
               <div class="hack-kpi-card">
                 <div class="hack-kpi-number">IV</div>
-                <h2 class="hack-kpi-title">Automation Development / Agentic AI Development</h2>
+                <h2 class="hack-kpi-title">Automation Development &amp; Agentic AI Development</h2>
                 <div class="hack-kpi-cta">Join the Quest</div>
               </div>
             </div>
@@ -1093,7 +1111,7 @@ class OdysseyApp {
                   <div class="timeline-content">
                     <div class="timeline-header">
                       <h3 class="timeline-title">The Call to Quest</h3>
-                      <span class="timeline-date">16th Sept 2026</span>
+                      <span class="timeline-date">17th Sept 2026</span>
                     </div>
                     <p class="timeline-desc">The call has been made—step forward, embrace the challenge, and begin your journey to innovation.</p>
                   </div>
@@ -1305,7 +1323,7 @@ class OdysseyApp {
               <p class="vanguard-subtitle">The Strategic Masterminds & Core Execution Officers</p>
             </div>
 
-            <!-- Planning Committee Sub-KPI Cards (Sub-Cards 4A to 4F / Cards 4 - 9) -->
+            <!-- Planning Committee Sub-KPI Cards -->
             <div class="vanguard-kpi-grid">
               <!-- Sub KPI Card 4A: HERA -->
               <div class="vanguard-kpi-card has-photo">
@@ -1328,18 +1346,6 @@ class OdysseyApp {
                   <div class="vanguard-deity-badge">ATHENA</div>
                   <h3 class="vanguard-person-name">Ankita Das</h3>
                   <div class="vanguard-person-role">The Lead Organizer</div>
-                </div>
-              </div>
-
-              <!-- Sub KPI Card 4C: APHRODITE -->
-              <div class="vanguard-kpi-card has-photo">
-                <div class="card-photo-side">
-                  <img src="/images/aphrodite_new.jpg" alt="Bijayalaxmi Swain" class="vanguard-photo">
-                </div>
-                <div class="card-text-side">
-                  <div class="vanguard-deity-badge">APHRODITE</div>
-                  <h3 class="vanguard-person-name">Bijayalaxmi Swain</h3>
-                  <div class="vanguard-person-role">The Event Coordinator</div>
                 </div>
               </div>
 
@@ -1376,6 +1382,18 @@ class OdysseyApp {
                   <div class="vanguard-deity-badge poseidon-badge">POSEIDON</div>
                   <h3 class="vanguard-person-name">Guru Gourav Panda</h3>
                   <div class="vanguard-person-role">The Outreach Lead</div>
+                </div>
+              </div>
+
+              <!-- Sub KPI Card: BIJAYALAXMI SWAIN -->
+              <div class="vanguard-kpi-card has-photo">
+                <div class="card-photo-side">
+                  <img src="/images/aphrodite_new.jpg" alt="Bijayalaxmi Swain" class="vanguard-photo">
+                </div>
+                <div class="card-text-side">
+                  <div class="vanguard-deity-badge">APHRODITE</div>
+                  <h3 class="vanguard-person-name">Bijayalaxmi Swain</h3>
+                  <div class="vanguard-person-role">The Event Coordinator</div>
                 </div>
               </div>
             </div>
@@ -1510,7 +1528,6 @@ class OdysseyApp {
     const overlay = document.getElementById('weapon-arrow-overlay');
     const wrapper = document.getElementById('weapon-arrow-wrapper');
     const regModal = document.getElementById('registration-modal');
-    const trackSelect = document.getElementById('reg-track-select');
     const trackHeading = document.getElementById('reg-track-title');
 
     if (!overlay || !wrapper) {
@@ -1526,13 +1543,18 @@ class OdysseyApp {
 
     // As arrow reaches target (~700ms), open registration modal
     setTimeout(() => {
-      if (trackSelect) trackSelect.value = trackTitle;
       if (trackHeading) trackHeading.textContent = `Register: ${trackTitle}`;
+
+      const regTrackAbstract = document.getElementById('reg-track-abstract');
+      if (regTrackAbstract) {
+        regTrackAbstract.textContent = TRACK_ABSTRACTS[trackTitle] || 'No abstract available for this track yet.';
+      }
 
       const form = document.getElementById('reg-form');
       const successMsg = document.getElementById('reg-success-msg');
       if (form) form.style.display = 'block';
       if (successMsg) successMsg.style.display = 'none';
+      regModal?.classList.remove('registration-complete');
 
       regModal?.classList.add('active');
     }, 650);
@@ -1546,16 +1568,19 @@ class OdysseyApp {
 
   openRegistrationModal(trackTitle) {
     const regModal = document.getElementById('registration-modal');
-    const trackSelect = document.getElementById('reg-track-select');
     const trackHeading = document.getElementById('reg-track-title');
+    const regTrackAbstract = document.getElementById('reg-track-abstract');
 
-    if (trackSelect) trackSelect.value = trackTitle;
     if (trackHeading) trackHeading.textContent = `Register: ${trackTitle}`;
+    if (regTrackAbstract) {
+      regTrackAbstract.textContent = TRACK_ABSTRACTS[trackTitle] || 'No abstract available for this track yet.';
+    }
 
     const form = document.getElementById('reg-form');
     const successMsg = document.getElementById('reg-success-msg');
     if (form) form.style.display = 'block';
     if (successMsg) successMsg.style.display = 'none';
+    regModal?.classList.remove('registration-complete');
 
     regModal?.classList.add('active');
   }

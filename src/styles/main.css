@@ -31,6 +31,17 @@
   user-select: none;
 }
 
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
 body.odyssey-theme {
   background-color: var(--bg-dark);
   color: #e0d5c1;
@@ -540,5 +551,4 @@ body.odyssey-theme {
   border-color: var(--color-gold-bright);
   font-weight: bold;
 }
-
 
