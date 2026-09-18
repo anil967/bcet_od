@@ -1128,3 +1128,119 @@ body.intro-active .odyssey-viewport {
 }
 
 
+/* ═══════════════════════════════════════════
+   POSTER POPUP — 4 Second Auto-Dismiss
+   ═══════════════════════════════════════════ */
+
+@keyframes posterFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes posterScaleIn {
+  from { transform: scale(0.88); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes posterDrain {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+@keyframes posterFadeOut {
+  from { opacity: 1; pointer-events: none; }
+  to   { opacity: 0; pointer-events: none; }
+}
+
+.poster-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 2, 1, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: posterFadeIn 0.5s ease forwards;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.poster-popup-overlay.hiding {
+  animation: posterFadeOut 0.55s ease forwards;
+}
+
+.poster-popup-frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-height: 92vh;
+  animation: posterScaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  border: 2px solid rgba(255, 215, 0, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(255, 215, 0, 0.12),
+    0 24px 60px rgba(0, 0, 0, 0.95),
+    0 0 40px rgba(255, 180, 0, 0.18);
+}
+
+.poster-popup-img {
+  display: block;
+  max-height: calc(92vh - 8px);
+  max-width: min(90vw, 480px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* × Close button */
+.poster-popup-close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(20, 12, 6, 0.98);
+  border: 1.5px solid rgba(255, 215, 0, 0.6);
+  color: #ffd700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  line-height: 1;
+}
+
+.poster-popup-close:hover {
+  background: rgba(255, 215, 0, 0.9);
+  color: #0a0705;
+  transform: scale(1.1);
+}
+
+/* Progress drain bar */
+.poster-popup-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.poster-popup-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd700, #f39c12);
+  animation: posterDrain 4s linear forwards;
+  transform-origin: left;
+}
+
+@media (max-width: 500px) {
+  .poster-popup-img {
+    max-width: 95vw;
+  }
+}

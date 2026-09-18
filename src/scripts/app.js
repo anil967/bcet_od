@@ -652,9 +652,25 @@ class OdysseyApp {
             promptEl.textContent = `Open Realm ${step} \u2192`;
           }
         }
+
+        // Update pin-click-label: switch from node name to content name on unlock
+        const labelEl = pin?.querySelector('.pin-click-label');
+        if (labelEl) {
+          const unlockedLabels = { voyage: 'About Us', realms: 'PS & Reg', protocols: 'Protocols', legions: 'Team', odyssey: 'Trailer' };
+          labelEl.textContent = unlockedLabels[id] || id;
+          labelEl.classList.remove('pin-click-label--locked');
+        }
       } else {
         pin?.classList.remove('unlocked', 'pin-current', 'pin-completed');
         pin?.classList.add('locked');
+
+        // Restore locked label to content name (same names, just amber style)
+        const lockedLabels = { voyage: 'About Us', realms: 'PS & Reg', protocols: 'Protocols', legions: 'Team', odyssey: 'Trailer' };
+        const labelEl = pin?.querySelector('.pin-click-label');
+        if (labelEl) {
+          labelEl.textContent = lockedLabels[id] || id;
+          labelEl.classList.add('pin-click-label--locked');
+        }
       }
     });
 
@@ -1643,7 +1659,7 @@ class OdysseyApp {
                 </div>
                 <div class="card-text-side">
                   <h2 class="legion-card-title">The High King</h2>
-                  <div class="legion-name">Manmath Biswal</div>
+                  <div class="legion-name">Dr. Manmath Biswal</div>
                   <div class="legion-role">Chairman</div>
                 </div>
               </div>
@@ -2072,4 +2088,35 @@ class OdysseyApp {
 document.addEventListener('DOMContentLoaded', () => {
   const app = new OdysseyApp();
   app.init();
+
+  // ── Poster Popup: auto-dismiss after 4 seconds ──
+  const posterOverlay = document.getElementById('poster-popup-overlay');
+  const posterCloseBtn = document.getElementById('poster-popup-close');
+
+  if (posterOverlay) {
+    const dismissPoster = () => {
+      if (!posterOverlay.parentNode) return;
+      posterOverlay.classList.add('hiding');
+      posterOverlay.addEventListener('animationend', () => {
+        posterOverlay.remove();
+      }, { once: true });
+    };
+
+    // Auto-dismiss after 4 seconds
+    const autoDismissTimer = setTimeout(dismissPoster, 4000);
+
+    // Manual close button
+    posterCloseBtn?.addEventListener('click', () => {
+      clearTimeout(autoDismissTimer);
+      dismissPoster();
+    });
+
+    // Click on backdrop also closes
+    posterOverlay.addEventListener('click', (e) => {
+      if (e.target === posterOverlay) {
+        clearTimeout(autoDismissTimer);
+        dismissPoster();
+      }
+    });
+  }
 });

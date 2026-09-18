@@ -1873,6 +1873,17 @@
   object-position: center 10% !important;
 }
 
+.high-king-card .card-photo-side img,
+.commander-card .card-photo-side img {
+  object-position: center top !important;
+  transform: none !important;
+}
+
+.high-king-card.legion-kpi-card.has-photo:hover .card-photo-side img,
+.commander-card.legion-kpi-card.has-photo:hover .card-photo-side img {
+  transform: scale(1.04) !important;
+}
+
 .queen-card .card-photo-side img {
   object-position: center 8% !important;
 }
@@ -2520,6 +2531,71 @@
   .vanguard-title {
     font-size: clamp(1.5rem, 7vw, 2.4rem);
     letter-spacing: 2px;
+  }
+
+  /* ── PS & Reg page: KPI cards on mobile ── */
+  .hack-kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    margin-top: 2rem;
+  }
+
+  .hack-kpi-card {
+    padding: 1.6rem 1.1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .hack-kpi-title {
+    font-size: 1rem;
+  }
+
+  .hack-kpi-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    width: 100%;
+  }
+
+  .hack-kpi-cta {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    font-size: 0.78rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .hack-pdf-btn {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+    white-space: normal;
+    font-size: 0.72rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  /* Hackathon rules card mobile */
+  .hackathon-rules-card {
+    width: 100%;
+    padding: 1rem 0.9rem;
+    box-sizing: border-box;
+  }
+
+  .hackathon-rules-list li {
+    font-size: 0.95rem;
+    gap: 0.4rem;
+  }
+
+  .hackathon-tagline {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+
+  /* Team page photo height on mobile */
+  .vanguard-kpi-card.has-photo .card-photo-side,
+  .legion-kpi-card.has-photo .card-photo-side,
+  .ops-kpi-card.has-photo .card-photo-side {
+    height: 240px !important;
   }
 }
 

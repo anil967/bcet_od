@@ -25,6 +25,17 @@
 
 <body class="odyssey-theme">
 
+  <!-- ── POSTER POPUP (Auto-dismiss after 4s) ── -->
+  <div id="poster-popup-overlay" class="poster-popup-overlay" role="dialog" aria-label="Odyssey Poster" aria-modal="true">
+    <div class="poster-popup-frame">
+      <button class="poster-popup-close" id="poster-popup-close" aria-label="Close poster">&#10005;</button>
+      <img src="/images/odyssey_poster.jpg" alt="Odyssey Hackathon 2K26 Poster" class="poster-popup-img" draggable="false">
+      <div class="poster-popup-bar">
+        <div class="poster-popup-progress" id="poster-popup-progress"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- ANIMATED OPENING LANDING (Poseidon Hero) -->
   <div id="intro-opening-screen" class="intro-opening-screen" role="dialog" aria-label="Welcome to The Odyssey">
     <div class="intro-hero-bg" aria-hidden="true"></div>
@@ -176,15 +187,16 @@
                       </svg>
                     </div>
                   </div>
-                  <div class="pin-click-label">Click Here</div>
+                  <div class="pin-click-label">About Us</div>
                   <div class="pin-tooltip">
                     <div class="tooltip-header">
-                      <span class="tooltip-tag">Step I • Active Start</span>
+                      <span class="tooltip-tag">Step I &bull; Active Start</span>
                       <h3 class="tooltip-title">The Voyage</h3>
                     </div>
-                    <p class="tooltip-desc">Click to visit Symbol I and reveal the brown foot path to Symbol II!</p>
+                    <p class="tooltip-tagline">Journey to Innovation &mdash; Navigating Uncharted Waters</p>
+                    <p class="tooltip-desc">The Voyage represents the courageous first step into uncharted territories. Like Odysseus navigating tempestuous waters, true innovation requires bold leadership, adaptive steering, and the resilience to conquer unknown challenges.</p>
                     <div class="tooltip-footer">
-                      <span class="coords-badge">37°58'N 23°43'E</span>
+                      <span class="coords-badge">37&deg;58'N 23&deg;43'E</span>
                       <span class="action-prompt">Click Here &rarr;</span>
                     </div>
                   </div>
@@ -204,16 +216,18 @@
                       </svg>
                     </div>
                   </div>
+                  <!-- Symbol II label -->
+                  <div class="pin-click-label pin-click-label--locked">PS &amp; Reg</div>
                   <div class="pin-tooltip">
                     <div class="tooltip-header">
-                      <span class="tooltip-tag">Step II • The Realms</span>
+                      <span class="tooltip-tag">Step II &bull; The Realms</span>
                       <h3 class="tooltip-title">The Realms</h3>
                     </div>
-                    <p class="tooltip-desc">Explore Symbol I first to reveal the brown foot path trail to this
-                      sanctuary!</p>
+                    <p class="tooltip-tagline">Architectural Pillars of Knowledge &amp; Domain Sanctuaries</p>
+                    <p class="tooltip-desc">The Realms represent foundational pillars, domains, and architectural frameworks of progress. Each domain fosters unique capabilities, specialized talents, and enduring structures.</p>
                     <div class="tooltip-footer">
-                      <span class="coords-badge">36°25'N 25°26'E</span>
-                      <span class="action-prompt prompt-status">Click Symbol I First &rarr;</span>
+                      <span class="coords-badge">36&deg;25'N 25&deg;26'E</span>
+                      <span class="action-prompt prompt-status">Complete Step I First &rarr;</span>
                     </div>
                   </div>
                 </div>
@@ -233,14 +247,17 @@
                       </svg>
                     </div>
                   </div>
-                  <div class="pin-tooltip">
+                  <!-- Symbol III label -->
+                  <div class="pin-click-label pin-click-label--locked">Protocols</div>
+                  <div class="pin-tooltip pin-tooltip-left">
                     <div class="tooltip-header">
-                      <span class="tooltip-tag">Step III • Protocols</span>
+                      <span class="tooltip-tag">Step III &bull; Protocols</span>
                       <h3 class="tooltip-title">Realm Protocols</h3>
                     </div>
-                    <p class="tooltip-desc">Follow the brown foot path serially to unlock this realm.</p>
+                    <p class="tooltip-tagline">Sacred Codes of Governance, Trust &amp; Operational Decrees</p>
+                    <p class="tooltip-desc">Realm Protocols dictate the unwritten divine laws governing collaboration, ethics, and mutual trust. Xenia&mdash;the sacred code of hospitality&mdash;ensures seamless operational harmony.</p>
                     <div class="tooltip-footer">
-                      <span class="coords-badge">38°29'N 22°30'E</span>
+                      <span class="coords-badge">38&deg;29'N 22&deg;30'E</span>
                       <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
                     </div>
                   </div>
@@ -261,14 +278,17 @@
                       </svg>
                     </div>
                   </div>
+                  <!-- Symbol IV label -->
+                  <div class="pin-click-label pin-click-label--locked">Team</div>
                   <div class="pin-tooltip">
                     <div class="tooltip-header">
-                      <span class="tooltip-tag">Step IV • Legions</span>
+                      <span class="tooltip-tag">Step IV &bull; Legions</span>
                       <h3 class="tooltip-title">The Legions</h3>
                     </div>
-                    <p class="tooltip-desc">Follow the brown foot path serially to unlock this realm.</p>
+                    <p class="tooltip-tagline">Unified Execution, Hoplite Shield Wall &amp; Strategic Vanguard</p>
+                    <p class="tooltip-desc">The Legions represent unified execution, tactical discipline, and collective strength. Operating like an unbroken hoplite phalanx, aligned teams overcome monumental obstacles.</p>
                     <div class="tooltip-footer">
-                      <span class="coords-badge">37°04'N 22°25'E</span>
+                      <span class="coords-badge">37&deg;04'N 22&deg;25'E</span>
                       <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
                     </div>
                   </div>
@@ -288,14 +308,17 @@
                       </svg>
                     </div>
                   </div>
-                  <div class="pin-tooltip">
+                  <!-- Symbol V label -->
+                  <div class="pin-click-label pin-click-label--locked">Trailer</div>
+                  <div class="pin-tooltip pin-tooltip-left">
                     <div class="tooltip-header">
-                      <span class="tooltip-tag">Step V • The Odyssey</span>
+                      <span class="tooltip-tag">Step V &bull; The Odyssey</span>
                       <h3 class="tooltip-title">The Odyssey</h3>
                     </div>
-                    <p class="tooltip-desc">Follow all path steps serially to reach the Journey to Innovation!</p>
+                    <p class="tooltip-tagline">The Pinnacle of Triumph, Golden Mastery &amp; Return Home</p>
+                    <p class="tooltip-desc">The grand culmination of endurance, wisdom, and triumphant achievement. It celebrates the ultimate realization of vision, reclaiming sovereign mastery, and inspiring future innovators.</p>
                     <div class="tooltip-footer">
-                      <span class="coords-badge">38°22'N 20°43'E</span>
+                      <span class="coords-badge">38&deg;22'N 20&deg;43'E</span>
                       <span class="action-prompt prompt-status">Final Destination &rarr;</span>
                     </div>
                   </div>
@@ -379,7 +402,7 @@
                     <polyline points="7 10 12 15 17 10"></polyline>
                     <line x1="12" y1="15" x2="12" y2="3"></line>
                   </svg>
-                  <span>Download Problem Statement (PDF)</span>
+                  <span>Download Problem Statement</span>
                 </a>
               </div>
             </div>
