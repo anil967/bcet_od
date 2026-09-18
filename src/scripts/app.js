@@ -460,6 +460,8 @@ class OdysseyApp {
     const data = SYMBOLS_DATA[symbolId];
     if (!data) return;
 
+    this.odysseyMap?.centerOnSymbol(symbolId);
+
     const roman = ['I', 'II', 'III', 'IV', 'V'][this.sidebarPreviewStep - 1];
     const stepLabel = document.getElementById('sidebar-step-label');
     const realmTitle = document.getElementById('sidebar-realm-title');

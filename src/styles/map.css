@@ -756,31 +756,39 @@
 }
 
 @media (max-width: 1100px) {
+  .odyssey-viewport {
+    overflow: hidden !important;
+  }
+
   .map-home-layout {
-    flex-direction: column;
-    overflow-y: auto;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    height: 100% !important;
+    width: 100% !important;
   }
 
   .map-journey-sidebar {
-    flex: 0 0 auto;
-    max-width: none;
-    width: 100%;
-    height: auto;
-    max-height: none;
-    border-left: none;
-    border-top: 2px solid var(--border-gold);
-    position: relative;
-    transform: none;
-    border-radius: 0;
-    box-shadow: none;
-    padding: 1rem 1rem 1.25rem;
+    flex: 0 0 auto !important;
+    max-width: none !important;
+    width: 100% !important;
+    height: auto !important;
+    border-left: none !important;
+    border-top: 2px solid var(--border-gold) !important;
+    position: relative !important;
+    transform: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0.65rem 0.9rem 0.75rem !important;
+    gap: 0.35rem !important;
   }
 
   .sidebar-overview {
-    font-size: 0.88rem;
-    display: block;
-    -webkit-line-clamp: unset;
-    overflow: visible;
+    font-size: 0.82rem !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    margin: 0 !important;
   }
 
   .sidebar-mobile-close,
@@ -789,79 +797,210 @@
   }
 
   .map-container {
-    flex: 1;
-    min-height: min(52vh, 480px);
-  }
-
-  .odyssey-viewport {
-    overflow-y: auto;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
   }
 }
 
 @media (max-width: 900px) {
-  .map-footer-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 0.5rem 0.75rem;
+  .map-container {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
   }
 
-  .prompt-item {
-    font-size: 0.65rem;
+  .map-wrapper {
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .map-viewport-area {
+    padding: 0 !important;
+    height: 100% !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    touch-action: none !important;
+    cursor: grab !important;
+    background: #0a0705 !important;
+  }
+
+  .map-viewport-area:active {
+    cursor: grabbing !important;
+  }
+
+  .map-fit-frame {
+    height: 100% !important;
+    width: auto !important;
+    aspect-ratio: 16 / 9 !important;
+    min-width: 100% !important;
+    max-width: none !important;
+    max-height: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    will-change: transform !important;
+  }
+
+  .map-bg-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: fill !important;
+  }
+
+  .map-journey-sidebar {
+    max-height: 195px !important;
+    padding: 0.5rem 0.85rem 0.65rem !important;
+    gap: 0.25rem !important;
+    overflow: hidden !important;
+  }
+
+  .sidebar-kicker,
+  .sidebar-heading,
+  .sidebar-greek,
+  .sidebar-tagline,
+  .sidebar-coords {
+    display: none !important;
+  }
+
+  .sidebar-step-label {
+    font-size: 0.62rem !important;
+    color: var(--color-gold-primary) !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    margin: 0 !important;
+  }
+
+  .sidebar-realm-title {
+    font-size: 1.05rem !important;
+    line-height: 1.1 !important;
+    color: var(--color-gold-bright) !important;
+    margin: 0 !important;
+  }
+
+  .sidebar-overview {
+    font-size: 0.76rem !important;
+    line-height: 1.32 !important;
+    color: #cbbba6 !important;
+    margin: 0 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .sidebar-nav-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.5rem !important;
+    margin-top: 0.15rem !important;
+  }
+
+  .sidebar-nav-btn {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 0.95rem !important;
+  }
+
+  .sidebar-dot {
+    width: 6px !important;
+    height: 6px !important;
+  }
+
+  .sidebar-cta {
+    width: 100% !important;
+    padding: 0.52rem 0.85rem !important;
+    font-size: 0.74rem !important;
+    letter-spacing: 0.1em !important;
+    margin-top: 0.15rem !important;
+  }
+
+  .sidebar-lock-note {
+    font-size: 0.6rem !important;
+    margin: 0.1rem 0 0 !important;
   }
 
   .pin-badge {
-    width: 44px;
-    height: 44px;
+    width: 32px !important;
+    height: 32px !important;
   }
 
   .pin-ring {
-    width: 44px;
-    height: 44px;
+    width: 32px !important;
+    height: 32px !important;
   }
 
-  .pin-tooltip {
-    display: none;
+  .pin-number {
+    font-size: 0.68rem !important;
+  }
+
+  .emblem-svg svg {
+    width: 14px !important;
+    height: 14px !important;
   }
 
   .pin-click-label {
-    font-size: 0.58rem;
-    padding: 2px 6px;
+    font-size: 0.5rem !important;
+    padding: 1px 5px !important;
+    bottom: -17px !important;
+  }
+
+  .pin-tooltip {
+    display: none !important;
+  }
+
+  .map-footer-bar {
+    display: none !important;
   }
 }
 
 @media (max-width: 480px) {
   .map-journey-sidebar {
-    height: min(78vh, 560px);
-  }
-
-  .sidebar-heading {
-    font-size: 1rem;
+    max-height: 180px !important;
+    padding: 0.45rem 0.75rem 0.6rem !important;
   }
 
   .sidebar-realm-title {
-    font-size: 1.25rem;
+    font-size: 0.98rem !important;
   }
 
   .sidebar-cta {
-    font-size: 0.72rem;
-    padding: 0.65rem 0.5rem;
-  }
-
-  .map-footer-bar {
-    font-size: 0.65rem;
-  }
-
-  .prompt-item {
-    display: none;
+    font-size: 0.72rem !important;
+    padding: 0.48rem 0.75rem !important;
   }
 
   .pin-badge {
-    width: 38px;
-    height: 38px;
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .pin-ring {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .pin-number {
+    font-size: 0.62rem !important;
   }
 
   .emblem-svg svg {
-    width: 16px !important;
-    height: 16px !important;
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .pin-click-label {
+    font-size: 0.46rem !important;
+    padding: 1px 4px !important;
   }
 }

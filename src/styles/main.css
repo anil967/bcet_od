@@ -27,6 +27,8 @@
 html {
   height: 100%;
   overflow: hidden;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
 * {
@@ -34,6 +36,16 @@ html {
   margin: 0;
   padding: 0;
   user-select: none;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 body.odyssey-theme {
@@ -43,6 +55,8 @@ body.odyssey-theme {
   overflow: hidden;
   height: 100%;
   position: relative;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
 /* Background Ember Canvas */
