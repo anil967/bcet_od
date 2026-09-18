@@ -1659,11 +1659,7 @@ class OdysseyApp {
                 </div>
                 <div class="card-text-side">
                   <h2 class="legion-card-title">The High King</h2>
-<<<<<<< HEAD
                   <div class="legion-name">Dr. Manmath Biswal</div>
-=======
-                  <div class="legion-name">Dr. Manmath Kumar Biswal</div>
->>>>>>> d34eb853be1b19b346d84f1f4f9f936369da898c
                   <div class="legion-role">Chairman</div>
                 </div>
               </div>
@@ -2092,7 +2088,6 @@ class OdysseyApp {
 document.addEventListener('DOMContentLoaded', () => {
   const app = new OdysseyApp();
   app.init();
-<<<<<<< HEAD
 
   // ── Poster Popup: auto-dismiss after 4 seconds ──
   const posterOverlay = document.getElementById('poster-popup-overlay');
@@ -2125,6 +2120,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-=======
-});
->>>>>>> d34eb853be1b19b346d84f1f4f9f936369da898c
