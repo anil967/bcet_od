@@ -106,6 +106,64 @@ class OdysseyApp {
       this.introAutoTimer = setTimeout(() => transitionToMap(), 8500);
     }
 
+    // 1.2 Restricted Mortals Funny Popup Handling
+    const restrictedModal = document.getElementById('restricted-mortals-modal');
+    const restrictedCloseBtn = document.getElementById('restricted-mortals-close-btn');
+    const restrictedMercyBtn = document.getElementById('restricted-mercy-btn');
+    const restrictedEnterBtn = document.getElementById('restricted-enter-btn');
+    const introRestrictedPill = document.getElementById('intro-restricted-pill');
+    const restrictedNavBtn = document.getElementById('restricted-nav-btn');
+
+    const openRestrictedModal = () => {
+      // Pause automatic transition timer while reading popup
+      if (this.introAutoTimer) {
+        clearTimeout(this.introAutoTimer);
+        this.introAutoTimer = null;
+      }
+      restrictedModal?.classList.add('active');
+    };
+
+    const closeRestrictedModal = () => {
+      audioSystem.playClick();
+      restrictedModal?.classList.remove('active');
+    };
+
+    // Automatically show popup on landing page after brief moment
+    setTimeout(() => {
+      openRestrictedModal();
+    }, 700);
+
+    [restrictedCloseBtn, restrictedMercyBtn].forEach(btn => {
+      btn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeRestrictedModal();
+      });
+    });
+
+    restrictedEnterBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeRestrictedModal();
+      transitionToMap();
+    });
+
+    introRestrictedPill?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      audioSystem.playClick();
+      openRestrictedModal();
+    });
+
+    restrictedNavBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      audioSystem.playClick();
+      openRestrictedModal();
+    });
+
+    restrictedModal?.addEventListener('click', (e) => {
+      if (e.target === restrictedModal) {
+        closeRestrictedModal();
+      }
+    });
+
     this.initCountdownClock();
 
     this.initMapSidebarControls();
