@@ -571,8 +571,257 @@ body.odyssey-theme {
   font-size: 1.08rem;
   line-height: 1.55;
   color: #e8dcc8;
-  margin-bottom: 1.6rem;
+  margin-bottom: 1.1rem;
   max-width: 46ch;
+}
+
+/* ==========================================================================
+   ODYSSEY 3D SPLIT-FLAP FOLDING COUNTDOWN CLOCK
+   ========================================================================== */
+
+:root {
+  --clock-card-w: clamp(62px, 5.2vw, 76px);
+  --clock-card-h: clamp(70px, 5.8vw, 84px);
+}
+
+.intro-clock-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin: 0.5rem 0 1.45rem 0;
+  width: 100%;
+}
+
+.clock-caption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  color: var(--color-gold-bright);
+  text-transform: uppercase;
+}
+
+.clock-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-gold-bright);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.85);
+  animation: clockDotPulse 2s ease-in-out infinite;
+}
+
+@keyframes clockDotPulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px rgba(255, 215, 0, 1); }
+}
+
+.odyssey-flip-clock {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: clamp(0.35rem, 1vw, 0.65rem);
+}
+
+.clock-segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.clock-card {
+  position: relative;
+  width: var(--clock-card-w);
+  height: var(--clock-card-h);
+  border-radius: 9px;
+  background: #120a06;
+  border: 1px solid rgba(243, 156, 18, 0.45);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.8),
+    0 0 14px rgba(243, 156, 18, 0.12),
+    inset 0 1px 0 rgba(255, 215, 0, 0.35);
+  perspective: 350px;
+  transform-style: preserve-3d;
+  user-select: none;
+}
+
+/* Individual Flaps */
+.card-flap {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  box-sizing: border-box;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Numeral text inside flap */
+.flap-num {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: var(--clock-card-h);
+  line-height: var(--clock-card-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: clamp(1.7rem, 2.3vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: linear-gradient(180deg, #ffffff 0%, #fff2d0 45%, #ffd700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
+  pointer-events: none;
+}
+
+/* Top Flaps */
+.flap-top-back,
+.flap-top-front {
+  top: 0;
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(180deg, #28190f 0%, #1c1109 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+  transform-origin: bottom center;
+}
+
+.flap-top-back .flap-num,
+.flap-top-front .flap-num {
+  top: 0;
+}
+
+/* Bottom Flaps */
+.flap-bottom-back,
+.flap-bottom-front {
+  bottom: 0;
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(180deg, #100905 0%, #160d07 100%);
+  border-top: 1px solid rgba(255, 215, 0, 0.12);
+  transform-origin: top center;
+}
+
+.flap-bottom-back .flap-num,
+.flap-bottom-front .flap-num {
+  bottom: 0;
+}
+
+/* Stacking & Initial 3D Rotation */
+.flap-top-back {
+  z-index: 1;
+}
+
+.flap-bottom-back {
+  z-index: 1;
+}
+
+.flap-top-front {
+  z-index: 3;
+  transform: rotateX(0deg);
+}
+
+.flap-bottom-front {
+  z-index: 2;
+  transform: rotateX(90deg);
+}
+
+/* Active 3D Folding Animation */
+.clock-card.flipping .flap-top-front {
+  animation: flipFoldTop 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.clock-card.flipping .flap-bottom-front {
+  animation: flipFoldBottom 0.28s cubic-bezier(0.2, 0, 0.4, 1) 0.26s forwards;
+}
+
+@keyframes flipFoldTop {
+  0% {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+  100% {
+    transform: rotateX(-90deg);
+    filter: brightness(0.5);
+  }
+}
+
+@keyframes flipFoldBottom {
+  0% {
+    transform: rotateX(90deg);
+    filter: brightness(0.5);
+  }
+  100% {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+}
+
+/* Center Horizontal Seam & Hinge Notches */
+.clock-seam {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  transform: translateY(-50%);
+  background: #060302;
+  box-shadow: 0 1px 0 rgba(255, 215, 0, 0.2), 0 -1px 0 rgba(0, 0, 0, 0.85);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.clock-seam::before,
+.clock-seam::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  width: 4px;
+  height: 8px;
+  background: #0a0705;
+  border-radius: 3px;
+}
+
+.clock-seam::before {
+  left: -2px;
+}
+
+.clock-seam::after {
+  right: -2px;
+}
+
+.clock-divider {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 2vw, 1.9rem);
+  font-weight: 700;
+  color: var(--color-gold-bright);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.55);
+  height: var(--clock-card-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+  animation: clockColonBlink 1.4s ease-in-out infinite;
+  user-select: none;
+}
+
+@keyframes clockColonBlink {
+  0%, 100% { opacity: 0.95; }
+  50% { opacity: 0.35; }
+}
+
+.clock-label {
+  font-family: var(--font-heading);
+  font-size: clamp(0.64rem, 0.8vw, 0.74rem);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #d8c8b4;
+  text-transform: capitalize;
+  user-select: none;
 }
 
 .intro-enter-btn {
@@ -809,12 +1058,49 @@ body.intro-active .odyssey-viewport {
   }
 
   .intro-display-lede {
-    margin: 0 auto 1.2rem auto !important;
+    margin: 0 auto 0.9rem auto !important;
     font-size: clamp(0.85rem, 3.5vw, 0.96rem) !important;
     line-height: 1.55 !important;
     text-align: center !important;
     max-width: 38ch !important;
     width: 100% !important;
+  }
+
+  .intro-clock-section {
+    align-items: center !important;
+    margin: 0.5rem auto 1.15rem auto !important;
+    width: 100% !important;
+    --clock-card-w: min(18.5vw, 68px) !important;
+    --clock-card-h: min(20.5vw, 76px) !important;
+  }
+
+  .clock-caption {
+    font-size: clamp(0.58rem, 2.4vw, 0.68rem) !important;
+    letter-spacing: 0.16em !important;
+    justify-content: center !important;
+  }
+
+  .odyssey-flip-clock {
+    justify-content: center !important;
+    gap: clamp(0.2rem, 1.2vw, 0.45rem) !important;
+    width: 100% !important;
+  }
+
+  .clock-card {
+    border-radius: 7px !important;
+  }
+
+  .flap-num {
+    font-size: clamp(1.35rem, 5.2vw, 1.95rem) !important;
+  }
+
+  .clock-divider {
+    font-size: clamp(1.15rem, 4.2vw, 1.6rem) !important;
+  }
+
+  .clock-label {
+    font-size: clamp(0.56rem, 2.2vw, 0.68rem) !important;
+    letter-spacing: 0.08em !important;
   }
 
   .intro-enter-btn {

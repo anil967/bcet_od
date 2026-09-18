@@ -75,6 +75,10 @@ class OdysseyApp {
         clearTimeout(this.introAutoTimer);
         this.introAutoTimer = null;
       }
+      if (this.countdownInterval) {
+        clearInterval(this.countdownInterval);
+        this.countdownInterval = null;
+      }
       audioSystem.playBackgroundMusic();
       document.body.classList.remove('intro-active');
       if (introScreen && !introScreen.classList.contains('fade-out')) {
@@ -95,9 +99,14 @@ class OdysseyApp {
         audioSystem.playClick();
         transitionToMap();
       });
+      document.getElementById('odyssey-flip-clock')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
       introScreen.addEventListener('click', () => transitionToMap());
       this.introAutoTimer = setTimeout(() => transitionToMap(), 8500);
     }
+
+    this.initCountdownClock();
 
     this.initMapSidebarControls();
     this.initMobileJourneyPanel();
@@ -228,7 +237,19 @@ class OdysseyApp {
 
     updateTeamMemberUI();
 
+    // Auto-strip non-digit chars from phone fields (real-time sanitizer)
+    const phoneFieldIds = ['reg-leader-phone', 'reg-m1-phone', 'reg-m2-phone', 'reg-m3-phone', 'reg-m4-phone'];
+    phoneFieldIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', () => {
+        const cleaned = el.value.replace(/\D/g, '').slice(0, 10);
+        if (el.value !== cleaned) el.value = cleaned;
+      });
+    });
+
     regForm?.addEventListener('submit', async (e) => {
+
       e.preventDefault();
       const submitBtn = document.getElementById('reg-submit-btn');
       const errorEl = document.getElementById('reg-error-msg');
@@ -237,32 +258,63 @@ class OdysseyApp {
         errorEl.textContent = '';
       }
 
-      // Gather team & leader data
-      const teamName = document.getElementById('reg-team-name')?.value?.trim() || '';
-      const leaderName = document.getElementById('reg-leader-name')?.value?.trim() || '';
+      // Gather leader & team data first
+      const teamName    = document.getElementById('reg-team-name')?.value?.trim() || '';
+      const leaderName  = document.getElementById('reg-leader-name')?.value?.trim() || '';
       const leaderPhone = document.getElementById('reg-leader-phone')?.value?.trim() || '';
       const leaderEmail = document.getElementById('reg-email')?.value?.trim() || '';
-      const teamSize = currentTeamSize;
+      const institution = document.getElementById('reg-institution')?.value?.trim() || '';
+      const teamSize    = currentTeamSize;
+
+      // ── Validation helpers ──────────────────────────────────────────────
+      const showError = (msg) => {
+        if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
+      };
+      const isValidPhone = (p) => /^[6-9][0-9]{9}$/.test(p);
+      const isValidEmail = (em) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em);
+      const isValidName  = (n) => n.length >= 2 && n.length <= 60;
+
+      if (!teamName || teamName.length < 3) {
+        showError('⚠️ Team name must be at least 3 characters.'); return;
+      }
+      if (!institution || institution.length < 3) {
+        showError('⚠️ Institution name must be at least 3 characters.'); return;
+      }
+      if (!isValidName(leaderName)) {
+        showError('⚠️ Leader name must be 2–60 characters.'); return;
+      }
+      if (!isValidPhone(leaderPhone)) {
+        showError('⚠️ Leader phone must be a valid 10-digit Indian mobile number (starts with 6–9).'); return;
+      }
+      if (!isValidEmail(leaderEmail)) {
+        showError('⚠️ Leader email is invalid. Please enter a valid email address.'); return;
+      }
 
       // Gather team members
       const members = [];
       for (let i = 1; i <= teamSize - 1; i++) {
-        const mName = document.getElementById(`reg-m${i}-name`)?.value?.trim() || '';
+        const mName  = document.getElementById(`reg-m${i}-name`)?.value?.trim() || '';
         const mEmail = document.getElementById(`reg-m${i}-email`)?.value?.trim() || '';
         const mPhone = document.getElementById(`reg-m${i}-phone`)?.value?.trim() || '';
 
-        if (!mName || !mEmail || !mPhone) {
-          if (errorEl) {
-            errorEl.textContent = `⚠️ Please provide full name, email, and phone for Member ${i + 1}.`;
-            errorEl.style.display = 'block';
-          }
+        if (!mName && !mEmail && !mPhone) {
+          showError(`⚠️ Please provide full name, email, and phone for Member ${i + 1}.`);
           return;
+        }
+        if (!isValidName(mName)) {
+          showError(`⚠️ Member ${i + 1} name must be 2–60 characters.`); return;
+        }
+        if (!isValidEmail(mEmail)) {
+          showError(`⚠️ Member ${i + 1} email is invalid.`); return;
+        }
+        if (!isValidPhone(mPhone)) {
+          showError(`⚠️ Member ${i + 1} phone must be a valid 10-digit Indian mobile number.`); return;
         }
         members.push({ memberSlot: i, name: mName, email: mEmail, phone: mPhone });
       }
 
       const accommodation = document.getElementById('reg-accommodation')?.value || '';
-      const institution = document.getElementById('reg-institution')?.value?.trim() || '';
+
       const paymentSlipInput = document.getElementById('reg-payment-slip');
       const paymentSlipFile = paymentSlipInput?.files?.[0];
 
@@ -351,7 +403,10 @@ class OdysseyApp {
         const teamNameEl = document.getElementById('odysseus-team-name');
         if (teamNameEl) teamNameEl.textContent = teamName || 'your team';
         const registrationIdEl = document.getElementById('odyssey-registration-id');
-        if (registrationIdEl) registrationIdEl.textContent = result.insertedId || '';
+        const regId = result.regId || result.insertedId || '';
+        if (registrationIdEl) registrationIdEl.textContent = regId;
+        // Store for the copy button
+        registrationIdEl?.setAttribute('data-reg-id', regId);
         regForm.style.display = 'none';
         if (regSuccessMsg) regSuccessMsg.style.display = 'flex';
       } catch (err) {
@@ -1903,6 +1958,95 @@ class OdysseyApp {
     };
 
     render();
+  }
+
+  initCountdownClock() {
+    const cardDays = document.getElementById('card-days');
+    const cardHours = document.getElementById('card-hours');
+    const cardMinutes = document.getElementById('card-minutes');
+    const cardSeconds = document.getElementById('card-seconds');
+    if (!cardDays || !cardHours || !cardMinutes || !cardSeconds) return;
+
+    // Hackathon Commencement: October 13, 2026, 09:00:00 AM IST
+    const targetDate = new Date('2026-10-13T09:00:00+05:30').getTime();
+
+    const flipCard = (cardEl, newVal, isInitial = false) => {
+      if (!cardEl) return;
+      const currentVal = cardEl.dataset.value;
+
+      const topBackNum = cardEl.querySelector('.flap-top-back .flap-num');
+      const bottomBackNum = cardEl.querySelector('.flap-bottom-back .flap-num');
+      const topFrontNum = cardEl.querySelector('.flap-top-front .flap-num');
+      const bottomFrontNum = cardEl.querySelector('.flap-bottom-front .flap-num');
+
+      if (!topBackNum || !bottomBackNum || !topFrontNum || !bottomFrontNum) return;
+
+      if (isInitial || !currentVal) {
+        topBackNum.textContent = newVal;
+        bottomBackNum.textContent = newVal;
+        topFrontNum.textContent = newVal;
+        bottomFrontNum.textContent = newVal;
+        cardEl.dataset.value = newVal;
+        return;
+      }
+
+      if (newVal === currentVal) return;
+
+      // Set initial state before the 3D fold begins:
+      // Top back flap has NEW value (revealed when top front folds down)
+      topBackNum.textContent = newVal;
+      // Bottom back flap has OLD value (visible at start)
+      bottomBackNum.textContent = currentVal;
+      // Top front flap has OLD value (folds down towards viewer)
+      topFrontNum.textContent = currentVal;
+      // Bottom front flap has NEW value (unfolds down to cover bottom back)
+      bottomFrontNum.textContent = newVal;
+
+      cardEl.classList.remove('flipping');
+      void cardEl.offsetWidth; // Force reflow to restart CSS 3D animation
+      cardEl.classList.add('flipping');
+
+      // Once fold animation completes (560ms), lock in new value across all flaps
+      clearTimeout(cardEl._flipTimer);
+      cardEl._flipTimer = setTimeout(() => {
+        topBackNum.textContent = newVal;
+        bottomBackNum.textContent = newVal;
+        topFrontNum.textContent = newVal;
+        bottomFrontNum.textContent = newVal;
+        cardEl.classList.remove('flipping');
+        cardEl.dataset.value = newVal;
+      }, 560);
+    };
+
+    let isFirstRun = true;
+
+    const updateClock = () => {
+      const now = Date.now();
+      let diff = targetDate - now;
+      if (diff < 0) {
+        diff = 0;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      const dStr = String(days).padStart(2, '0');
+      const hStr = String(hours).padStart(2, '0');
+      const mStr = String(minutes).padStart(2, '0');
+      const sStr = String(seconds).padStart(2, '0');
+
+      flipCard(cardDays, dStr, isFirstRun);
+      flipCard(cardHours, hStr, isFirstRun);
+      flipCard(cardMinutes, mStr, isFirstRun);
+      flipCard(cardSeconds, sStr, isFirstRun);
+
+      isFirstRun = false;
+    };
+
+    updateClock();
+    this.countdownInterval = setInterval(updateClock, 1000);
   }
 }
 

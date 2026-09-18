@@ -64,16 +64,28 @@ export async function getCollection() {
   return connectedClient.db(dbName).collection(collectionName);
 }
 
+function generateRegId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/I/1 to avoid confusion
+  let id = 'OD';
+  for (let i = 0; i < 4; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
+
 export async function saveRegistration(registrationData) {
   const col = await getCollection();
+  const regId = generateRegId();
   const doc = {
     ...registrationData,
+    regId,
     registeredAt: new Date().toISOString(),
     status: 'pending_verification',
   };
   const result = await col.insertOne(doc);
   return {
     success: true,
+    regId,
     insertedId: result.insertedId.toString(),
     message: 'Registration successfully recorded in Odyssey database',
   };

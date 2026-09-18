@@ -37,6 +37,66 @@
       <p class="intro-display-sub">Journey to Innovation · Ἡ Ὀδύσσεια</p>
       <p class="intro-display-lede">Like Odysseus crossing wine-dark seas, innovators chart bold courses through
         unmapped challenges — resilience, unity, and mastery lead every crew home to impact.</p>
+
+      <!-- ODYSSEY THEMED FLIP-CLOCK COUNTDOWN -->
+      <div class="intro-clock-section" aria-label="Countdown to The Odyssey">
+        <div class="clock-caption">
+          <span class="clock-pulse-dot" aria-hidden="true"></span>
+          <span class="clock-caption-text">QUEST COMMENCES IN</span>
+        </div>
+        <div class="odyssey-flip-clock" id="odyssey-flip-clock">
+          <div class="clock-segment">
+            <div class="clock-card" id="card-days" data-unit="days">
+              <div class="card-flap flap-top-back"><span class="flap-num">24</span></div>
+              <div class="card-flap flap-bottom-back"><span class="flap-num">24</span></div>
+              <div class="card-flap flap-top-front"><span class="flap-num">24</span></div>
+              <div class="card-flap flap-bottom-front"><span class="flap-num">24</span></div>
+              <span class="clock-seam" aria-hidden="true"></span>
+            </div>
+            <span class="clock-label">Days</span>
+          </div>
+
+          <div class="clock-divider" aria-hidden="true">:</div>
+
+          <div class="clock-segment">
+            <div class="clock-card" id="card-hours" data-unit="hours">
+              <div class="card-flap flap-top-back"><span class="flap-num">18</span></div>
+              <div class="card-flap flap-bottom-back"><span class="flap-num">18</span></div>
+              <div class="card-flap flap-top-front"><span class="flap-num">18</span></div>
+              <div class="card-flap flap-bottom-front"><span class="flap-num">18</span></div>
+              <span class="clock-seam" aria-hidden="true"></span>
+            </div>
+            <span class="clock-label">Hours</span>
+          </div>
+
+          <div class="clock-divider" aria-hidden="true">:</div>
+
+          <div class="clock-segment">
+            <div class="clock-card" id="card-minutes" data-unit="minutes">
+              <div class="card-flap flap-top-back"><span class="flap-num">57</span></div>
+              <div class="card-flap flap-bottom-back"><span class="flap-num">57</span></div>
+              <div class="card-flap flap-top-front"><span class="flap-num">57</span></div>
+              <div class="card-flap flap-bottom-front"><span class="flap-num">57</span></div>
+              <span class="clock-seam" aria-hidden="true"></span>
+            </div>
+            <span class="clock-label">Minutes</span>
+          </div>
+
+          <div class="clock-divider" aria-hidden="true">:</div>
+
+          <div class="clock-segment">
+            <div class="clock-card" id="card-seconds" data-unit="seconds">
+              <div class="card-flap flap-top-back"><span class="flap-num">49</span></div>
+              <div class="card-flap flap-bottom-back"><span class="flap-num">49</span></div>
+              <div class="card-flap flap-top-front"><span class="flap-num">49</span></div>
+              <div class="card-flap flap-bottom-front"><span class="flap-num">49</span></div>
+              <span class="clock-seam" aria-hidden="true"></span>
+            </div>
+            <span class="clock-label">Seconds</span>
+          </div>
+        </div>
+      </div>
+
       <button type="button" class="gold-action-btn intro-enter-btn" id="intro-enter-btn">Begin the Voyage</button>
       <span class="intro-skip-hint">Tap anywhere · or wait a few moments to enter the map</span>
     </div>
@@ -283,17 +343,6 @@
         </div>
 
         <div class="reg-page-body">
-          <!-- Team Rules Banner -->
-          <div class="reg-rules-banner">
-            <div class="reg-rules-title">📌 Team Rules</div>
-            <ul class="reg-rules-list">
-              <li>🚫 Inter-college teams are not allowed.</li>
-              <li>🏫 All team members must belong to the same institution.</li>
-              <li>👥 Team size: 3–5 members per team.</li>
-              <li>👩 At least 1 female member is mandatory in every team</li>
-              <li>💰 The registration fee is ₹500 per team.</li>
-            </ul>
-          </div>
 
           <form id="reg-form">
             <!-- Selected Problem Statement -->
@@ -324,25 +373,39 @@
               <div class="reg-grid-2">
                 <div class="reg-field">
                   <label for="reg-team-name">Legion / Team Name</label>
-                  <input type="text" id="reg-team-name" placeholder="e.g. Achaean Innovators" required>
+                  <input type="text" id="reg-team-name" placeholder="e.g. Achaean Innovators"
+                    required minlength="3" maxlength="60"
+                    pattern="[A-Za-z0-9 &amp;'\-\.]{3,60}"
+                    title="Team name: 3–60 chars, letters/numbers/spaces only">
                 </div>
                 <div class="reg-field">
                   <label for="reg-institution">Institution / Organization Name</label>
-                  <input type="text" id="reg-institution" placeholder="e.g. BCET Odisha" required>
+                  <input type="text" id="reg-institution" placeholder="e.g. BCET Odisha"
+                    required minlength="3" maxlength="100"
+                    title="Institution name: 3–100 chars">
                 </div>
               </div>
               <div class="reg-grid-3">
                 <div class="reg-field">
                   <label for="reg-leader-name">Team Leader Name (Member 1)</label>
-                  <input type="text" id="reg-leader-name" placeholder="e.g. Odysseus" required>
+                  <input type="text" id="reg-leader-name" placeholder="e.g. Odysseus"
+                    required minlength="2" maxlength="60"
+                    pattern="[A-Za-z .'-]{2,60}"
+                    title="Full name: 2–60 letters only">
                 </div>
                 <div class="reg-field">
                   <label for="reg-leader-phone">Team Leader Phone No.</label>
-                  <input type="tel" id="reg-leader-phone" placeholder="e.g. +91 9876543210" required>
+                  <input type="tel" id="reg-leader-phone" placeholder="10-digit mobile no."
+                    required pattern="[6-9][0-9]{9}"
+                    maxlength="10" minlength="10"
+                    inputmode="numeric"
+                    title="Enter valid 10-digit Indian mobile number (starts with 6-9)">
                 </div>
                 <div class="reg-field">
                   <label for="reg-email">Team Leader Email Address</label>
-                  <input type="email" id="reg-email" placeholder="e.g. leader@institution.edu" required>
+                  <input type="email" id="reg-email" placeholder="e.g. leader@institution.edu"
+                    required maxlength="100"
+                    title="Enter a valid email address">
                 </div>
               </div>
             </div>
@@ -368,15 +431,23 @@
                 <div class="reg-grid-3">
                   <div class="reg-field">
                     <label for="reg-m1-name">Full Name</label>
-                    <input type="text" id="reg-m1-name" placeholder="Member 2 Name" required>
+                    <input type="text" id="reg-m1-name" placeholder="Member 2 Name"
+                      required minlength="2" maxlength="60"
+                      pattern="[A-Za-z .'-]{2,60}"
+                      title="Full name: 2–60 letters only">
                   </div>
                   <div class="reg-field">
                     <label for="reg-m1-email">Email Address</label>
-                    <input type="email" id="reg-m1-email" placeholder="member2@email.com" required>
+                    <input type="email" id="reg-m1-email" placeholder="member2@email.com"
+                      required maxlength="100"
+                      title="Valid email required">
                   </div>
                   <div class="reg-field">
                     <label for="reg-m1-phone">Phone No.</label>
-                    <input type="tel" id="reg-m1-phone" placeholder="Phone No." required>
+                    <input type="tel" id="reg-m1-phone" placeholder="10-digit number"
+                      required pattern="[6-9][0-9]{9}" maxlength="10" minlength="10"
+                      inputmode="numeric"
+                      title="Valid 10-digit Indian mobile number">
                   </div>
                 </div>
               </div>
@@ -390,15 +461,23 @@
                 <div class="reg-grid-3">
                   <div class="reg-field">
                     <label for="reg-m2-name">Full Name</label>
-                    <input type="text" id="reg-m2-name" placeholder="Member 3 Name" required>
+                    <input type="text" id="reg-m2-name" placeholder="Member 3 Name"
+                      required minlength="2" maxlength="60"
+                      pattern="[A-Za-z .'-]{2,60}"
+                      title="Full name: 2–60 letters only">
                   </div>
                   <div class="reg-field">
                     <label for="reg-m2-email">Email Address</label>
-                    <input type="email" id="reg-m2-email" placeholder="member3@email.com" required>
+                    <input type="email" id="reg-m2-email" placeholder="member3@email.com"
+                      required maxlength="100"
+                      title="Valid email required">
                   </div>
                   <div class="reg-field">
                     <label for="reg-m2-phone">Phone No.</label>
-                    <input type="tel" id="reg-m2-phone" placeholder="Phone No." required>
+                    <input type="tel" id="reg-m2-phone" placeholder="10-digit number"
+                      required pattern="[6-9][0-9]{9}" maxlength="10" minlength="10"
+                      inputmode="numeric"
+                      title="Valid 10-digit Indian mobile number">
                   </div>
                 </div>
               </div>
@@ -413,15 +492,23 @@
                 <div class="reg-grid-3">
                   <div class="reg-field">
                     <label for="reg-m3-name">Full Name</label>
-                    <input type="text" id="reg-m3-name" placeholder="Member 4 Name">
+                    <input type="text" id="reg-m3-name" placeholder="Member 4 Name"
+                      minlength="2" maxlength="60"
+                      pattern="[A-Za-z .'-]{2,60}"
+                      title="Full name: 2–60 letters only">
                   </div>
                   <div class="reg-field">
                     <label for="reg-m3-email">Email Address</label>
-                    <input type="email" id="reg-m3-email" placeholder="member4@email.com">
+                    <input type="email" id="reg-m3-email" placeholder="member4@email.com"
+                      maxlength="100"
+                      title="Valid email required">
                   </div>
                   <div class="reg-field">
                     <label for="reg-m3-phone">Phone No.</label>
-                    <input type="tel" id="reg-m3-phone" placeholder="Phone No.">
+                    <input type="tel" id="reg-m3-phone" placeholder="10-digit number"
+                      pattern="[6-9][0-9]{9}" maxlength="10" minlength="10"
+                      inputmode="numeric"
+                      title="Valid 10-digit Indian mobile number">
                   </div>
                 </div>
               </div>
@@ -436,15 +523,23 @@
                 <div class="reg-grid-3">
                   <div class="reg-field">
                     <label for="reg-m4-name">Full Name</label>
-                    <input type="text" id="reg-m4-name" placeholder="Member 5 Name">
+                    <input type="text" id="reg-m4-name" placeholder="Member 5 Name"
+                      minlength="2" maxlength="60"
+                      pattern="[A-Za-z .'-]{2,60}"
+                      title="Full name: 2–60 letters only">
                   </div>
                   <div class="reg-field">
                     <label for="reg-m4-email">Email Address</label>
-                    <input type="email" id="reg-m4-email" placeholder="member5@email.com">
+                    <input type="email" id="reg-m4-email" placeholder="member5@email.com"
+                      maxlength="100"
+                      title="Valid email required">
                   </div>
                   <div class="reg-field">
                     <label for="reg-m4-phone">Phone No.</label>
-                    <input type="tel" id="reg-m4-phone" placeholder="Phone No.">
+                    <input type="tel" id="reg-m4-phone" placeholder="10-digit number"
+                      pattern="[6-9][0-9]{9}" maxlength="10" minlength="10"
+                      inputmode="numeric"
+                      title="Valid 10-digit Indian mobile number">
                   </div>
                 </div>
               </div>
@@ -511,13 +606,14 @@
           <!-- SUCCESS VIEW WITH POSEIDON HERO CHARACTER & WEAPON -->
           <div class="reg-success-container" id="reg-success-msg" style="display:none;">
             <div class="reg-success-header">
-              <span class="quest-status-badge">📜 QUEST REGISTRATION VERIFIED</span>
+              <span class="quest-status-badge">📜 QUEST REGISTRATION RECEIVED</span>
               <p class="reg-success-kicker">Your journey to innovation begins here.</p>
             </div>
 
             <div class="odysseus-speech-bubble">
               <span class="speech-quote">"Thank you for registering <strong id="odysseus-team-name">your team</strong>!
-                May the Gods of Innovation guide your Legion to victory!"</span>
+                May the Gods of Innovation guide your Legion to victory!"
+              </span>
             </div>
 
             <div class="poseidon-hero-frame">
@@ -531,13 +627,30 @@
             <div class="reg-success-details">
               <div class="reg-id-card">
                 <span class="reg-id-label">REGISTRATION ID</span>
-                <strong id="odyssey-registration-id" class="reg-id-value"></strong>
+                <strong id="odyssey-registration-id" class="reg-id-value" data-reg-id=""></strong>
               </div>
-              <p class="reg-confirmation-copy">Your Legion has been registered for the <strong>ODYSSEY Hackathon</strong>.
-                Prepare for the Journey to Innovation!</p>
-              <div class="whatsapp-cta">
-                <a class="gold-action-btn" href="https://chat.whatsapp.com/CGWQjE5HpHG5QmqTvZR1EB" target="_blank" rel="noopener noreferrer">JOIN OFFICIAL WHATSAPP GROUP</a>
-                <p class="whatsapp-supporting-text">After joining the official WhatsApp group, participants will receive a Google Form link to submit their project abstract and PPT for the shortlisting round.</p>
+
+              <!-- Thank You Message & Confirmation -->
+              <div class="reg-thankyou-block">
+                <p class="reg-thankyou-main">🎉 Thank you for registering! Your registration has been received and is currently under review.</p>
+                <p class="reg-thankyou-email">📧 You will receive a <strong>confirmation email</strong> once your registration is validated by the Odyssey team.</p>
+              </div>
+
+              <!-- Copy Reg ID Note -->
+              <div class="reg-copy-note">
+                <div class="reg-copy-note-header">📌 Important Note</div>
+                <p class="reg-copy-note-text">Please <strong>copy your Registration ID</strong> — it is required during the Idea Submission process. Do not lose it!</p>
+                <button type="button" class="reg-copy-btn gold-action-btn" id="copy-reg-id-btn" onclick="(function(){
+                  const el = document.getElementById('odyssey-registration-id');
+                  const id = el?.getAttribute('data-reg-id') || el?.textContent || '';
+                  if(id) { navigator.clipboard.writeText(id).then(() => {
+                    const btn = document.getElementById('copy-reg-id-btn');
+                    btn.textContent = '✅ Copied!';
+                    setTimeout(() => btn.textContent = '📋 Copy Registration ID', 2000);
+                  }); }
+                })()">
+                  📋 Copy Registration ID
+                </button>
               </div>
             </div>
           </div>
