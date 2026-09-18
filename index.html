@@ -97,10 +97,7 @@
         </div>
       </div>
 
-      <div class="intro-actions-container">
-        <button type="button" class="gold-action-btn intro-enter-btn" id="intro-enter-btn">Begin the Voyage</button>
-        <button type="button" class="intro-restricted-pill" id="intro-restricted-pill" title="View Restricted Mortals Decree">⚠️ Restricted Legends Notice (6 Flagged)</button>
-      </div>
+      <button type="button" class="gold-action-btn intro-enter-btn" id="intro-enter-btn">Begin the Voyage</button>
       <span class="intro-skip-hint">Tap anywhere · or wait a few moments to enter the map</span>
     </div>
   </div>
@@ -122,7 +119,6 @@
     </div>
 
     <div class="header-controls">
-      <button type="button" class="control-btn restricted-nav-btn" id="restricted-nav-btn" title="View Divine Decree of Restricted Mortals">⚠️ Restricted List</button>
       <button type="button" class="control-btn" id="guide-btn" aria-haspopup="dialog">Guide</button>
     </div>
   </header>
@@ -753,117 +749,6 @@
       </div>
       <div class="modal-footer" style="display: flex; justify-content: center; margin-top: 1.2rem;">
         <button type="button" class="gold-action-btn" id="payment-qr-done-btn">Done / Return to Form</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- RESTRICTED MORTALS FUNNY BAN POPUP MODAL -->
-  <div class="modal-overlay restricted-mortals-modal-overlay" id="restricted-mortals-modal" role="dialog" aria-modal="true"
-    aria-labelledby="restricted-mortals-title">
-    <div class="modal-card restricted-mortals-card">
-      <button class="modal-close" id="restricted-mortals-close-btn" aria-label="Close Notice">&times;</button>
-      
-      <div class="modal-header restricted-header">
-        <span class="modal-badge restricted-badge">⚡ OLYMPIAN DECREE · RESTRICTED ACCESS ⚡</span>
-        <h2 class="modal-title restricted-title" id="restricted-mortals-title">⚠️ SORRY TO SAY THAT... ACCESS DENIED!</h2>
-        <span class="modal-origin restricted-origin">By Divine Order of Poseidon, Zeus, and the Odyssey High Council</span>
-      </div>
-
-      <div class="modal-body restricted-body">
-        <p class="restricted-lead-text">
-          🚨 <strong>Critical Olympian Alert:</strong> Our mythic firewall detected extreme levels of aura, quantum brainpower, and sheer chaos! The following legendary mortals are officially <strong>NOT ABLE TO USE THIS APPLICATION</strong>:
-        </p>
-
-        <div class="restricted-names-grid">
-          <!-- 1. A.S. Deepali -->
-          <div class="restricted-person-card">
-            <div class="person-header">
-              <span class="person-icon">👑</span>
-              <div class="person-meta">
-                <span class="person-name">A.S. Deepali</span>
-                <span class="person-badge">Hazard: Infinite Aura</span>
-              </div>
-            </div>
-            <p class="person-reason">Server CPUs started overheating just trying to process her royal presence. Poseidon declared her aura too glorious for mere mortal screens.</p>
-          </div>
-
-          <!-- 2. Ankita Das -->
-          <div class="restricted-person-card">
-            <div class="person-header">
-              <span class="person-icon">✨</span>
-              <div class="person-meta">
-                <span class="person-name">Ankita Das</span>
-                <span class="person-badge">Hazard: 120 FPS Brain</span>
-              </div>
-            </div>
-            <p class="person-reason">Brain clock speed operates too fast. Council feared she would redesign Mount Olympus overnight and conquer the hackathon before lunch.</p>
-          </div>
-
-          <!-- 3. Bijayalaxmi Swain -->
-          <div class="restricted-person-card">
-            <div class="person-header">
-              <span class="person-icon">⚡</span>
-              <div class="person-meta">
-                <span class="person-name">Bijayalaxmi Swain</span>
-                <span class="person-badge">Hazard: High Voltage Wit</span>
-              </div>
-            </div>
-            <p class="person-reason">Her roast power and wit caused electric surges in the database. Odyssey engineers are currently meditating to recover their morale.</p>
-          </div>
-
-          <!-- 4. Lawrencekumar Khamurai -->
-          <div class="restricted-person-card">
-            <div class="person-header">
-              <span class="person-icon">🏹</span>
-              <div class="person-meta">
-                <span class="person-name">Lawrencekumar Khamurai</span>
-                <span class="person-badge">Hazard: Code Speedster</span>
-              </div>
-            </div>
-            <p class="person-reason">Types code faster than Apollo's golden arrows fly. Banned under Section 42 of Olympus for being unfairly overpowered and conjuring too much magic.</p>
-          </div>
-
-          <!-- 5. Aryan S.S Acharya -->
-          <div class="restricted-person-card">
-            <div class="person-header">
-              <span class="person-icon">🛡️</span>
-              <div class="person-meta">
-                <span class="person-name">Aryan S.S Acharya</span>
-                <span class="person-badge">Hazard: Chaos Agent</span>
-              </div>
-            </div>
-            <p class="person-reason">Tried to automate the entire Aegean Sea with Agentic AI. Memory buffer overflowed into the wine-dark ocean, confusing all ships.</p>
-          </div>
-
-          <!-- 6. Guru Gourav Panda -->
-          <div class="restricted-person-card">
-            <div class="person-header">
-              <span class="person-icon">🐼</span>
-              <div class="person-meta">
-                <span class="person-name">Guru Gourav Panda</span>
-                <span class="person-badge">Hazard: Absolute Chill</span>
-              </div>
-            </div>
-            <p class="person-reason">Dangerously calm under extreme pressure. His chill aura froze the countdown clock, the server fans, and Poseidon's trident.</p>
-          </div>
-        </div>
-
-        <div class="restricted-verdict-box">
-          <div class="verdict-icon">📜</div>
-          <div class="verdict-content">
-            <h4 class="verdict-title">Official Council Statement &amp; Waiver Protocol:</h4>
-            <p class="verdict-msg">
-              <strong>"We are truly sorry to say that if these 6 mortals enter, nobody else has a chance to win anything!"</strong> 😂<br>
-              <strong>Want divine clearance?</strong> Each flagged mortal must present peace offerings of <em>hot chai, cold coffee, samosas, or chocolates</em> to the organizing desk immediately! ☕🍕🍫
-            </p>
-            <span class="restricted-disclaimer">❤️ Purely for fun &amp; friendly banter! You all are legendary stars — welcome to The Odyssey!</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-footer restricted-footer">
-        <button type="button" class="gold-action-btn restricted-mercy-btn" id="restricted-mercy-btn">Beg Poseidon For Mercy 😂</button>
-        <button type="button" class="gold-action-btn restricted-enter-btn" id="restricted-enter-btn">Enter App Anyway ⚡</button>
       </div>
     </div>
   </div>

@@ -106,64 +106,6 @@ class OdysseyApp {
       this.introAutoTimer = setTimeout(() => transitionToMap(), 8500);
     }
 
-    // 1.2 Restricted Mortals Funny Popup Handling
-    const restrictedModal = document.getElementById('restricted-mortals-modal');
-    const restrictedCloseBtn = document.getElementById('restricted-mortals-close-btn');
-    const restrictedMercyBtn = document.getElementById('restricted-mercy-btn');
-    const restrictedEnterBtn = document.getElementById('restricted-enter-btn');
-    const introRestrictedPill = document.getElementById('intro-restricted-pill');
-    const restrictedNavBtn = document.getElementById('restricted-nav-btn');
-
-    const openRestrictedModal = () => {
-      // Pause automatic transition timer while reading popup
-      if (this.introAutoTimer) {
-        clearTimeout(this.introAutoTimer);
-        this.introAutoTimer = null;
-      }
-      restrictedModal?.classList.add('active');
-    };
-
-    const closeRestrictedModal = () => {
-      audioSystem.playClick();
-      restrictedModal?.classList.remove('active');
-    };
-
-    // Automatically show popup on landing page after brief moment
-    setTimeout(() => {
-      openRestrictedModal();
-    }, 700);
-
-    [restrictedCloseBtn, restrictedMercyBtn].forEach(btn => {
-      btn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeRestrictedModal();
-      });
-    });
-
-    restrictedEnterBtn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeRestrictedModal();
-      transitionToMap();
-    });
-
-    introRestrictedPill?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      audioSystem.playClick();
-      openRestrictedModal();
-    });
-
-    restrictedNavBtn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      audioSystem.playClick();
-      openRestrictedModal();
-    });
-
-    restrictedModal?.addEventListener('click', (e) => {
-      if (e.target === restrictedModal) {
-        closeRestrictedModal();
-      }
-    });
-
     this.initCountdownClock();
 
     this.initMapSidebarControls();
@@ -317,12 +259,12 @@ class OdysseyApp {
       }
 
       // Gather leader & team data first
-      const teamName    = document.getElementById('reg-team-name')?.value?.trim() || '';
-      const leaderName  = document.getElementById('reg-leader-name')?.value?.trim() || '';
+      const teamName = document.getElementById('reg-team-name')?.value?.trim() || '';
+      const leaderName = document.getElementById('reg-leader-name')?.value?.trim() || '';
       const leaderPhone = document.getElementById('reg-leader-phone')?.value?.trim() || '';
       const leaderEmail = document.getElementById('reg-email')?.value?.trim() || '';
       const institution = document.getElementById('reg-institution')?.value?.trim() || '';
-      const teamSize    = currentTeamSize;
+      const teamSize = currentTeamSize;
 
       // ── Validation helpers ──────────────────────────────────────────────
       const showError = (msg) => {
@@ -330,7 +272,7 @@ class OdysseyApp {
       };
       const isValidPhone = (p) => /^[6-9][0-9]{9}$/.test(p);
       const isValidEmail = (em) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em);
-      const isValidName  = (n) => n.length >= 2 && n.length <= 60;
+      const isValidName = (n) => n.length >= 2 && n.length <= 60;
 
       if (!teamName || teamName.length < 3) {
         showError('⚠️ Team name must be at least 3 characters.'); return;
@@ -351,7 +293,7 @@ class OdysseyApp {
       // Gather team members
       const members = [];
       for (let i = 1; i <= teamSize - 1; i++) {
-        const mName  = document.getElementById(`reg-m${i}-name`)?.value?.trim() || '';
+        const mName = document.getElementById(`reg-m${i}-name`)?.value?.trim() || '';
         const mEmail = document.getElementById(`reg-m${i}-email`)?.value?.trim() || '';
         const mPhone = document.getElementById(`reg-m${i}-phone`)?.value?.trim() || '';
 
