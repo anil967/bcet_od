@@ -69,13 +69,8 @@ class OdysseyApp {
     this.initMapSidebarControls();
     this.initMobileJourneyPanel();
 
-    // 2. Brand Logo & Back to Map -> Return to Map
+    // 2. Brand Logo Click -> Return to Map
     document.getElementById('brand-logo')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      this.showMapView();
-    });
-
-    document.getElementById('header-back-btn')?.addEventListener('click', () => {
       audioSystem.playClick();
       this.showMapView();
     });
@@ -608,10 +603,6 @@ class OdysseyApp {
     subpageView?.classList.remove('active');
     regView?.classList.remove('active');
 
-    // Hide header back button on map view
-    const headerBackBtn = document.getElementById('header-back-btn');
-    if (headerBackBtn) headerBackBtn.style.display = 'none';
-
     // Auto redirect to next node when backing from a node
     const exitedNode = this.currentSymbolId || this.lastVisitedSymbolId;
     let nextStep = this.sidebarPreviewStep;
@@ -683,10 +674,6 @@ class OdysseyApp {
     subpageView?.classList.add('active');
     regView?.classList.remove('active');
 
-    // Show header back button
-    const headerBackBtn = document.getElementById('header-back-btn');
-    if (headerBackBtn) headerBackBtn.style.display = 'inline-flex';
-
     // Scroll subpage to top
     const container = document.getElementById('subpage-content');
     if (container) container.scrollTop = 0;
@@ -741,10 +728,6 @@ class OdysseyApp {
     subpageView?.classList.remove('active');
     regView?.classList.add('active');
 
-    // Show header back button
-    const headerBackBtn = document.getElementById('header-back-btn');
-    if (headerBackBtn) headerBackBtn.style.display = 'inline-flex';
-
     // Scroll registration page to top
     const container = document.getElementById('reg-page-content');
     if (container) container.scrollTop = 0;
@@ -790,7 +773,6 @@ class OdysseyApp {
       <!-- Hero Section -->
       <section class="page-hero" style="background-image: url('${data.heroImg}');">
         <div class="hero-content">
-          <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 1.25rem;"><span>&larr;</span> Back to Map</button>
           <h1 class="hero-main-title">
             <span class="hero-title-icon">${data.icon}</span>
             ${data.name}
@@ -930,12 +912,6 @@ class OdysseyApp {
       </section>
     `;
 
-    // Attach Back to Map Listener
-    document.getElementById('back-to-map-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      this.showMapView();
-    });
-
     // Attach Tab Switch Handlers
     const tabBtns = container.querySelectorAll('.tab-btn');
     tabBtns.forEach(btn => {
@@ -994,7 +970,6 @@ class OdysseyApp {
 
           <!-- About Us Section with Slow Pop-up from Bottom -->
           <section class="aboutus-section">
-            <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 1.25rem;"><span>&larr;</span> Back to Map</button>
             <h1 class="aboutus-heading">ABOUT US</h1>
 
             <div class="aboutus-divider">
@@ -1110,12 +1085,6 @@ class OdysseyApp {
       </div>
     `;
 
-    // Back button
-    document.getElementById('back-to-map-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      this.showMapView();
-    });
-
     // Contact call audio feedback
     container.querySelectorAll('.contact-call-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1141,7 +1110,6 @@ class OdysseyApp {
 
           <!-- Hackathon Section -->
           <section class="hackathon-section">
-            <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 1.25rem;"><span>&larr;</span> Back to Map</button>
             <h1 class="hackathon-heading">HACKATHON</h1>
 
             <div class="hackathon-tagline">Enter the Quest. Create the Future.</div>
@@ -1277,12 +1245,6 @@ class OdysseyApp {
       </div>
     `;
 
-    // Back button
-    document.getElementById('back-to-map-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      this.showMapView();
-    });
-
     // Scroll-triggered pop-up for KPI cards
     const kpiCards = container.querySelectorAll('.hack-kpi-card');
     const observer = new IntersectionObserver((entries) => {
@@ -1316,7 +1278,6 @@ class OdysseyApp {
         <div class="realms-cover-overlay">
 
           <section class="protocols-section">
-            <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 1.25rem;"><span>&larr;</span> Back to Map</button>
             <h1 class="hackathon-heading">PROTOCOLS</h1>
 
             <div class="aboutus-divider">
@@ -1430,12 +1391,6 @@ class OdysseyApp {
       </div>
     `;
 
-    // Back button
-    document.getElementById('back-to-map-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      this.showMapView();
-    });
-
     // Intersection Observer for Timeline Items (Footprint trail animation)
     const timelineItems = container.querySelectorAll('.timeline-item');
     const observerOptions = {
@@ -1464,8 +1419,7 @@ class OdysseyApp {
         <div class="realms-cover-overlay">
 
           <section class="odyssey-promo-section" style="max-width: 1400px; margin: 1rem auto 4rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2.2rem; padding: 0 1.5rem;">
-            <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 0.5rem; align-self: flex-start;"><span>&larr;</span> Back to Map</button>
-            <h1 class="hackathon-heading" style="margin-top: 0.5rem;">THE QUEST TRAILER</h1>
+            <h1 class="hackathon-heading" style="margin-top: 1rem;">THE QUEST TRAILER</h1>
 
             <div class="aboutus-divider">
               <span class="aboutus-divider-icon">🏛️</span>
@@ -1493,12 +1447,6 @@ class OdysseyApp {
         </div>
       </div>
     `;
-
-    // Back button
-    document.getElementById('back-to-map-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      this.showMapView();
-    });
   }
 
   /* ─── Legions: Custom Legions & Leadership Page (15 KPI Cards) ─── */
@@ -1508,7 +1456,6 @@ class OdysseyApp {
         <div class="realms-cover-overlay">
 
           <section class="legions-section">
-            <button type="button" class="back-map-btn back-to-map-btn" id="back-to-map-btn" style="margin-bottom: 1.25rem;"><span>&larr;</span> Back to Map</button>
             <h1 class="hackathon-heading">THE LEGIONS</h1>
             <div class="hackathon-tagline">The High Command & Vanguard of ODYSSEY</div>
 
@@ -1722,12 +1669,6 @@ class OdysseyApp {
         </div>
       </div>
     `;
-
-    // Back button
-    document.getElementById('back-to-map-btn')?.addEventListener('click', () => {
-      audioSystem.playClick();
-      this.showMapView();
-    });
 
     // Intersection Observer for Vanguard Cards Deck Spread animation
     const vanguardGrid = container.querySelector('.vanguard-kpi-grid');
