@@ -322,34 +322,52 @@ class OdysseyApp {
         const fileName = paymentSlipFile.name.toLowerCase();
         const isJpg = /\.(jpg|jpeg)$/.test(fileName) && paymentSlipFile.type === 'image/jpeg';
         if (!isJpg) {
-          if (errorEl) {
-            errorEl.textContent = '⚠️ Please upload the payment slip in JPG format only.';
-            errorEl.style.display = 'block';
-          }
+          showError('⚠️ Please upload the payment slip in JPG format only.');
+          return;
+        }
+        // Pre-flight: reject files > 8MB before even trying to compress
+        if (paymentSlipFile.size > 8 * 1024 * 1024) {
+          showError('⚠️ Payment slip file is too large (max 8MB). Please use a smaller photo.');
           return;
         }
       }
 
-      // Helper to read file as Base64 data URL
-      const readFileAsBase64 = (file) => new Promise((resolve, reject) => {
+      // Compress image via canvas to stay under Vercel's 4.5MB serverless body limit.
+      // Resizes to max 1200px and re-encodes at JPEG quality 0.72 (~60-70% size reduction).
+      const compressImage = (file) => new Promise((resolve, reject) => {
         if (!file) return resolve(null);
         const reader = new FileReader();
-        reader.onload = () => resolve({
-          fileName: file.name,
-          fileSize: file.size,
-          fileType: file.type,
-          dataUrl: reader.result
-        });
         reader.onerror = reject;
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onerror = reject;
+          img.onload = () => {
+            const MAX = 1200;
+            let { width, height } = img;
+            if (width > MAX || height > MAX) {
+              if (width > height) { height = Math.round(height * MAX / width); width = MAX; }
+              else { width = Math.round(width * MAX / height); height = MAX; }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+            resolve({ fileName: file.name, fileSize: file.size, fileType: 'image/jpeg', dataUrl });
+          };
+          img.src = e.target.result;
+        };
         reader.readAsDataURL(file);
       });
 
       let paymentSlip = null;
       if (paymentSlipFile) {
         try {
-          paymentSlip = await readFileAsBase64(paymentSlipFile);
+          paymentSlip = await compressImage(paymentSlipFile);
         } catch (fileErr) {
-          console.warn('Could not read payment slip file:', fileErr);
+          console.warn('Could not process payment slip file:', fileErr);
+          showError('⚠️ Could not process the image. Please try a different file.');
+          return;
         }
       }
 
