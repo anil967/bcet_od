@@ -63,6 +63,7 @@ export function buildMasterRouteD() {
 let cachedPinLengths = null;
 
 function computePinLengths(pathEl) {
+  if (cachedPinLengths) return cachedPinLengths;
   const total = pathEl.getTotalLength?.() || 0;
   if (!total || total <= 0) return null;
 
@@ -74,7 +75,17 @@ function computePinLengths(pathEl) {
     const pin = pins[p];
     let bestDist = Infinity;
     let bestLen = searchStart;
-    for (let s = searchStart; s <= total; s += 2) {
+    for (let s = searchStart; s <= total; s += 4) {
+      const pt = pathEl.getPointAtLength(s);
+      const d2 = (pt.x - pin.x) ** 2 + (pt.y - pin.y) ** 2;
+      if (d2 < bestDist) {
+        bestDist = d2;
+        bestLen = s;
+      }
+    }
+    const fineStart = Math.max(searchStart, bestLen - 4);
+    const fineEnd = Math.min(total, bestLen + 4);
+    for (let s = fineStart; s <= fineEnd; s += 1) {
       const pt = pathEl.getPointAtLength(s);
       const d2 = (pt.x - pin.x) ** 2 + (pt.y - pin.y) ** 2;
       if (d2 < bestDist) {
@@ -86,6 +97,7 @@ function computePinLengths(pathEl) {
     searchStart = bestLen;
   }
   lengths.push(total); // Step 5: full road to node 5
+  cachedPinLengths = lengths;
   return lengths;
 }
 
@@ -169,14 +181,18 @@ export class OdysseyMap {
     }, 150);
   }
 
+  pauseMapVideo() {
+    if (this.video && !this.video.paused) {
+      try { this.video.pause(); } catch (_) {}
+    }
+  }
+
   ensureMapVideoPlaying() {
     if (!this.video) return;
     this.video.muted = true;
-    const play = () => {
+    if (this.video.paused) {
       this.video.play().catch(() => {});
-    };
-    play();
-    this.video.addEventListener('loadeddata', play, { once: true });
+    }
   }
 
   syncPinPositions() {
@@ -190,13 +206,14 @@ export class OdysseyMap {
   }
 
   syncTrailPaths() {
+    if (this._trailPathsSynced) return;
     const d = buildMasterRouteD();
     const trailIds = ['trail-mask-path', 'trail-road-dots', 'trail-master'];
     trailIds.forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.setAttribute('d', d);
     });
-    cachedPinLengths = null;
+    this._trailPathsSynced = true;
   }
 
   initPanDrag() {

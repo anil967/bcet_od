@@ -83,7 +83,7 @@ class OdysseyApp {
           introScreen.style.display = 'none';
           mapWrapper?.classList.add('slide-in');
           this.odysseyMap?.refreshLayout();
-        }, 600);
+        }, 550);
       }
     };
 
@@ -487,13 +487,15 @@ class OdysseyApp {
     });
   }
 
-  updateMapSidebar(stepNumber) {
+  updateMapSidebar(stepNumber, shouldCenter = true) {
     this.sidebarPreviewStep = Math.min(5, Math.max(1, stepNumber));
     const symbolId = this.symbolOrder[this.sidebarPreviewStep - 1];
     const data = SYMBOLS_DATA[symbolId];
     if (!data) return;
 
-    this.odysseyMap?.centerOnSymbol(symbolId);
+    if (shouldCenter) {
+      this.odysseyMap?.centerOnSymbol(symbolId);
+    }
     this.symbolOrder.forEach((id, idx) => {
       const pin = document.getElementById(`pin-${id}`);
       pin?.classList.toggle('pin-selected', idx === (this.sidebarPreviewStep - 1));
@@ -554,7 +556,7 @@ class OdysseyApp {
     }
   }
 
-  updateSerialUnlockState() {
+  updateSerialUnlockState(syncSidebar = true) {
     // 1. Update map pins
     this.symbolOrder.forEach((id, idx) => {
       const step = idx + 1;
@@ -597,7 +599,9 @@ class OdysseyApp {
       }
     }
 
-    this.updateMapSidebar(this.sidebarPreviewStep);
+    if (syncSidebar) {
+      this.updateMapSidebar(this.sidebarPreviewStep);
+    }
   }
 
   showLockedNotice(stepIdx) {
@@ -653,17 +657,17 @@ class OdysseyApp {
     this.currentSymbolId = null;
     this.sidebarPreviewStep = nextStep;
 
-    this.updateSerialUnlockState();
-    this.updateMapSidebar(this.sidebarPreviewStep);
+    // Update state visuals without redundant centering
+    this.updateSerialUnlockState(false);
+    this.updateMapSidebar(this.sidebarPreviewStep, false);
 
-    // Smoothly pan camera so next node is brought right in front
+    // Smoothly pan camera once to bring next node front and center
     const targetSymbol = this.symbolOrder[this.sidebarPreviewStep - 1];
     if (targetSymbol && this.odysseyMap) {
+      this.odysseyMap.ensureMapVideoPlaying();
       requestAnimationFrame(() => {
-        this.odysseyMap?.refreshLayout(true);
-        setTimeout(() => {
-          this.odysseyMap?.centerOnSymbol(targetSymbol, true);
-        }, 70);
+        this.odysseyMap?.centerOnSymbol(targetSymbol, true);
+        updateTrailProgress(this.unlockedStep);
       });
     }
   }
@@ -706,6 +710,7 @@ class OdysseyApp {
     mapView?.classList.remove('active');
     subpageView?.classList.add('active');
     regView?.classList.remove('active');
+    this.odysseyMap?.pauseMapVideo();
 
     // Scroll subpage to top
     const container = document.getElementById('subpage-content');
@@ -770,6 +775,7 @@ class OdysseyApp {
     mapView?.classList.remove('active');
     subpageView?.classList.remove('active');
     regView?.classList.add('active');
+    this.odysseyMap?.pauseMapVideo();
 
     // Scroll registration page to top
     const container = document.getElementById('reg-page-content');
@@ -1844,44 +1850,54 @@ class OdysseyApp {
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
 
+    let resizeTimer;
     window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }, 150);
+    }, { passive: true });
 
     const particles = [];
-    const count = 45;
+    const count = 32;
 
     for (let i = 0; i < count; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        radius: Math.random() * 2 + 0.5,
-        alpha: Math.random() * 0.6 + 0.2,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: -Math.random() * 0.5 - 0.2
+        radius: Math.random() * 1.8 + 0.6,
+        alpha: Math.random() * 0.5 + 0.25,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: -Math.random() * 0.45 - 0.15
       });
     }
 
+    let isVisible = !document.hidden;
+    document.addEventListener('visibilitychange', () => {
+      isVisible = !document.hidden;
+      if (isVisible) requestAnimationFrame(render);
+    });
+
     const render = () => {
+      if (!isVisible) return;
       ctx.clearRect(0, 0, width, height);
 
-      particles.forEach(p => {
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
 
-        if (p.y < 0) {
-          p.y = height + 10;
+        if (p.y < -5) {
+          p.y = height + 5;
           p.x = Math.random() * width;
         }
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(243, 156, 18, ${p.alpha})`;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = '#ffd700';
+        ctx.fillStyle = `rgba(243, 166, 30, ${p.alpha})`;
         ctx.fill();
-      });
+      }
 
       requestAnimationFrame(render);
     };
