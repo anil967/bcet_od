@@ -1145,7 +1145,7 @@ class OdysseyApp {
                 </div>
               </a>
 
-              <a href="https://falconclub.xyz/" target="_blank" class="aboutus-kpi-card kpi-card-2" id="kpi-card-2" title="Hephaestus Forge - FALCON CLUB">
+              <a href="https://falconclub-ebon.vercel.app/#about" target="_blank" class="aboutus-kpi-card kpi-card-2" id="kpi-card-2" title="Hephaestus Forge - FALCON CLUB">
                 <div class="kpi-card-bg-layer" style="background-image: url('/images/falcon.jpeg');"></div>
                 <div class="kpi-card-overlay"></div>
                 <div class="kpi-card-content">
@@ -1187,7 +1187,7 @@ class OdysseyApp {
 
                 <article class="contact-card">
                   <div class="contact-card-badge">Event Coordinator</div>
-                  <h3 class="contact-name">Bijayalaxmi Swain</h3>
+                  <h3 class="contact-name">Bijaylaxmi Swain</h3>
                   <p class="contact-role">Event Coordinator</p>
                   <a class="contact-phone" href="tel:+919438007678">
                     <svg class="contact-phone-icon" viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
@@ -1506,7 +1506,7 @@ class OdysseyApp {
                   <div class="timeline-content">
                     <div class="timeline-header">
                       <h3 class="timeline-title">The Call to Quest</h3>
-                      <span class="timeline-date">16th Sept 2026</span>
+                      <span class="timeline-date">17th Sept 2026</span>
                     </div>
                     <p class="timeline-desc">The call has been made—step forward, embrace the challenge, and begin your journey to innovation.</p>
                   </div>
@@ -1655,11 +1655,15 @@ class OdysseyApp {
               <!-- KPI Card 1: The High King -->
               <div class="legion-kpi-card high-king-card has-photo">
                 <div class="card-photo-side">
-                  <img src="/images/high_king.jpg" alt="Manmath Biswal" class="vanguard-photo">
+                  <img src="/images/high_king.jpg" alt="Dr. Manmath Kumar Biswal" class="vanguard-photo">
                 </div>
                 <div class="card-text-side">
                   <h2 class="legion-card-title">The High King</h2>
+<<<<<<< HEAD
                   <div class="legion-name">Dr. Manmath Biswal</div>
+=======
+                  <div class="legion-name">Dr. Manmath Kumar Biswal</div>
+>>>>>>> d34eb853be1b19b346d84f1f4f9f936369da898c
                   <div class="legion-role">Chairman</div>
                 </div>
               </div>
@@ -1684,7 +1688,7 @@ class OdysseyApp {
                 <div class="card-text-side">
                   <h2 class="legion-card-title">The Sovereign Queen</h2>
                   <div class="legion-name">Suhasini Choudhury</div>
-                  <div class="legion-role">The Faculty Incharge</div>
+                  <div class="legion-role">Co-Convenor</div>
                 </div>
               </div>
             </div>
@@ -1725,11 +1729,11 @@ class OdysseyApp {
               <!-- Sub KPI Card 4C: APHRODITE -->
               <div class="vanguard-kpi-card has-photo">
                 <div class="card-photo-side">
-                  <img src="/images/aphrodite_new.jpg" alt="Bijayalaxmi Swain" class="vanguard-photo">
+                  <img src="/images/aphrodite_new.jpg" alt="Bijaylaxmi Swain" class="vanguard-photo">
                 </div>
                 <div class="card-text-side">
                   <div class="vanguard-deity-badge">APHRODITE</div>
-                  <h3 class="vanguard-person-name">Bijayalaxmi Swain</h3>
+                  <h3 class="vanguard-person-name">Bijaylaxmi Swain</h3>
                   <div class="vanguard-person-role">The Event Coordinator</div>
                 </div>
               </div>
@@ -1737,11 +1741,11 @@ class OdysseyApp {
               <!-- Sub KPI Card 4D: KRATOS -->
               <div class="vanguard-kpi-card has-photo">
                 <div class="card-photo-side">
-                  <img src="/images/kratos_new.jpg" alt="Lawrence Kumar Khamurai" class="vanguard-photo">
+                  <img src="/images/kratos_new.jpg" alt="Larence Kumar Khamurai" class="vanguard-photo">
                 </div>
                 <div class="card-text-side">
                   <div class="vanguard-deity-badge">KRATOS</div>
-                  <h3 class="vanguard-person-name">Lawrence Kumar Khamurai</h3>
+                  <h3 class="vanguard-person-name">Larence Kumar Khamurai</h3>
                   <div class="vanguard-person-role">The Event Organizer</div>
                 </div>
               </div>
@@ -2088,6 +2092,7 @@ class OdysseyApp {
 document.addEventListener('DOMContentLoaded', () => {
   const app = new OdysseyApp();
   app.init();
+<<<<<<< HEAD
 
   // ── Poster Popup: auto-dismiss after 4 seconds ──
   const posterOverlay = document.getElementById('poster-popup-overlay');
@@ -2120,3 +2125,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+=======
+});
+>>>>>>> d34eb853be1b19b346d84f1f4f9f936369da898c
