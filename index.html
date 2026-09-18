@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>The Odyssey — Journey to Innovation</title>
   <meta name="description"
     content="An interactive constant historical map featuring a progressive brown foot path trail that unlocks serially.">
@@ -22,11 +22,21 @@
 
 <body class="odyssey-theme">
 
-  <!-- FULLSCREEN OPENING PAGE WITH FRONT VIDEO -->
-  <div id="intro-opening-screen" class="intro-opening-screen">
-    <video autoplay playsinline id="intro-bg-video" class="intro-bg-video">
-      <source src="/FRONTvideo.mp4" type="video/mp4">
-    </video>
+  <!-- ANIMATED OPENING LANDING (Poseidon Hero) -->
+  <div id="intro-opening-screen" class="intro-opening-screen" role="dialog" aria-label="Welcome to The Odyssey">
+    <div class="intro-hero-bg" aria-hidden="true"></div>
+    <div class="intro-vignette" aria-hidden="true"></div>
+    <div class="intro-god-rays" aria-hidden="true"></div>
+    <div class="intro-sea-shimmer" aria-hidden="true"></div>
+    <div class="intro-content">
+      <span class="intro-eyebrow">BCET ODYSSEY HACKATHON · TECH FOR BHARAT</span>
+      <h2 class="intro-display-title">THE ODYSSEY</h2>
+      <p class="intro-display-sub">Journey to Innovation · Ἡ Ὀδύσσεια</p>
+      <p class="intro-display-lede">Like Odysseus crossing wine-dark seas, innovators chart bold courses through
+        unmapped challenges — resilience, unity, and mastery lead every crew home to impact.</p>
+      <button type="button" class="gold-action-btn intro-enter-btn" id="intro-enter-btn">Begin the Voyage</button>
+      <span class="intro-skip-hint">Tap anywhere · or wait a few moments to enter the map</span>
+    </div>
   </div>
 
   <!-- AUTOMATIC BACKGROUND SOUNDTRACK -->
@@ -45,10 +55,9 @@
       </div>
     </div>
 
-
-
-    <!-- Header Controls -->
-    <div class="header-controls"></div>
+    <div class="header-controls">
+      <button type="button" class="control-btn" id="guide-btn" aria-haspopup="dialog">Guide</button>
+    </div>
   </header>
 
   <!-- MAIN CONTAINER WITH SPA VIEWS -->
@@ -56,36 +65,33 @@
 
     <!-- VIEW 1: INTERACTIVE CONSTANT HISTORICAL MAP -->
     <section id="map-view" class="view-section active">
+      <div class="map-home-layout">
       <div class="map-container unfolded" id="map-container">
 
         <!-- Constant Parchment Map Graphic Frame -->
         <div class="map-wrapper slide-in" id="map-wrapper">
-          <video autoplay loop muted playsinline class="map-bg-img">
+          <div class="map-viewport-area">
+          <div class="map-fit-frame" id="map-fit-frame">
+          <video autoplay loop muted playsinline class="map-bg-img" id="map-bg-video" poster="/images/historical_map_bg.jpg">
             <source src="/Video Project 9.mp4" type="video/mp4">
           </video>
 
-          <!-- SVG Overlay for Clean Brown Foot Path Trail -->
-          <svg class="map-svg-overlay" viewBox="0 0 1000 600" preserveAspectRatio="none">
+          <!-- SVG Overlay for Road Path & Moving Dotted Route -->
+          <svg class="map-svg-overlay" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
             <defs>
-              <linearGradient id="brownFootGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ffd700" stop-opacity="1" />
-                <stop offset="50%" stop-color="#f39c12" stop-opacity="1" />
-                <stop offset="100%" stop-color="#b78103" stop-opacity="1" />
-              </linearGradient>
+              <!-- Progressive reveal mask: uncovers the road forward as nodes are unlocked -->
+              <mask id="road-reveal-mask" maskUnits="userSpaceOnUse">
+                <path id="trail-mask-path" class="road-mask-path" d="" fill="none" stroke="#ffffff" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" />
+              </mask>
             </defs>
 
-            <!-- 4 Clean Brown Foot Path Segments -->
-            <!-- Segment 1: Symbol I -> Symbol II -->
-            <path id="trail-seg-1" d="M 180 260 Q 320 200 450 180" class="brown-footpath-trail" />
-
-            <!-- Segment 2: Symbol II -> Symbol III -->
-            <path id="trail-seg-2" d="M 450 180 T 720 230" class="brown-footpath-trail" />
-
-            <!-- Segment 3: Symbol III -> Symbol IV -->
-            <path id="trail-seg-3" d="M 720 230 Q 560 360 380 420" class="brown-footpath-trail" />
-
-            <!-- Segment 4: Symbol IV -> Symbol V -->
-            <path id="trail-seg-4" d="M 380 420 Q 580 480 760 430" class="brown-footpath-trail" />
+            <!-- Road Path Group: Single Animated Dotted Line (Revealed progressively node by node) -->
+            <g id="road-path-group" class="road-path-group" mask="url(#road-reveal-mask)">
+              <!-- Single Dotted Movement Line (no black border) -->
+              <path id="trail-road-dots" class="single-dotted-trail" d="" />
+              <!-- Hidden compatibility anchor -->
+              <path id="trail-master" class="brown-footpath-trail" d="" style="display:none;" />
+            </g>
           </svg>
 
           <!-- 5 INTERACTIVE CONSTANT MAP EMBLEMS (SERIAL PROGRESSIVE UNLOCK) -->
@@ -222,18 +228,302 @@
               </div>
             </div>
           </div>
+
+          </div><!-- /.map-fit-frame -->
+          </div><!-- /.map-viewport-area -->
+
+          <button type="button" class="map-journey-fab" id="map-journey-fab" aria-expanded="false" aria-controls="map-journey-sidebar">Journey</button>
+
+          <!-- Bottom status bar removed per user request -->
+          <footer class="map-footer-bar" style="display: none;" aria-hidden="true">
+            <span id="trail-status-text" style="display: none;"></span>
+          </footer>
         </div><!-- /.map-wrapper -->
 
-
-
-
       </div><!-- /.map-container -->
+
+      <aside class="map-journey-sidebar" id="map-journey-sidebar" aria-label="Interactive journey details">
+        <button type="button" class="sidebar-mobile-close" id="sidebar-mobile-close" aria-label="Close journey panel">&times;</button>
+        <div class="sidebar-kicker">Interactive Journey</div>
+        <h2 class="sidebar-heading">Chart Your Odyssey</h2>
+        <div class="sidebar-step-label" id="sidebar-step-label">Step I</div>
+        <h3 class="sidebar-realm-title" id="sidebar-realm-title">The Voyage</h3>
+        <p class="sidebar-greek" id="sidebar-greek">Ὁ Πλοῦς καὶ ἡ Καινοτομία</p>
+        <p class="sidebar-tagline" id="sidebar-tagline">Journey to Innovation — Navigating Uncharted Waters</p>
+        <p class="sidebar-overview" id="sidebar-overview"></p>
+        <p class="sidebar-coords" id="sidebar-coords"></p>
+        <div class="sidebar-nav-row">
+          <button type="button" class="sidebar-nav-btn" id="sidebar-prev-btn" aria-label="Previous step">&#8592;</button>
+          <div class="sidebar-dots" id="sidebar-dots" aria-hidden="true"></div>
+          <button type="button" class="sidebar-nav-btn" id="sidebar-next-btn" aria-label="Next step">&#8594;</button>
+        </div>
+        <button type="button" class="sidebar-cta gold-action-btn" id="sidebar-open-btn">Open The Voyage</button>
+        <p class="sidebar-lock-note" id="sidebar-lock-note" hidden>Complete prior steps to unlock this realm on the map.</p>
+      </aside>
+      </div><!-- /.map-home-layout -->
     </section>
 
     <!-- VIEW 2: DESTINATION SUB-PAGE (DYNAMICALLY POPULATED) -->
     <section id="subpage-view" class="view-section">
       <div class="subpage-container" id="subpage-content">
         <!-- Rendered via JavaScript app.js -->
+      </div>
+    </section>
+
+    <!-- VIEW 3: HACKATHON REGISTRATION FULL PAGE -->
+    <section id="registration-view" class="view-section">
+      <div class="subpage-container reg-page-container" id="reg-page-content">
+        <div class="reg-page-hero">
+          <span class="reg-hero-badge">HACKATHON QUEST REGISTRATION</span>
+          <h1 class="reg-hero-title" id="reg-track-title">REGISTER: TECH FOR BHARAT &amp; SOCIAL IMPACT</h1>
+          <p class="reg-hero-subtitle">Step into ODYSSEY — Begin your Journey to Innovation</p>
+        </div>
+
+        <div class="reg-page-body">
+          <!-- Team Rules Banner -->
+          <div class="reg-rules-banner">
+            <div class="reg-rules-title">📌 Team Rules</div>
+            <ul class="reg-rules-list">
+              <li>🚫 Inter-college teams are not allowed.</li>
+              <li>🏫 All team members must belong to the same institution.</li>
+              <li>👥 Team size: 3–5 members per team.</li>
+              <li>👩 At least 1 female member is mandatory in every team</li>
+              <li>💰 The registration fee is ₹500 per team.</li>
+            </ul>
+          </div>
+
+          <form id="reg-form">
+            <!-- Selected Problem Statement -->
+            <div class="reg-field reg-track-field" style="margin-bottom: 1.5rem;">
+              <label for="reg-track-input">Selected Quest / Problem Statement</label>
+              <input type="text" id="reg-track-input" readonly style="color: var(--color-gold-bright); font-weight: 700; cursor: default; letter-spacing: 0.5px;">
+            </div>
+
+            <!-- Team & Leader Info -->
+            <div class="reg-section-block">
+              <h3 class="reg-block-title">⚔️ Legion &amp; Commander Details</h3>
+              <div class="reg-grid-2">
+                <div class="reg-field">
+                  <label for="reg-team-name">Legion / Team Name</label>
+                  <input type="text" id="reg-team-name" placeholder="e.g. Achaean Innovators" required>
+                </div>
+                <div class="reg-field">
+                  <label for="reg-institution">Institution / Organization Name</label>
+                  <input type="text" id="reg-institution" placeholder="e.g. BCET Odisha" required>
+                </div>
+              </div>
+              <div class="reg-grid-3">
+                <div class="reg-field">
+                  <label for="reg-leader-name">Team Leader Name (Member 1)</label>
+                  <input type="text" id="reg-leader-name" placeholder="e.g. Odysseus" required>
+                </div>
+                <div class="reg-field">
+                  <label for="reg-leader-phone">Team Leader Phone No.</label>
+                  <input type="tel" id="reg-leader-phone" placeholder="e.g. +91 9876543210" required>
+                </div>
+                <div class="reg-field">
+                  <label for="reg-email">Team Leader Email Address</label>
+                  <input type="email" id="reg-email" placeholder="e.g. leader@institution.edu" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Team Members Section -->
+            <div class="reg-members-section">
+              <div class="reg-members-header">
+                <div>
+                  <h3 class="reg-members-title">🛡️ Legion Team Members</h3>
+                  <p class="reg-members-subtitle">3 to 5 members per team (including Leader). Member 2 and Member 3 are required.</p>
+                </div>
+                <div class="team-counter-pill">
+                  Legion Size: <strong id="team-size-counter">3</strong> / 5 Members
+                </div>
+              </div>
+
+              <!-- Member 2 (Slot 1) -->
+              <div class="member-card" data-member-slot="1">
+                <div class="member-card-heading">
+                  <span class="member-num-badge">Member 2</span>
+                  <span class="member-role-tag">Required</span>
+                </div>
+                <div class="reg-grid-3">
+                  <div class="reg-field">
+                    <label for="reg-m1-name">Full Name</label>
+                    <input type="text" id="reg-m1-name" placeholder="Member 2 Name" required>
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m1-email">Email Address</label>
+                    <input type="email" id="reg-m1-email" placeholder="member2@email.com" required>
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m1-phone">Phone No.</label>
+                    <input type="tel" id="reg-m1-phone" placeholder="Phone No." required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Member 3 (Slot 2) -->
+              <div class="member-card" data-member-slot="2">
+                <div class="member-card-heading">
+                  <span class="member-num-badge">Member 3</span>
+                  <span class="member-role-tag">Required</span>
+                </div>
+                <div class="reg-grid-3">
+                  <div class="reg-field">
+                    <label for="reg-m2-name">Full Name</label>
+                    <input type="text" id="reg-m2-name" placeholder="Member 3 Name" required>
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m2-email">Email Address</label>
+                    <input type="email" id="reg-m2-email" placeholder="member3@email.com" required>
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m2-phone">Phone No.</label>
+                    <input type="tel" id="reg-m2-phone" placeholder="Phone No." required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Member 4 (Slot 3) - initially hidden -->
+              <div class="member-card member-card-optional" data-member-slot="3" hidden>
+                <div class="member-card-heading">
+                  <span class="member-num-badge">Member 4</span>
+                  <span class="member-role-tag">Optional</span>
+                  <button type="button" class="remove-member-btn" data-remove-slot="3" title="Remove Member 4" aria-label="Remove Member 4">✕</button>
+                </div>
+                <div class="reg-grid-3">
+                  <div class="reg-field">
+                    <label for="reg-m3-name">Full Name</label>
+                    <input type="text" id="reg-m3-name" placeholder="Member 4 Name">
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m3-email">Email Address</label>
+                    <input type="email" id="reg-m3-email" placeholder="member4@email.com">
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m3-phone">Phone No.</label>
+                    <input type="tel" id="reg-m3-phone" placeholder="Phone No.">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Member 5 (Slot 4) - initially hidden -->
+              <div class="member-card member-card-optional" data-member-slot="4" hidden>
+                <div class="member-card-heading">
+                  <span class="member-num-badge">Member 5</span>
+                  <span class="member-role-tag">Optional</span>
+                  <button type="button" class="remove-member-btn" data-remove-slot="4" title="Remove Member 5" aria-label="Remove Member 5">✕</button>
+                </div>
+                <div class="reg-grid-3">
+                  <div class="reg-field">
+                    <label for="reg-m4-name">Full Name</label>
+                    <input type="text" id="reg-m4-name" placeholder="Member 5 Name">
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m4-email">Email Address</label>
+                    <input type="email" id="reg-m4-email" placeholder="member5@email.com">
+                  </div>
+                  <div class="reg-field">
+                    <label for="reg-m4-phone">Phone No.</label>
+                    <input type="tel" id="reg-m4-phone" placeholder="Phone No.">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Add Member Button Container (after Member 3) -->
+              <div class="add-member-control-area">
+                <button type="button" class="add-member-btn" id="add-member-btn">
+                  <span class="add-plus-symbol">+</span>
+                  <span class="add-btn-text">Add Member 4</span>
+                </button>
+                <span class="add-member-hint" id="add-member-hint">Click + to add Member 4 (maximum 5 members per team)</span>
+              </div>
+            </div>
+
+            <!-- Accommodation & Logistical Preferences -->
+            <div class="reg-section-block">
+              <h3 class="reg-block-title">🏛️ Logistics &amp; Accommodation</h3>
+              <div class="reg-field">
+                <label for="reg-accommodation">Accommodation Required?</label>
+                <select id="reg-accommodation" required>
+                  <option value="" disabled selected>Select Accommodation Choice</option>
+                  <option value="Yes">Yes — Accommodation Required</option>
+                  <option value="No">No — Self Arranged</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Payment Details & Receipt Upload -->
+            <div class="reg-payment-section">
+              <h3 class="reg-payment-title">💳 Registration Fee &amp; Payment Verification</h3>
+              <div class="payment-info-box">
+                <div class="payment-qr-wrap" id="payment-qr-trigger" role="button" tabindex="0"
+                  title="Click to open Payment QR Scanner">
+                  <div class="payment-qr-thumbnail-box">
+                    <img src="/images/payment-qr.png" alt="Payment QR Code" class="payment-qr-thumb">
+                    <div class="qr-expand-overlay">
+                      <span class="qr-expand-icon">🔍</span>
+                    </div>
+                  </div>
+                  <span>Scan &amp; Pay UPI</span>
+                  <span class="qr-click-hint">Click to enlarge</span>
+                </div>
+                <div class="payment-details-text">
+                  <p><strong>UPI ID:</strong> <code>jrrout751@ybl</code></p>
+                  <p><strong>Account Holder:</strong> Odyssey Hackathon BCET</p>
+                  <p><strong>Registration Fee:</strong> <span class="fee-badge">₹500 per team</span></p>
+                  <p class="payment-note">⚡ Pay the registration fee via UPI and upload your payment slip photo below.</p>
+                </div>
+              </div>
+
+              <div class="reg-field payment-upload-field">
+                <label for="reg-payment-slip">Upload Payment Slip / Receipt (JPG only)</label>
+                <input type="file" id="reg-payment-slip" accept=".jpg,.jpeg,image/jpeg" required class="file-input-gold">
+              </div>
+            </div>
+
+            <div class="reg-submit-wrap">
+              <div id="reg-error-msg"
+                style="display:none; color:#ff6b6b; margin-bottom:0.8rem; font-size:0.9rem; text-align:center;"></div>
+              <button type="submit" class="gold-action-btn reg-main-submit-btn" id="reg-submit-btn">🏹 Submit Quest Registration</button>
+            </div>
+          </form>
+
+          <!-- SUCCESS VIEW WITH POSEIDON HERO CHARACTER & WEAPON -->
+          <div class="reg-success-container" id="reg-success-msg" style="display:none;">
+            <div class="reg-success-header">
+              <span class="quest-status-badge">📜 QUEST REGISTRATION VERIFIED</span>
+              <p class="reg-success-kicker">Your journey to innovation begins here.</p>
+            </div>
+
+            <div class="odysseus-speech-bubble">
+              <span class="speech-quote">"Thank you for registering <strong id="odysseus-team-name">your team</strong>!
+                May the Gods of Innovation guide your Legion to victory!"</span>
+            </div>
+
+            <div class="poseidon-hero-frame">
+              <img src="/images/poseidon.jpg" alt="Poseidon God of the Oceans" class="poseidon-img">
+              <div class="poseidon-glow-overlay"></div>
+              <div class="hero-sparks">
+                <span>⚡</span><span>🔥</span><span>✨</span>
+              </div>
+            </div>
+
+            <div class="reg-success-details">
+              <div class="reg-id-card">
+                <span class="reg-id-label">REGISTRATION ID</span>
+                <strong id="odyssey-registration-id" class="reg-id-value"></strong>
+              </div>
+              <p class="reg-confirmation-copy">Your Legion has been registered for the <strong>ODYSSEY Hackathon</strong>.
+                Prepare for the Journey to Innovation!</p>
+              <div class="whatsapp-cta">
+                <a class="gold-action-btn" href="https://chat.whatsapp.com/CGWQjE5HpHG5QmqTvZR1EB" target="_blank" rel="noopener noreferrer">JOIN OFFICIAL WHATSAPP GROUP</a>
+                <p class="whatsapp-supporting-text">After joining the official WhatsApp group, participants will receive a Google Form link to submit their project abstract and PPT for the shortlisting round.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
 
@@ -274,16 +564,14 @@
           <div class="step-num">1</div>
           <div class="step-info">
             <h4>Start at Symbol I (The Voyage)</h4>
-            <p>Click <strong>I. The Voyage</strong> to open its page and reveal the brown foot path trail to Symbol II.
-            </p>
+            <p>Click <strong>I. The Voyage</strong> to open its page and reveal the brown foot path trail to Symbol II.</p>
           </div>
         </div>
         <div class="guide-step">
           <div class="step-num">2</div>
           <div class="step-info">
             <h4>Constant Map View</h4>
-            <p>The map remains stationary and constant while the brown foot path reveals serially across the parchment.
-            </p>
+            <p>The map remains stationary and constant while the brown foot path reveals serially across the parchment.</p>
           </div>
         </div>
         <div class="guide-step">
@@ -296,229 +584,6 @@
       </div>
       <div class="modal-footer">
         <button class="gold-action-btn" id="guide-confirm-btn">Begin Journey</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- HACKATHON REGISTRATION MODAL -->
-  <div class="modal-overlay" id="registration-modal">
-    <div class="modal-card reg-card">
-      <button class="modal-close" id="reg-close-btn">&times;</button>
-      <div class="modal-header">
-        <span class="modal-badge">HACKATHON QUEST REGISTRATION</span>
-        <h2 class="modal-title" id="reg-track-title">Join the Quest</h2>
-        <span class="modal-origin">Step into ODYSSEY — Begin your Journey to Innovation</span>
-      </div>
-      <div class="modal-body reg-body">
-        <div class="reg-track-abstract-box" id="reg-track-abstract-box">
-          <div class="reg-track-abstract-label">Problem Statement Abstract</div>
-          <p id="reg-track-abstract">Select a track to view the abstract.</p>
-        </div>
-
-        <!-- Team Rules Banner -->
-        <div class="reg-rules-banner">
-          <div class="reg-rules-title">📌 Team Rules</div>
-          <ul class="reg-rules-list">
-            <li>🚫 Inter-college teams are not allowed.</li>
-            <li>🏫 All team members must belong to the same institution.</li>
-            <li>👥 Team size: 3–5 members per team.</li>
-            <li>👩 At least 1 female member is mandatory in every team</li>
-            <li>💰 The registration fee is ₹500 per team.</li>
-          </ul>
-        </div>
-
-        <form id="reg-form">
-          <!-- Team & Leader Info -->
-          <div class="reg-field">
-            <label for="reg-team-name">Legion / Team Name</label>
-            <input type="text" id="reg-team-name" placeholder="e.g. Achaean Innovators" required>
-          </div>
-          <div class="reg-grid-2">
-            <div class="reg-field">
-              <label for="reg-leader-name">Team Leader Name</label>
-              <input type="text" id="reg-leader-name" placeholder="e.g. Odysseus" required>
-            </div>
-            <div class="reg-field">
-              <label for="reg-leader-phone">Team Leader Phone No.</label>
-              <input type="tel" id="reg-leader-phone" placeholder="e.g. +91 9876543210" required>
-            </div>
-          </div>
-          <div class="reg-field">
-            <label for="reg-email">Team Leader Email Address</label>
-            <input type="email" id="reg-email" placeholder="leader@institution.edu" required>
-          </div>
-
-          <div class="reg-field">
-            <label for="reg-team-size">Number of Team Members (including team leader)</label>
-            <select id="reg-team-size" required>
-              <option value="3" selected>3 members</option>
-              <option value="4">4 members</option>
-              <option value="5">5 members</option>
-            </select>
-          </div>
-
-          <!-- Additional Team Members Section -->
-          <div class="reg-members-section">
-            <h3 class="reg-members-title">🛡️ Additional Legion Team Members</h3>
-
-            <div class="member-card" data-member-slot="1">
-              <h4 class="member-card-heading">Member 1</h4>
-              <div class="reg-grid-3">
-                <div class="reg-field">
-                  <label for="reg-m1-name">Name</label>
-                  <input type="text" id="reg-m1-name" placeholder="Member 1 Name">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m1-email">Email</label>
-                  <input type="email" id="reg-m1-email" placeholder="member1@email.com">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m1-phone">Phone No.</label>
-                  <input type="tel" id="reg-m1-phone" placeholder="Phone No.">
-                </div>
-              </div>
-            </div>
-
-            <div class="member-card" data-member-slot="2">
-              <h4 class="member-card-heading">Member 2</h4>
-              <div class="reg-grid-3">
-                <div class="reg-field">
-                  <label for="reg-m2-name">Name</label>
-                  <input type="text" id="reg-m2-name" placeholder="Member 2 Name">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m2-email">Email</label>
-                  <input type="email" id="reg-m2-email" placeholder="member2@email.com">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m2-phone">Phone No.</label>
-                  <input type="tel" id="reg-m2-phone" placeholder="Phone No.">
-                </div>
-              </div>
-            </div>
-
-            <div class="member-card" data-member-slot="3" hidden>
-              <h4 class="member-card-heading">Member 3</h4>
-              <div class="reg-grid-3">
-                <div class="reg-field">
-                  <label for="reg-m3-name">Name</label>
-                  <input type="text" id="reg-m3-name" placeholder="Member 3 Name">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m3-email">Email</label>
-                  <input type="email" id="reg-m3-email" placeholder="member3@email.com">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m3-phone">Phone No.</label>
-                  <input type="tel" id="reg-m3-phone" placeholder="Phone No.">
-                </div>
-              </div>
-            </div>
-
-            <div class="member-card" data-member-slot="4" hidden>
-              <h4 class="member-card-heading">Member 4</h4>
-              <div class="reg-grid-3">
-                <div class="reg-field">
-                  <label for="reg-m4-name">Name</label>
-                  <input type="text" id="reg-m4-name" placeholder="Member 4 Name">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m4-email">Email</label>
-                  <input type="email" id="reg-m4-email" placeholder="member4@email.com">
-                </div>
-                <div class="reg-field">
-                  <label for="reg-m4-phone">Phone No.</label>
-                  <input type="tel" id="reg-m4-phone" placeholder="Phone No.">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Accommodation Option -->
-          <div class="reg-field" style="margin-top: 1.2rem;">
-            <label for="reg-accommodation">Accommodation Required?</label>
-            <select id="reg-accommodation" required>
-              <option value="" disabled selected>Select Accommodation Choice</option>
-              <option value="Yes">Yes — Accommodation Required</option>
-              <option value="No">No — Self Arranged</option>
-            </select>
-          </div>
-
-          <!-- Institution Name Box after Team Members -->
-          <div class="reg-field">
-            <label for="reg-institution">Institution / Organization Name</label>
-            <input type="text" id="reg-institution" placeholder="e.g. BCET Odisha" required>
-          </div>
-
-          <!-- Payment Option & Payment Slip Photo Upload -->
-          <div class="reg-payment-section">
-            <h3 class="reg-payment-title">💳 Registration Fee & Payment Details</h3>
-            <div class="payment-info-box">
-              <div class="payment-qr-wrap" id="payment-qr-trigger" role="button" tabindex="0"
-                title="Click to open Payment QR Scanner">
-                <div class="payment-qr-thumbnail-box">
-                  <img src="/images/payment-qr.png" alt="Payment QR Code" class="payment-qr-thumb">
-                  <div class="qr-expand-overlay">
-                    <span class="qr-expand-icon">🔍</span>
-                  </div>
-                </div>
-                <span>Scan &amp; Pay UPI</span>
-                <span class="qr-click-hint">Click to enlarge</span>
-              </div>
-              <div class="payment-details-text">
-                <p><strong>UPI ID:</strong> <code>jrrout751@ybl</code></p>
-                <p><strong>Account Holder:</strong> Odyssey Hackathon BCET</p>
-                <p class="payment-note">⚡ Pay the registration fee via UPI and upload your payment slip photo below.</p>
-              </div>
-            </div>
-
-            <div class="reg-field" style="margin-top: 1.1rem;">
-              <label for="reg-payment-slip">Upload Payment Slip / Receipt (JPG only)</label>
-              <input type="file" id="reg-payment-slip" accept=".jpg,.jpeg,image/jpeg" required class="file-input-gold">
-            </div>
-          </div>
-
-          <div class="reg-submit-wrap">
-            <div id="reg-error-msg"
-              style="display:none; color:#ff6b6b; margin-bottom:0.8rem; font-size:0.85rem; text-align:center;"></div>
-            <button type="submit" class="gold-action-btn" id="reg-submit-btn">🏹 Submit Quest Registration</button>
-          </div>
-        </form>
-
-        <!-- SUCCESS VIEW WITH POSEIDON HERO CHARACTER & WEAPON -->
-        <div class="reg-success-container" id="reg-success-msg" style="display:none;">
-          <div class="reg-success-header">
-          <span class="quest-status-badge">📜 QUEST REGISTRATION VERIFIED</span>
-          <p class="reg-success-kicker">Your journey to innovation begins here.</p>
-          </div>
-
-          <div class="odysseus-speech-bubble">
-          <span class="speech-quote">"Thank you for registering <strong id="odysseus-team-name">your team</strong>!
-            May the Gods of Innovation guide your Legion to victory!"</span>
-          </div>
-
-          <div class="poseidon-hero-frame">
-          <img src="/images/poseidon.jpg" alt="Poseidon God of the Oceans" class="poseidon-img">
-          <div class="poseidon-glow-overlay"></div>
-          <div class="hero-sparks">
-            <span>⚡</span><span>🔥</span><span>✨</span>
-          </div>
-          </div>
-
-          <div class="reg-success-details">
-          <div class="reg-id-card">
-            <span class="reg-id-label">REGISTRATION ID</span>
-            <strong id="odyssey-registration-id" class="reg-id-value"></strong>
-          </div>
-          <p class="reg-confirmation-copy">Your Legion has been registered for the <strong>ODYSSEY Hackathon</strong>.
-            Prepare for the Journey to Innovation!</p>
-          <div class="whatsapp-cta">
-            <a class="gold-action-btn" href="https://chat.whatsapp.com/CGWQjE5HpHG5QmqTvZR1EB" target="_blank" rel="noopener noreferrer">JOIN OFFICIAL WHATSAPP GROUP</a>
-            <p class="whatsapp-supporting-text">After joining the official WhatsApp group, participants will receive a Google Form link to submit their project abstract and PPT for the shortlisting round.</p>
-          </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
@@ -565,10 +630,6 @@
             <stop offset="50%" stop-color="#ffd700" />
             <stop offset="100%" stop-color="#ffffff" />
           </linearGradient>
-          <filter id="arrowGlow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
         </defs>
         <!-- Trail Ember particles -->
         <path d="M 0,16 L 30,16" stroke="#f39c12" stroke-width="2" stroke-dasharray="2 4" opacity="0.8" />
@@ -576,11 +637,10 @@
         <path d="M 10,4 L 35,16 L 10,28 M 4,7 L 24,16 L 4,25" fill="none" stroke="#ffd700" stroke-width="3"
           stroke-linecap="round" />
         <!-- Shaft -->
-        <line x1="30" y1="16" x2="140" y2="16" stroke="url(#arrowGold)" stroke-width="4.5" stroke-linecap="round"
-          filter="url(#arrowGlow)" />
+        <line x1="30" y1="16" x2="140" y2="16" stroke="url(#arrowGold)" stroke-width="4.5" stroke-linecap="round" />
         <line x1="30" y1="16" x2="140" y2="16" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" />
         <!-- Arrow Head (Weapon Spearhead) -->
-        <polygon points="160,16 132,3 138,16 132,29" fill="#ffd700" filter="url(#arrowGlow)" />
+        <polygon points="160,16 132,3 138,16 132,29" fill="#ffd700" />
         <polygon points="160,16 138,10 142,16 138,22" fill="#ffffff" />
       </svg>
     </div>

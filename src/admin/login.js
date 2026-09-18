@@ -18,7 +18,7 @@ form.addEventListener('submit', async (event) => {
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.message || 'Unable to sign in');
-    window.location.replace('/admin/dashboard.html');
+    window.location.replace('/admin/dashboard');
   } catch (err) {
     error.textContent = err.message;
   } finally {

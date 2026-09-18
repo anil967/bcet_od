@@ -1,7 +1,7 @@
 // Main Odyssey Application Controller — Managing Serial Unlock & Brown Foot Path Trails
 
 import { SYMBOLS_DATA } from './data.js';
-import { OdysseyMap } from './map.js';
+import { OdysseyMap, updateTrailProgress } from './map.js';
 import { audioSystem } from './audio.js';
 
 const TRACK_ABSTRACTS = {
@@ -14,10 +14,14 @@ const TRACK_ABSTRACTS = {
 class OdysseyApp {
   constructor() {
     this.currentSymbolId = null;
+    this.selectedTrack = '';
     this.activeTab = 'lore';
     this.odysseyMap = null;
     this.unlockedStep = 1; // 1 to 5
     this.symbolOrder = ['voyage', 'realms', 'protocols', 'legions', 'odyssey'];
+    this.sidebarPreviewStep = 1;
+    this.introAutoTimer = null;
+    window.__odysseyApp = this;
   }
 
   init() {
@@ -29,58 +33,41 @@ class OdysseyApp {
     // 1.1 Opening Page Screen & Entrance Trigger
     const mapWrapper = document.getElementById('map-wrapper');
     const introScreen = document.getElementById('intro-opening-screen');
-    const introVideo = document.getElementById('intro-bg-video');
+    const introEnterBtn = document.getElementById('intro-enter-btn');
 
     const transitionToMap = () => {
+      if (this.introAutoTimer) {
+        clearTimeout(this.introAutoTimer);
+        this.introAutoTimer = null;
+      }
       audioSystem.playBackgroundMusic();
+      document.body.classList.remove('intro-active');
       if (introScreen && !introScreen.classList.contains('fade-out')) {
         introScreen.classList.add('fade-out');
         setTimeout(() => {
           introScreen.style.display = 'none';
           mapWrapper?.classList.add('slide-in');
+          this.odysseyMap?.refreshLayout();
         }, 600);
       }
     };
 
-    if (introVideo) {
-      introVideo.muted = false;
-      introVideo.play().catch(() => {
-        introVideo.muted = true;
-        introVideo.play().catch(() => {});
-      });
-
+    if (introScreen) {
+      document.body.classList.add('intro-active');
       audioSystem.playBackgroundMusic();
-
-      // When opening page video finishes, automatically transition to map
-      introVideo.addEventListener('ended', () => {
+      introEnterBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        audioSystem.playClick();
         transitionToMap();
       });
+      introScreen.addEventListener('click', () => transitionToMap());
+      this.introAutoTimer = setTimeout(() => transitionToMap(), 8500);
     }
 
-    // Optional click on intro screen to transition to map
-    introScreen?.addEventListener('click', () => {
-      audioSystem.playBackgroundMusic();
-      transitionToMap();
-    });
+    this.initMapSidebarControls();
+    this.initMobileJourneyPanel();
 
-    // 2. Setup Top Header Nav Pill Click Handlers
-    const navPills = document.querySelectorAll('.symbol-nav .nav-pill');
-    navPills.forEach(pill => {
-      pill.addEventListener('click', () => {
-        const symbolId = pill.getAttribute('data-symbol');
-        const stepIdx = this.symbolOrder.indexOf(symbolId) + 1;
-
-        if (stepIdx <= this.unlockedStep) {
-          audioSystem.playClick();
-          this.openSymbolPage(symbolId);
-        } else {
-          audioSystem.playClick();
-          this.showLockedNotice(stepIdx);
-        }
-      });
-    });
-
-    // 3. Brand Logo Click -> Return to Map
+    // 2. Brand Logo Click -> Return to Map
     document.getElementById('brand-logo')?.addEventListener('click', () => {
       audioSystem.playClick();
       this.showMapView();
@@ -118,13 +105,16 @@ class OdysseyApp {
       });
     });
 
-    // 6b. Registration Modal Handlers
-    const regModal = document.getElementById('registration-modal');
-    const regCloseBtn = document.getElementById('reg-close-btn');
+    // 6b. Registration Full-Page & Dynamic Member Handlers
     const regForm = document.getElementById('reg-form');
     const regSuccessMsg = document.getElementById('reg-success-msg');
-    const teamSizeSelect = document.getElementById('reg-team-size');
+    const addMemberBtn = document.getElementById('add-member-btn');
+    const addMemberHint = document.getElementById('add-member-hint');
+    const teamSizeCounter = document.getElementById('team-size-counter');
     const memberCards = [...document.querySelectorAll('.member-card[data-member-slot]')];
+    const removeMemberBtns = document.querySelectorAll('.remove-member-btn');
+
+    let currentTeamSize = 3; // Minimum 3 members (Leader + Member 2 + Member 3)
 
     const updateTrackDetails = (trackTitle) => {
       const normalizedTitle = trackTitle || 'Software Deployment with AI Implementation';
@@ -140,18 +130,76 @@ class OdysseyApp {
       const additionalMemberCount = teamSize - 1;
       memberCards.forEach((card) => {
         const slot = Number(card.dataset.memberSlot);
-        card.hidden = slot > additionalMemberCount;
+        const shouldShow = slot <= currentTeamSize - 1;
+        card.hidden = !shouldShow;
+        const inputs = card.querySelectorAll('input');
+        inputs.forEach((input) => {
+          if (!shouldShow) {
+            input.value = '';
+            input.removeAttribute('required');
+          } else {
+            input.setAttribute('required', 'required');
+          }
+        });
       });
+
+      if (teamSizeCounter) {
+        teamSizeCounter.textContent = String(currentTeamSize);
+      }
+
+      if (addMemberBtn) {
+        if (currentTeamSize < 5) {
+          addMemberBtn.disabled = false;
+          const nextMemberNum = currentTeamSize + 1;
+          addMemberBtn.innerHTML = `<span class="add-plus-symbol">+</span><span class="add-btn-text">Add Member ${nextMemberNum}</span>`;
+          if (addMemberHint) {
+            addMemberHint.textContent = `Click + to add Member ${nextMemberNum} (maximum 5 members per team)`;
+          }
+        } else {
+          addMemberBtn.disabled = true;
+          addMemberBtn.innerHTML = `<span class="add-plus-symbol">✓</span><span class="add-btn-text">Maximum Limit (5 Members)</span>`;
+          if (addMemberHint) {
+            addMemberHint.textContent = `Legion team maximum capacity reached (5 members).`;
+          }
+        }
+      }
     };
 
-    teamSizeSelect?.addEventListener('change', updateMemberPanels);
-    updateMemberPanels();
-    updateTrackDetails('Software Deployment with AI Implementation');
-
-    regCloseBtn?.addEventListener('click', () => {
-      audioSystem.playClick();
-      regModal?.classList.remove('active');
+    addMemberBtn?.addEventListener('click', () => {
+      if (currentTeamSize < 5) {
+        audioSystem.playClick();
+        currentTeamSize++;
+        updateTeamMemberUI();
+      }
     });
+
+    removeMemberBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        audioSystem.playClick();
+        const slotToRemove = Number(btn.dataset.removeSlot);
+        if (slotToRemove === 4 && currentTeamSize === 5) {
+          currentTeamSize = 4;
+        } else if (slotToRemove === 3) {
+          if (currentTeamSize === 5) {
+            // Shift Member 5 values into Member 4 slot
+            const m3Name = document.getElementById('reg-m3-name');
+            const m3Email = document.getElementById('reg-m3-email');
+            const m3Phone = document.getElementById('reg-m3-phone');
+            const m4Name = document.getElementById('reg-m4-name');
+            const m4Email = document.getElementById('reg-m4-email');
+            const m4Phone = document.getElementById('reg-m4-phone');
+            if (m3Name && m4Name) m3Name.value = m4Name.value;
+            if (m3Email && m4Email) m3Email.value = m4Email.value;
+            if (m3Phone && m4Phone) m3Phone.value = m4Phone.value;
+          }
+          currentTeamSize = Math.max(3, currentTeamSize - 1);
+        }
+        updateTeamMemberUI();
+      });
+    });
+
+    updateTeamMemberUI();
 
     regForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -167,7 +215,7 @@ class OdysseyApp {
       const leaderName = document.getElementById('reg-leader-name')?.value?.trim() || '';
       const leaderPhone = document.getElementById('reg-leader-phone')?.value?.trim() || '';
       const leaderEmail = document.getElementById('reg-email')?.value?.trim() || '';
-      const teamSize = Number(teamSizeSelect?.value || 0);
+      const teamSize = currentTeamSize;
 
       // Gather team members
       const members = [];
@@ -175,9 +223,15 @@ class OdysseyApp {
         const mName = document.getElementById(`reg-m${i}-name`)?.value?.trim() || '';
         const mEmail = document.getElementById(`reg-m${i}-email`)?.value?.trim() || '';
         const mPhone = document.getElementById(`reg-m${i}-phone`)?.value?.trim() || '';
-        if (mName || mEmail || mPhone) {
-          members.push({ memberSlot: i, name: mName, email: mEmail, phone: mPhone });
+
+        if (!mName || !mEmail || !mPhone) {
+          if (errorEl) {
+            errorEl.textContent = `⚠️ Please provide full name, email, and phone for Member ${i + 1}.`;
+            errorEl.style.display = 'block';
+          }
+          return;
         }
+        members.push({ memberSlot: i, name: mName, email: mEmail, phone: mPhone });
       }
 
       const accommodation = document.getElementById('reg-accommodation')?.value || '';
@@ -220,6 +274,8 @@ class OdysseyApp {
         }
       }
 
+      const problemStatement = document.getElementById('reg-track-input')?.value || this.selectedTrack || 'General Track';
+
       const payload = {
         teamName,
         leaderName,
@@ -229,7 +285,9 @@ class OdysseyApp {
         members,
         accommodation,
         institution,
-        paymentSlip
+        paymentSlip,
+        problemStatement,
+        track: problemStatement
       };
 
       // Set loading state on button
@@ -335,6 +393,118 @@ class OdysseyApp {
 
     // Initialize UI states
     this.updateSerialUnlockState();
+    this.updateMapSidebar(this.sidebarPreviewStep);
+
+    requestAnimationFrame(() => {
+      this.odysseyMap?.refreshLayout();
+    });
+  }
+
+  initMobileJourneyPanel() {
+    const sidebar = document.getElementById('map-journey-sidebar');
+    const fab = document.getElementById('map-journey-fab');
+    const closeBtn = document.getElementById('sidebar-mobile-close');
+
+    const setOpen = (open) => {
+      sidebar?.classList.toggle('sidebar-open', open);
+      fab?.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+
+    fab?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      audioSystem.playClick();
+      setOpen(!sidebar?.classList.contains('sidebar-open'));
+    });
+
+    closeBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      audioSystem.playClick();
+      setOpen(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+  }
+
+  initMapSidebarControls() {
+    const prevBtn = document.getElementById('sidebar-prev-btn');
+    const nextBtn = document.getElementById('sidebar-next-btn');
+    const openBtn = document.getElementById('sidebar-open-btn');
+
+    prevBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (this.sidebarPreviewStep > 1) {
+        audioSystem.playClick();
+        this.updateMapSidebar(this.sidebarPreviewStep - 1);
+      }
+    });
+
+    nextBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (this.sidebarPreviewStep < 5) {
+        audioSystem.playClick();
+        this.updateMapSidebar(this.sidebarPreviewStep + 1);
+      }
+    });
+
+    openBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const symbolId = this.symbolOrder[this.sidebarPreviewStep - 1];
+      const stepIdx = this.sidebarPreviewStep;
+      if (stepIdx <= this.unlockedStep) {
+        audioSystem.playClick();
+        this.handleSymbolClick(symbolId);
+      } else {
+        this.showLockedNotice(stepIdx);
+      }
+    });
+  }
+
+  updateMapSidebar(stepNumber) {
+    this.sidebarPreviewStep = Math.min(5, Math.max(1, stepNumber));
+    const symbolId = this.symbolOrder[this.sidebarPreviewStep - 1];
+    const data = SYMBOLS_DATA[symbolId];
+    if (!data) return;
+
+    const roman = ['I', 'II', 'III', 'IV', 'V'][this.sidebarPreviewStep - 1];
+    const stepLabel = document.getElementById('sidebar-step-label');
+    const realmTitle = document.getElementById('sidebar-realm-title');
+    const greekEl = document.getElementById('sidebar-greek');
+    const taglineEl = document.getElementById('sidebar-tagline');
+    const overviewEl = document.getElementById('sidebar-overview');
+    const coordsEl = document.getElementById('sidebar-coords');
+    if (stepLabel) stepLabel.textContent = `Step ${roman}`;
+    if (realmTitle) realmTitle.textContent = data.name;
+    if (greekEl) greekEl.textContent = data.greekName;
+    if (taglineEl) taglineEl.textContent = data.tagline;
+    if (overviewEl) overviewEl.textContent = data.overview;
+    if (coordsEl) coordsEl.textContent = data.coords;
+
+    const isUnlocked = this.sidebarPreviewStep <= this.unlockedStep;
+    const openBtn = document.getElementById('sidebar-open-btn');
+    const lockNote = document.getElementById('sidebar-lock-note');
+    if (openBtn) {
+      openBtn.textContent = isUnlocked ? `Open ${data.name}` : 'Complete Prior Steps to Unlock';
+      openBtn.classList.toggle('is-locked', !isUnlocked);
+    }
+    if (lockNote) lockNote.hidden = isUnlocked;
+
+    document.getElementById('sidebar-prev-btn')?.toggleAttribute('disabled', this.sidebarPreviewStep <= 1);
+    document.getElementById('sidebar-next-btn')?.toggleAttribute('disabled', this.sidebarPreviewStep >= 5);
+
+    const dotsHost = document.getElementById('sidebar-dots');
+    if (dotsHost) {
+      dotsHost.innerHTML = '';
+      for (let i = 1; i <= 5; i += 1) {
+        const dot = document.createElement('span');
+        dot.className = 'sidebar-dot';
+        if (i === this.sidebarPreviewStep) dot.classList.add('active');
+        if (i > this.unlockedStep) dot.classList.add('locked');
+        dotsHost.appendChild(dot);
+      }
+    }
+
   }
 
   handleSymbolClick(symbolId) {
@@ -353,17 +523,17 @@ class OdysseyApp {
   }
 
   updateSerialUnlockState() {
-    // 1. Update Map Pins & Nav Pills
+    // 1. Update map pins
     this.symbolOrder.forEach((id, idx) => {
       const step = idx + 1;
       const pin = document.getElementById(`pin-${id}`);
-      const pill = document.getElementById(`pill-${id}`);
+
+      pin?.classList.toggle('pin-current', step === this.unlockedStep);
+      pin?.classList.toggle('pin-completed', step < this.unlockedStep);
 
       if (step <= this.unlockedStep) {
         pin?.classList.remove('locked');
         pin?.classList.add('unlocked');
-        pill?.classList.remove('locked');
-        pill?.classList.add('unlocked');
 
         // Update Tooltip Action Prompt
         const promptEl = pin?.querySelector('.action-prompt');
@@ -376,33 +546,26 @@ class OdysseyApp {
           }
         }
       } else {
-        pin?.classList.remove('unlocked');
+        pin?.classList.remove('unlocked', 'pin-current', 'pin-completed');
         pin?.classList.add('locked');
-        pill?.classList.remove('unlocked');
-        pill?.classList.add('locked');
       }
     });
 
-    // 2. Animate Brown Footpath Trail Segments
-    for (let i = 1; i <= 4; i++) {
-      const trail = document.getElementById(`trail-seg-${i}`);
-      if (i < this.unlockedStep) {
-        trail?.classList.add('active');
-      } else {
-        trail?.classList.remove('active');
-      }
-    }
+    // 2. Single voyage route — draw progressively (no overlapping segments)
+    updateTrailProgress(this.unlockedStep);
 
     // 3. Update Status Bar Text
     const statusText = document.getElementById('trail-status-text');
     if (statusText) {
       if (this.unlockedStep >= 5) {
-        statusText.textContent = `🎉 All 5 Realms Unlocked! Complete Journey to Innovation Foot Path Trail Active.`;
+        statusText.textContent = `All 5 unlocked`;
       } else {
-        const nextSymbolName = SYMBOLS_DATA[this.symbolOrder[this.unlockedStep - 1]].name;
-        statusText.textContent = `Step ${this.unlockedStep - 1} of 5 Completed \u2022 Foot Path Trail Extended to ${nextSymbolName}!`;
+        const current = SYMBOLS_DATA[this.symbolOrder[this.unlockedStep - 1]].name;
+        statusText.textContent = `Step ${this.unlockedStep} — ${current}`;
       }
     }
+
+    this.updateMapSidebar(this.sidebarPreviewStep);
   }
 
   showLockedNotice(stepIdx) {
@@ -412,6 +575,10 @@ class OdysseyApp {
 
   handleHashRoute() {
     const hash = window.location.hash.replace('#', '');
+    if (hash === 'register') {
+      this.openRegistrationPage(this.selectedTrack || 'Software Deployment with AI Implementation', false);
+      return;
+    }
     if (SYMBOLS_DATA[hash]) {
       const stepIdx = this.symbolOrder.indexOf(hash) + 1;
       if (stepIdx <= this.unlockedStep) {
@@ -431,19 +598,14 @@ class OdysseyApp {
 
     const mapView = document.getElementById('map-view');
     const subpageView = document.getElementById('subpage-view');
+    const regView = document.getElementById('registration-view');
 
     mapView?.classList.add('active');
     subpageView?.classList.remove('active');
+    regView?.classList.remove('active');
 
-    // Highlight active pill
-    document.querySelectorAll('.symbol-nav .nav-pill').forEach(pill => {
-      const id = pill.getAttribute('data-symbol');
-      if (id === this.currentSymbolId) {
-        pill.classList.add('active');
-      } else {
-        pill.classList.remove('active');
-      }
-    });
+    this.currentSymbolId = null;
+    this.updateMapSidebar(this.sidebarPreviewStep);
   }
 
   openSymbolPage(symbolId, updateHash = true) {
@@ -465,27 +627,69 @@ class OdysseyApp {
       window.location.hash = symbolId;
     }
 
-    // Highlight top header pill
-    document.querySelectorAll('.symbol-nav .nav-pill').forEach(pill => {
-      if (pill.getAttribute('data-symbol') === symbolId) {
-        pill.classList.add('active');
-      } else {
-        pill.classList.remove('active');
-      }
-    });
-
     // Render Subpage HTML
     this.renderSubpageContent(data);
 
     // Switch View Visibility
     const mapView = document.getElementById('map-view');
     const subpageView = document.getElementById('subpage-view');
+    const regView = document.getElementById('registration-view');
 
     mapView?.classList.remove('active');
     subpageView?.classList.add('active');
+    regView?.classList.remove('active');
 
     // Scroll subpage to top
     const container = document.getElementById('subpage-content');
+    if (container) container.scrollTop = 0;
+
+    audioSystem.playLyreArpeggio();
+  }
+
+  openRegistrationPage(trackTitle, updateHash = true) {
+    if (trackTitle && typeof trackTitle === 'string' && trackTitle.trim().length > 0) {
+      this.selectedTrack = trackTitle.trim();
+    } else if (!this.selectedTrack) {
+      this.selectedTrack = 'Software Deployment with AI Implementation';
+    }
+
+    const currentTrack = this.selectedTrack;
+
+    const trackHeading = document.getElementById('reg-track-title');
+    if (trackHeading) {
+      trackHeading.textContent = `REGISTER: ${currentTrack.toUpperCase()}`;
+    }
+
+    const trackInput = document.getElementById('reg-track-input');
+    if (trackInput) {
+      trackInput.value = currentTrack;
+    }
+
+    const form = document.getElementById('reg-form');
+    const successMsg = document.getElementById('reg-success-msg');
+    const errorEl = document.getElementById('reg-error-msg');
+    if (form) form.style.display = 'block';
+    if (successMsg) successMsg.style.display = 'none';
+    if (errorEl) {
+      errorEl.style.display = 'none';
+      errorEl.textContent = '';
+    }
+
+    if (updateHash && window.location.hash !== '#register') {
+      window.history.pushState(null, '', '#register');
+    }
+
+    // Switch View Visibility
+    const mapView = document.getElementById('map-view');
+    const subpageView = document.getElementById('subpage-view');
+    const regView = document.getElementById('registration-view');
+
+    mapView?.classList.remove('active');
+    subpageView?.classList.remove('active');
+    regView?.classList.add('active');
+
+    // Scroll registration page to top
+    const container = document.getElementById('reg-page-content');
     if (container) container.scrollTop = 0;
 
     audioSystem.playLyreArpeggio();
@@ -529,9 +733,6 @@ class OdysseyApp {
       <!-- Hero Section -->
       <section class="page-hero" style="background-image: url('${data.heroImg}');">
         <div class="hero-content">
-          <button class="back-map-btn" id="back-to-map-btn">
-            <span>&larr;</span> Return to Map & Foot Path
-          </button>
           <h1 class="hero-main-title">
             <span class="hero-title-icon">${data.icon}</span>
             ${data.name}
@@ -732,11 +933,6 @@ class OdysseyApp {
     container.innerHTML = `
       <div class="voyage-cover-wrapper" style="background-image: url('${data.heroImg}');">
         <div class="voyage-cover-overlay">
-          <div class="voyage-header-bar">
-            <button class="back-map-btn" id="back-to-map-btn">
-              <span>&larr;</span> Return to Map
-            </button>
-          </div>
 
           <!-- About Us Section with Slow Pop-up from Bottom -->
           <section class="aboutus-section">
@@ -883,11 +1079,6 @@ class OdysseyApp {
     container.innerHTML = `
       <div class="realms-cover-wrapper" style="background-image: url('${data.heroImg}');">
         <div class="realms-cover-overlay">
-          <div class="voyage-header-bar">
-            <button class="back-map-btn" id="back-to-map-btn">
-              <span>&larr;</span> Return to Map
-            </button>
-          </div>
 
           <!-- Hackathon Section -->
           <section class="hackathon-section">
@@ -1063,11 +1254,6 @@ class OdysseyApp {
     container.innerHTML = `
       <div class="realms-cover-wrapper" style="background-image: url('${data.heroImg}');">
         <div class="realms-cover-overlay">
-          <div class="voyage-header-bar">
-            <button class="back-map-btn" id="back-to-map-btn">
-              <span>&larr;</span> Return to Map
-            </button>
-          </div>
 
           <section class="protocols-section">
             <h1 class="hackathon-heading">PROTOCOLS</h1>
@@ -1215,11 +1401,6 @@ class OdysseyApp {
     container.innerHTML = `
       <div class="realms-cover-wrapper" style="background-image: url('${data.heroImg}');">
         <div class="realms-cover-overlay">
-          <div class="voyage-header-bar">
-            <button class="back-map-btn" id="back-to-map-btn">
-              <span>&larr;</span> Return to Map
-            </button>
-          </div>
 
           <section class="odyssey-promo-section" style="max-width: 1400px; margin: 1rem auto 4rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2.2rem; padding: 0 1.5rem;">
             <h1 class="hackathon-heading" style="margin-top: 1rem;">THE QUEST TRAILER</h1>
@@ -1263,11 +1444,6 @@ class OdysseyApp {
     container.innerHTML = `
       <div class="realms-cover-wrapper" style="background-image: url('${data.heroImg}');">
         <div class="realms-cover-overlay">
-          <div class="voyage-header-bar">
-            <button class="back-map-btn" id="back-to-map-btn">
-              <span>&larr;</span> Return to Map
-            </button>
-          </div>
 
           <section class="legions-section">
             <h1 class="hackathon-heading">THE LEGIONS</h1>
@@ -1521,17 +1697,15 @@ class OdysseyApp {
     }
   }
 
-  /* ─── Trigger Weapon Arrow Flight & Open Registration Modal ─── */
+  /* ─── Trigger Weapon Arrow Flight & Open Registration Page ─── */
   triggerWeaponArrow(trackTitle) {
-    // audioSystem.playTriumph(); // Disabled clicking sound from realm page KPI cards
-
     const overlay = document.getElementById('weapon-arrow-overlay');
     const wrapper = document.getElementById('weapon-arrow-wrapper');
     const regModal = document.getElementById('registration-modal');
     const trackHeading = document.getElementById('reg-track-title');
 
     if (!overlay || !wrapper) {
-      this.openRegistrationModal(trackTitle);
+      this.openRegistrationPage(trackTitle);
       return;
     }
 
@@ -1541,7 +1715,7 @@ class OdysseyApp {
     void wrapper.offsetWidth; // force reflow
     wrapper.classList.add('shoot');
 
-    // As arrow reaches target (~700ms), open registration modal
+    // As arrow reaches target (~1300ms), open registration page
     setTimeout(() => {
       if (trackHeading) trackHeading.textContent = `Register: ${trackTitle}`;
 
@@ -1559,30 +1733,16 @@ class OdysseyApp {
       regModal?.classList.add('active');
     }, 650);
 
-    // Clean up arrow after animation ends
+    // Clean up arrow after animation ends (~1900ms)
     setTimeout(() => {
       overlay.classList.remove('active');
       wrapper.classList.remove('shoot');
-    }, 900);
+    }, 1900);
   }
 
   openRegistrationModal(trackTitle) {
-    const regModal = document.getElementById('registration-modal');
-    const trackHeading = document.getElementById('reg-track-title');
-    const regTrackAbstract = document.getElementById('reg-track-abstract');
-
-    if (trackHeading) trackHeading.textContent = `Register: ${trackTitle}`;
-    if (regTrackAbstract) {
-      regTrackAbstract.textContent = TRACK_ABSTRACTS[trackTitle] || 'No abstract available for this track yet.';
-    }
-
-    const form = document.getElementById('reg-form');
-    const successMsg = document.getElementById('reg-success-msg');
-    if (form) form.style.display = 'block';
-    if (successMsg) successMsg.style.display = 'none';
-    regModal?.classList.remove('registration-complete');
-
-    regModal?.classList.add('active');
+    // Backward compatibility helper pointing to the full page registration
+    this.openRegistrationPage(trackTitle);
   }
 
   openArtifactModal(artifact) {
