@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { saveRegistration, checkConnection, getCollection } from './db.js';
+import { saveRegistration, checkConnection, getCollection, generateRegId } from './db.js';
 import {
   authenticateAdmin,
   expiredSessionCookie,
@@ -127,6 +127,80 @@ export async function handleApiRequest(req, res) {
     } catch (err) {
       res.statusCode = err.statusCode || 500;
       res.end(JSON.stringify({ success: false, message: err.statusCode ? err.message : 'Unable to update payment status' }));
+    }
+    return true;
+  }
+
+  // Bulk Import registrations
+  if (pathname === '/api/admin/registrations/import' && req.method === 'POST') {
+    if (!requireAdmin(req, res)) return true;
+    try {
+      const payload = await readJsonBody(req, 15 * 1024 * 1024); // up to 15MB
+      const items = Array.isArray(payload?.items) ? payload.items : [];
+      if (items.length === 0) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ success: false, message: 'No registrations provided for import' }));
+        return true;
+      }
+
+      const preparedDocs = items.map((raw) => {
+        const teamSize = Number(raw.teamSize) || (Array.isArray(raw.members) ? raw.members.length + 1 : 1);
+        return {
+          teamName: String(raw.teamName || 'Imported Team').trim(),
+          leaderName: String(raw.leaderName || '').trim(),
+          leaderPhone: String(raw.leaderPhone || '').trim(),
+          leaderEmail: String(raw.leaderEmail || '').trim(),
+          institution: String(raw.institution || raw.college || 'Not Specified').trim(),
+          teamSize,
+          members: Array.isArray(raw.members) ? raw.members : [],
+          accommodation: String(raw.accommodation || 'No').trim(),
+          problemStatement: raw.problemStatement || raw.track || '',
+          regId: raw.regId || generateRegId(),
+          status: raw.status || raw.paymentStatus || 'pending_verification',
+          registeredAt: raw.registeredAt || new Date().toISOString(),
+          imported: true,
+          importedAt: new Date().toISOString(),
+          notes: raw.notes || 'Imported via Smart Import',
+        };
+      });
+
+      const col = await getCollection();
+      const result = await col.insertMany(preparedDocs);
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        success: true,
+        count: result.insertedCount,
+        message: `Successfully imported ${result.insertedCount} registrations`,
+      }));
+    } catch (err) {
+      console.error('[API Error] Import failed:', err);
+      res.statusCode = err.statusCode || 500;
+      res.end(JSON.stringify({ success: false, message: err.message || 'Import failed' }));
+    }
+    return true;
+  }
+
+  // Delete registration (single)
+  const deleteMatch = pathname.match(/^\/api\/admin\/registrations\/([^/]+)$/);
+  if (deleteMatch && req.method === 'DELETE') {
+    if (!requireAdmin(req, res)) return true;
+    try {
+      if (!ObjectId.isValid(deleteMatch[1])) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ success: false, message: 'Invalid registration identifier' }));
+        return true;
+      }
+      const result = await (await getCollection()).deleteOne({ _id: new ObjectId(deleteMatch[1]) });
+      if (result.deletedCount !== 1) {
+        res.statusCode = 404;
+        res.end(JSON.stringify({ success: false, message: 'Registration not found' }));
+        return true;
+      }
+      res.statusCode = 200;
+      res.end(JSON.stringify({ success: true, message: 'Registration deleted successfully' }));
+    } catch (err) {
+      res.statusCode = err.statusCode || 500;
+      res.end(JSON.stringify({ success: false, message: err.message || 'Unable to delete registration' }));
     }
     return true;
   }

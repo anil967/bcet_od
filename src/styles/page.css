@@ -267,8 +267,13 @@
   height: 100%;
 }
 
-.contact-card:nth-child(2) { animation-delay: 0.15s; }
-.contact-card:nth-child(3) { animation-delay: 0.3s; }
+.contact-card:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.contact-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
 
 .contact-card:hover {
   transform: translateY(-8px);
@@ -385,6 +390,7 @@
     opacity: 0;
     transform: translateY(16px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -2371,6 +2377,7 @@
 }
 
 @media (max-width: 780px) {
+
   .subpage-container,
   .voyage-cover-wrapper,
   .realms-cover-wrapper,
@@ -2879,6 +2886,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -3083,6 +3091,7 @@
 
 /* Responsive */
 @media (max-width: 840px) {
+
   .reg-grid-2,
   .reg-grid-3 {
     grid-template-columns: 1fr;
@@ -3347,12 +3356,15 @@
     top: 8px;
     opacity: 0.3;
   }
+
   20% {
     opacity: 1;
   }
+
   80% {
     opacity: 1;
   }
+
   100% {
     top: calc(100% - 12px);
     opacity: 0.3;

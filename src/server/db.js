@@ -64,7 +64,7 @@ export async function getCollection() {
   return connectedClient.db(dbName).collection(collectionName);
 }
 
-function generateRegId() {
+export function generateRegId() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/I/1 to avoid confusion
   let id = 'OD';
   for (let i = 0; i < 4; i++) {
