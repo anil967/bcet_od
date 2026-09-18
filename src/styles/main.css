@@ -236,34 +236,6 @@ body.odyssey-theme {
     padding: 0 0.75rem;
   }
 
-  .intro-hero-bg {
-    background-position: 62% 35%;
-  }
-
-  .intro-content {
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-    padding: 1.25rem 1rem 2rem;
-    max-width: min(92vw, 420px);
-  }
-
-  .intro-display-lede {
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 0.95rem;
-  }
-
-  .intro-eyebrow {
-    font-size: 0.58rem;
-    letter-spacing: 0.14em;
-  }
-
-  .intro-enter-btn {
-    width: 100%;
-    max-width: 280px;
-  }
-
   .header-brand {
     gap: 0.5rem;
     min-width: 0;
@@ -614,6 +586,21 @@ body.intro-active .odyssey-viewport {
   100% { transform: scale(1.08) translate(-1.5%, -1%); }
 }
 
+@keyframes introAvatarKenBurnsMobile {
+  0% {
+    background-position: 84% 18%;
+    transform: scale(1.05);
+  }
+  50% {
+    background-position: 74% 24%;
+    transform: scale(1.12);
+  }
+  100% {
+    background-position: 82% 20%;
+    transform: scale(1.06);
+  }
+}
+
 @keyframes introRaysDrift {
   0% { transform: rotate(0deg); opacity: 0.65; }
   50% { opacity: 1; }
@@ -749,6 +736,101 @@ body.intro-active .odyssey-viewport {
   color: #000;
   border-color: var(--color-gold-bright);
   font-weight: bold;
+}
+
+/* =========================================================
+   MOBILE RESPONSIVE — INTRO OPENING SCREEN & AVATAR ANIMATION
+   ========================================================= */
+@media (max-width: 780px) {
+  .intro-opening-screen {
+    align-items: flex-end !important;
+    justify-content: center !important;
+    padding: 0 1rem clamp(1.5rem, 4vh, 2.5rem) !important;
+    box-sizing: border-box !important;
+  }
+
+  .intro-hero-bg {
+    background-position: 82% 18% !important;
+    animation: introAvatarKenBurnsMobile 16s ease-in-out infinite alternate !important;
+  }
+
+  .intro-vignette {
+    background:
+      radial-gradient(ellipse 90% 55% at 78% 22%, rgba(255, 195, 90, 0.22) 0%, transparent 65%),
+      linear-gradient(180deg, rgba(8, 5, 3, 0.15) 0%, rgba(8, 5, 3, 0.35) 40%, rgba(6, 4, 2, 0.88) 72%, rgba(5, 3, 2, 0.98) 100%),
+      linear-gradient(90deg, rgba(8, 5, 3, 0.5) 0%, transparent 35%, rgba(8, 5, 3, 0.35) 100%) !important;
+  }
+
+  .intro-content {
+    margin: 0 auto !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1.25rem 1rem 0.5rem !important;
+    max-width: min(92vw, 420px) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .intro-eyebrow {
+    font-size: clamp(0.58rem, 2.4vw, 0.68rem) !important;
+    letter-spacing: 0.16em !important;
+    text-align: center !important;
+    margin: 0 auto 0.45rem auto !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .intro-display-title {
+    font-size: clamp(1.9rem, 8vw, 2.7rem) !important;
+    letter-spacing: 0.1em !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+    margin: 0 auto 0.25rem auto !important;
+    width: 100% !important;
+  }
+
+  .intro-display-sub {
+    font-size: clamp(0.72rem, 3vw, 0.82rem) !important;
+    letter-spacing: 0.15em !important;
+    text-align: center !important;
+    margin: 0 auto 0.75rem auto !important;
+    width: 100% !important;
+  }
+
+  .intro-display-lede {
+    margin: 0 auto 1.2rem auto !important;
+    font-size: clamp(0.85rem, 3.5vw, 0.96rem) !important;
+    line-height: 1.55 !important;
+    text-align: center !important;
+    max-width: 38ch !important;
+    width: 100% !important;
+  }
+
+  .intro-enter-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    max-width: 270px !important;
+    margin: 0 auto !important;
+    padding: 0.85rem 1.6rem !important;
+    font-size: 0.84rem !important;
+    letter-spacing: 0.14em !important;
+    text-align: center !important;
+  }
+
+  .intro-skip-hint {
+    display: block !important;
+    text-align: center !important;
+    margin-top: 0.75rem !important;
+    font-size: 0.62rem !important;
+    letter-spacing: 0.11em !important;
+    color: rgba(215, 200, 180, 0.7) !important;
+    width: 100% !important;
+  }
 }
 
 
