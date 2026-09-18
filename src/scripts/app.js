@@ -13,6 +13,39 @@ export const TRACK_ABSTRACTS = {
   'Automation Development & Agentic AI Development': 'Build intelligent systems capable of automating workflows, making decisions, interacting with tools, and executing multi-step tasks with minimal human intervention. This track explores the convergence of AI agents, automation frameworks, APIs, and intelligent software systems.'
 };
 
+export const TRACK_PDFS = {
+  'Software Deployment with AI Implementation': {
+    url: '/problem-statements/ps1-software-deployment-with-ai.pdf',
+    filename: 'ODYSSEY_PS1_Software_Deployment_AI.pdf',
+    title: 'AI in Production — Building & Scaling Real-World Intelligent Software Systems'
+  },
+  'IOT with Software Solutions': {
+    url: '/problem-statements/ps2-iot-with-software-solutions.pdf',
+    filename: 'ODYSSEY_PS2_IoT_Software_Solutions.pdf',
+    title: 'Connecting the Physical & Digital — Intelligent IoT & Edge Solutions'
+  },
+  'IoT with Software Solutions': {
+    url: '/problem-statements/ps2-iot-with-software-solutions.pdf',
+    filename: 'ODYSSEY_PS2_IoT_Software_Solutions.pdf',
+    title: 'Connecting the Physical & Digital — Intelligent IoT & Edge Solutions'
+  },
+  'Tech for Bharat & Social Impact': {
+    url: '/problem-statements/ps3-tech-for-bharat-social-impact.pdf',
+    filename: 'ODYSSEY_PS3_Tech_For_Bharat_Social_Impact.pdf',
+    title: 'Tech for Bharat & Social Impact'
+  },
+  'Automation Development / Agentic AI Development': {
+    url: '/problem-statements/ps4-automation-agentic-ai-development.pdf',
+    filename: 'ODYSSEY_PS4_Automation_Agentic_AI_Development.pdf',
+    title: 'Autonomous by Design — AI Agents for Multi-Step Task Automation'
+  },
+  'Automation Development & Agentic AI Development': {
+    url: '/problem-statements/ps4-automation-agentic-ai-development.pdf',
+    filename: 'ODYSSEY_PS4_Automation_Agentic_AI_Development.pdf',
+    title: 'Autonomous by Design — AI Agents for Multi-Step Task Automation'
+  }
+};
+
 class OdysseyApp {
   constructor() {
     this.currentSymbolId = null;
@@ -705,6 +738,16 @@ class OdysseyApp {
       regTrackAbstract.textContent = TRACK_ABSTRACTS[currentTrack] || 'No abstract available for this track yet.';
     }
 
+    const regTrackPdfLink = document.getElementById('reg-track-pdf-link');
+    const pdfData = TRACK_PDFS[currentTrack];
+    if (regTrackPdfLink && pdfData) {
+      regTrackPdfLink.href = pdfData.url;
+      regTrackPdfLink.setAttribute('download', pdfData.filename);
+      regTrackPdfLink.style.display = 'inline-flex';
+    } else if (regTrackPdfLink) {
+      regTrackPdfLink.style.display = 'none';
+    }
+
     const form = document.getElementById('reg-form');
     const successMsg = document.getElementById('reg-success-msg');
     const errorEl = document.getElementById('reg-error-msg');
@@ -1136,30 +1179,70 @@ class OdysseyApp {
               </ul>
             </div>
 
-            <!-- 4 Hackathon KPI Cards -->
+            <!-- 4 Hackathon KPI Cards with Problem Statement PDF Links -->
             <div class="hack-kpi-grid">
-              <div class="hack-kpi-card">
+              <div class="hack-kpi-card" data-track="Software Deployment with AI Implementation">
                 <div class="hack-kpi-number">I</div>
                 <h2 class="hack-kpi-title">Software Deployment with AI Implementation</h2>
-                <div class="hack-kpi-cta">Join the Quest</div>
+                <div class="hack-kpi-actions">
+                  <div class="hack-kpi-cta">Join the Quest</div>
+                  <a href="/problem-statements/ps1-software-deployment-with-ai.pdf" download="ODYSSEY_PS1_Software_Deployment_AI.pdf" target="_blank" rel="noopener noreferrer" class="hack-pdf-btn" title="Download Problem Statement PDF">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Download PS</span>
+                  </a>
+                </div>
               </div>
 
-              <div class="hack-kpi-card">
+              <div class="hack-kpi-card" data-track="IOT with Software Solutions">
                 <div class="hack-kpi-number">II</div>
                 <h2 class="hack-kpi-title">IOT with Software Solutions</h2>
-                <div class="hack-kpi-cta">Join the Quest</div>
+                <div class="hack-kpi-actions">
+                  <div class="hack-kpi-cta">Join the Quest</div>
+                  <a href="/problem-statements/ps2-iot-with-software-solutions.pdf" download="ODYSSEY_PS2_IoT_Software_Solutions.pdf" target="_blank" rel="noopener noreferrer" class="hack-pdf-btn" title="Download Problem Statement PDF">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Download PS</span>
+                  </a>
+                </div>
               </div>
 
-              <div class="hack-kpi-card">
+              <div class="hack-kpi-card" data-track="Tech for Bharat & Social Impact">
                 <div class="hack-kpi-number">III</div>
                 <h2 class="hack-kpi-title">Tech for Bharat & Social Impact</h2>
-                <div class="hack-kpi-cta">Join the Quest</div>
+                <div class="hack-kpi-actions">
+                  <div class="hack-kpi-cta">Join the Quest</div>
+                  <a href="/problem-statements/ps3-tech-for-bharat-social-impact.pdf" download="ODYSSEY_PS3_Tech_For_Bharat_Social_Impact.pdf" target="_blank" rel="noopener noreferrer" class="hack-pdf-btn" title="Download Problem Statement PDF">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Download PS</span>
+                  </a>
+                </div>
               </div>
 
-              <div class="hack-kpi-card">
+              <div class="hack-kpi-card" data-track="Automation Development / Agentic AI Development">
                 <div class="hack-kpi-number">IV</div>
                 <h2 class="hack-kpi-title">Automation Development / Agentic AI Development</h2>
-                <div class="hack-kpi-cta">Join the Quest</div>
+                <div class="hack-kpi-actions">
+                  <div class="hack-kpi-cta">Join the Quest</div>
+                  <a href="/problem-statements/ps4-automation-agentic-ai-development.pdf" download="ODYSSEY_PS4_Automation_Agentic_AI_Development.pdf" target="_blank" rel="noopener noreferrer" class="hack-pdf-btn" title="Download Problem Statement PDF">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Download PS</span>
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -1263,9 +1346,18 @@ class OdysseyApp {
     kpiCards.forEach(card => {
       observer.observe(card);
 
+      // Stop propagation on PDF link click so it doesn't trigger registration arrow
+      card.querySelectorAll('.hack-pdf-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          audioSystem.playClick();
+        });
+      });
+
       // Click event for "Join the Quest" -> Shoot Weapon Arrow & Open Registration
-      card.addEventListener('click', () => {
-        const trackTitle = card.querySelector('.hack-kpi-title')?.textContent || 'Hackathon Track';
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.hack-pdf-btn')) return;
+        const trackTitle = card.getAttribute('data-track') || card.querySelector('.hack-kpi-title')?.textContent || 'Hackathon Track';
         this.triggerWeaponArrow(trackTitle);
       });
     });

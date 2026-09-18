@@ -2288,24 +2288,75 @@
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
+.hack-kpi-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 0.65rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
 .hack-kpi-cta {
   font-family: var(--font-heading);
   font-size: 0.82rem;
   color: var(--color-gold-bright);
   text-transform: uppercase;
   letter-spacing: 2px;
-  margin-top: 0.5rem;
-  padding: 0.4rem 1rem;
+  padding: 0.45rem 1.1rem;
   border: 1px solid var(--color-gold-primary);
   border-radius: 0;
   background: rgba(243, 156, 18, 0.1);
   transition: var(--transition-smooth);
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .hack-kpi-card:hover .hack-kpi-cta {
   background: rgba(243, 156, 18, 0.3);
   color: #ffffff;
   border-color: var(--color-gold-bright);
+}
+
+.hack-pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fce8a6;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  padding: 0.45rem 0.95rem;
+  border: 1px solid rgba(243, 156, 18, 0.55);
+  border-radius: 0;
+  background: rgba(16, 10, 6, 0.92);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.hack-pdf-btn svg {
+  stroke: var(--color-gold-bright);
+  transition: transform 0.2s ease, stroke 0.2s ease;
+  flex-shrink: 0;
+}
+
+.hack-pdf-btn:hover {
+  background: linear-gradient(180deg, rgba(243, 156, 18, 0.35) 0%, rgba(184, 115, 12, 0.4) 100%);
+  color: #ffffff;
+  border-color: var(--color-gold-bright);
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.45);
+  transform: translateY(-2px);
+}
+
+.hack-pdf-btn:hover svg {
+  stroke: #ffffff;
+  transform: translateY(1px);
 }
 
 @media (max-width: 650px) {
