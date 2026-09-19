@@ -39,29 +39,6 @@
   z-index: 5;
 }
 
-.back-map-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(20, 13, 8, 0.85);
-  border: 1px solid var(--color-gold-primary);
-  border-radius: 0;
-  padding: 0.5rem 1.1rem;
-  color: var(--color-gold-bright);
-  font-family: var(--font-heading);
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-}
-
-.back-map-btn:hover {
-  background: var(--color-gold-primary);
-  color: #ffffff;
-  box-shadow: none;
-  transform: translateX(-4px);
-}
-
 .hero-main-title {
   font-family: var(--font-display);
   font-size: 3rem;

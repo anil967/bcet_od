@@ -117,7 +117,11 @@ class OdysseyApp {
       this.showMapView();
     });
 
-
+    // Back to Map button
+    document.getElementById('back-to-map-btn')?.addEventListener('click', () => {
+      audioSystem.playClick();
+      this.showMapView();
+    });
 
     // 5. Guide Modal Toggle
     const guideBtn = document.getElementById('guide-btn');
@@ -729,6 +733,10 @@ class OdysseyApp {
     subpageView?.classList.remove('active');
     regView?.classList.remove('active');
 
+    // Hide back-to-map button
+    const backBtn = document.getElementById('back-to-map-btn');
+    if (backBtn) backBtn.style.display = 'none';
+
     // Auto redirect to next node when backing from a node
     const exitedNode = this.currentSymbolId || this.lastVisitedSymbolId;
     let nextStep = this.sidebarPreviewStep;
@@ -801,6 +809,10 @@ class OdysseyApp {
     regView?.classList.remove('active');
     this.odysseyMap?.pauseMapVideo();
 
+    // Show back-to-map button
+    const backBtn = document.getElementById('back-to-map-btn');
+    if (backBtn) backBtn.style.display = 'flex';
+
     // Scroll subpage to top
     const container = document.getElementById('subpage-content');
     if (container) container.scrollTop = 0;
@@ -865,6 +877,10 @@ class OdysseyApp {
     subpageView?.classList.remove('active');
     regView?.classList.add('active');
     this.odysseyMap?.pauseMapVideo();
+
+    // Show back-to-map button
+    const backBtnReg = document.getElementById('back-to-map-btn');
+    if (backBtnReg) backBtnReg.style.display = 'flex';
 
     // Scroll registration page to top
     const container = document.getElementById('reg-page-content');
