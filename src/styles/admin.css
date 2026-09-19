@@ -39,6 +39,10 @@
   border-radius: 0 !important;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   background: var(--bg-dark);
@@ -301,6 +305,10 @@ body {
   color: #6ee7b7;
   font-weight: 500;
   animation: slideDown 0.3s ease;
+}
+
+.toast-banner[hidden] {
+  display: none !important;
 }
 
 .toast-close-btn {
@@ -930,6 +938,10 @@ tbody td {
   text-align: center;
 }
 
+.empty-state[hidden] {
+  display: none !important;
+}
+
 .empty-icon {
   font-size: 44px;
   margin-bottom: 12px;
@@ -955,6 +967,10 @@ tbody td {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.loading-state[hidden] {
+  display: none !important;
 }
 
 .skeleton-row {

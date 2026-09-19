@@ -226,15 +226,18 @@ function applyFilters() {
 
 function renderTable() {
   loadingState.hidden = true;
+  loadingState.style.display = 'none';
 
   if (state.filtered.length === 0) {
     body.innerHTML = '';
     emptyState.hidden = false;
+    emptyState.style.display = 'flex';
     resultCount.textContent = `0 of ${state.registrations.length} registrations`;
     return;
   }
 
   emptyState.hidden = true;
+  emptyState.style.display = 'none';
   resultCount.textContent = `Showing ${state.filtered.length} of ${state.registrations.length} registered teams`;
 
   body.innerHTML = state.filtered.map((item, index) => {
@@ -714,6 +717,9 @@ async function executeBatchImport() {
 // Load registrations from server
 async function loadRegistrations() {
   loadingState.hidden = false;
+  loadingState.style.display = 'flex';
+  emptyState.hidden = true;
+  emptyState.style.display = 'none';
   loadError.textContent = '';
   try {
     const response = await fetch('/api/admin/registrations', { credentials: 'same-origin' });
@@ -729,6 +735,7 @@ async function loadRegistrations() {
     applyFilters();
   } catch (err) {
     loadingState.hidden = true;
+    loadingState.style.display = 'none';
     loadError.textContent = err.message;
     showToast(err.message, 'error');
   }
