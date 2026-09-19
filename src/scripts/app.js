@@ -720,173 +720,228 @@ class OdysseyApp {
     }
   }
 
+  runWithNavigationLoader(action, title = 'CHARTING THE ODYSSEY', sub = 'Navigating Uncharted Waters...') {
+    const loader = document.getElementById('odyssey-page-loader');
+    const titleEl = document.getElementById('loader-dest-title');
+    const subEl = document.getElementById('loader-dest-sub');
+
+    if (!loader) {
+      action();
+      return;
+    }
+
+    if (titleEl) titleEl.textContent = title;
+    if (subEl) subEl.textContent = sub;
+
+    loader.classList.remove('finishing');
+    loader.classList.add('active');
+
+    // Perform the view/DOM switch while loader covers the screen
+    setTimeout(() => {
+      try {
+        action();
+      } catch (err) {
+        console.error('Navigation error:', err);
+      }
+
+      // Smoothly fade out the loader
+      setTimeout(() => {
+        loader.classList.add('finishing');
+        setTimeout(() => {
+          loader.classList.remove('active', 'finishing');
+        }, 260);
+      }, 160);
+    }, 120);
+  }
+
   showMapView(updateHash = true) {
     if (updateHash) {
       window.history.pushState(null, '', ' ');
     }
 
-    const mapView = document.getElementById('map-view');
-    const subpageView = document.getElementById('subpage-view');
-    const regView = document.getElementById('registration-view');
+    const performShowMap = () => {
+      const mapView = document.getElementById('map-view');
+      const subpageView = document.getElementById('subpage-view');
+      const regView = document.getElementById('registration-view');
 
-    mapView?.classList.add('active');
-    subpageView?.classList.remove('active');
-    regView?.classList.remove('active');
+      mapView?.classList.add('active');
+      subpageView?.classList.remove('active');
+      regView?.classList.remove('active');
 
-    // Hide back-to-map button
-    const backBtn = document.getElementById('back-to-map-btn');
-    if (backBtn) backBtn.style.display = 'none';
+      // Hide back-to-map button
+      const backBtn = document.getElementById('back-to-map-btn');
+      if (backBtn) backBtn.style.display = 'none';
 
-    // Auto redirect to next node when backing from a node
-    const exitedNode = this.currentSymbolId || this.lastVisitedSymbolId;
-    let nextStep = this.sidebarPreviewStep;
+      // Auto redirect to next node when backing from a node
+      const exitedNode = this.currentSymbolId || this.lastVisitedSymbolId;
+      let nextStep = this.sidebarPreviewStep;
 
-    if (exitedNode && this.symbolOrder.includes(exitedNode)) {
-      const exitedStep = this.symbolOrder.indexOf(exitedNode) + 1;
-      nextStep = Math.min(5, exitedStep + 1);
-      if (this.unlockedStep < nextStep) {
-        this.unlockedStep = nextStep;
+      if (exitedNode && this.symbolOrder.includes(exitedNode)) {
+        const exitedStep = this.symbolOrder.indexOf(exitedNode) + 1;
+        nextStep = Math.min(5, exitedStep + 1);
+        if (this.unlockedStep < nextStep) {
+          this.unlockedStep = nextStep;
+        }
+      } else if (this.unlockedStep) {
+        nextStep = Math.min(5, this.unlockedStep);
       }
-    } else if (this.unlockedStep) {
-      nextStep = Math.min(5, this.unlockedStep);
-    }
 
-    this.currentSymbolId = null;
-    this.sidebarPreviewStep = nextStep;
+      this.currentSymbolId = null;
+      this.sidebarPreviewStep = nextStep;
 
-    // Update state visuals without redundant centering
-    this.updateSerialUnlockState(false);
-    this.updateMapSidebar(this.sidebarPreviewStep, false);
+      // Update state visuals without redundant centering
+      this.updateSerialUnlockState(false);
+      this.updateMapSidebar(this.sidebarPreviewStep, false);
 
-    // Smoothly pan camera once to bring next node front and center
-    const targetSymbol = this.symbolOrder[this.sidebarPreviewStep - 1];
-    if (targetSymbol && this.odysseyMap) {
-      this.odysseyMap.ensureMapVideoPlaying();
-      requestAnimationFrame(() => {
-        this.odysseyMap?.centerOnSymbol(targetSymbol, true);
-        updateTrailProgress(this.unlockedStep);
-      });
-    }
+      // Smoothly pan camera once to bring next node front and center
+      const targetSymbol = this.symbolOrder[this.sidebarPreviewStep - 1];
+      if (targetSymbol && this.odysseyMap) {
+        this.odysseyMap.ensureMapVideoPlaying();
+        requestAnimationFrame(() => {
+          this.odysseyMap?.centerOnSymbol(targetSymbol, true);
+          updateTrailProgress(this.unlockedStep);
+        });
+      }
+    };
+
+    this.runWithNavigationLoader(performShowMap, 'RETURNING TO MAP', 'Navigating the Aegean Sea...');
   }
 
   openSymbolPage(symbolId, updateHash = true) {
     const data = SYMBOLS_DATA[symbolId];
     if (!data) return;
 
-    // Auto-unfold map container if navigating directly to a subpage
-    const mapContainer = document.getElementById('map-container');
-    const mapWrapper = document.getElementById('map-wrapper');
-    if (mapContainer && !mapContainer.classList.contains('unfolded')) {
-      mapContainer.classList.add('unfolded');
-      mapWrapper?.classList.add('slide-in');
-    }
+    const titles = {
+      voyage: { title: 'ENTERING THE VOYAGE', sub: 'About Us · Navigating Uncharted Waters' },
+      realms: { title: 'ENTERING THE REALMS', sub: 'Architectural Pillars & Problem Statements' },
+      protocols: { title: 'REALM PROTOCOLS', sub: 'Sacred Codes of Governance, Trust & Decrees' },
+      legions: { title: 'THE LEGIONS', sub: 'Commanders, Vanguard & Organizing Fleet' },
+      odyssey: { title: 'THE ODYSSEY', sub: 'The Pinnacle of Triumph & Golden Mastery' }
+    };
+    const info = titles[symbolId] || { title: `ENTERING ${data.name.toUpperCase()}`, sub: data.tagline || 'Charting the Odyssey...' };
 
-    this.lastVisitedSymbolId = symbolId;
-    this.currentSymbolId = symbolId;
-    this.activeTab = 'lore';
+    const performOpenSymbol = () => {
+      // Auto-unfold map container if navigating directly to a subpage
+      const mapContainer = document.getElementById('map-container');
+      const mapWrapper = document.getElementById('map-wrapper');
+      if (mapContainer && !mapContainer.classList.contains('unfolded')) {
+        mapContainer.classList.add('unfolded');
+        mapWrapper?.classList.add('slide-in');
+      }
 
-    // Auto-unlock next step progressively when opening current step
-    const stepIdx = this.symbolOrder.indexOf(symbolId) + 1;
-    if (stepIdx === this.unlockedStep && this.unlockedStep < 5) {
-      this.unlockedStep++;
-      this.updateSerialUnlockState();
-    }
+      this.lastVisitedSymbolId = symbolId;
+      this.currentSymbolId = symbolId;
+      this.activeTab = 'lore';
 
-    if (updateHash) {
-      window.location.hash = symbolId;
-    }
+      // Auto-unlock next step progressively when opening current step
+      const stepIdx = this.symbolOrder.indexOf(symbolId) + 1;
+      if (stepIdx === this.unlockedStep && this.unlockedStep < 5) {
+        this.unlockedStep++;
+        this.updateSerialUnlockState();
+      }
 
-    // Render Subpage HTML
-    this.renderSubpageContent(data);
+      if (updateHash) {
+        window.location.hash = symbolId;
+      }
 
-    // Switch View Visibility
-    const mapView = document.getElementById('map-view');
-    const subpageView = document.getElementById('subpage-view');
-    const regView = document.getElementById('registration-view');
+      // Render Subpage HTML
+      this.renderSubpageContent(data);
 
-    mapView?.classList.remove('active');
-    subpageView?.classList.add('active');
-    regView?.classList.remove('active');
-    this.odysseyMap?.pauseMapVideo();
+      // Switch View Visibility
+      const mapView = document.getElementById('map-view');
+      const subpageView = document.getElementById('subpage-view');
+      const regView = document.getElementById('registration-view');
 
-    // Show back-to-map button
-    const backBtn = document.getElementById('back-to-map-btn');
-    if (backBtn) backBtn.style.display = 'flex';
+      mapView?.classList.remove('active');
+      subpageView?.classList.add('active');
+      regView?.classList.remove('active');
+      this.odysseyMap?.pauseMapVideo();
 
-    // Scroll subpage to top
-    const container = document.getElementById('subpage-content');
-    if (container) container.scrollTop = 0;
+      // Show back-to-map button
+      const backBtn = document.getElementById('back-to-map-btn');
+      if (backBtn) backBtn.style.display = 'flex';
 
-    audioSystem.playLyreArpeggio();
+      // Scroll subpage to top
+      const container = document.getElementById('subpage-content');
+      if (container) container.scrollTop = 0;
+
+      audioSystem.playLyreArpeggio();
+    };
+
+    this.runWithNavigationLoader(performOpenSymbol, info.title, info.sub);
   }
 
   openRegistrationPage(trackTitle, updateHash = true) {
-    if (trackTitle && typeof trackTitle === 'string' && trackTitle.trim().length > 0) {
-      this.selectedTrack = trackTitle.trim();
-    } else if (!this.selectedTrack) {
-      this.selectedTrack = 'Software Deployment with AI Implementation';
-    }
+    const performOpenReg = () => {
+      if (trackTitle && typeof trackTitle === 'string' && trackTitle.trim().length > 0) {
+        this.selectedTrack = trackTitle.trim();
+      } else if (!this.selectedTrack) {
+        this.selectedTrack = 'Software Deployment with AI Implementation';
+      }
 
-    const currentTrack = this.selectedTrack;
+      const currentTrack = this.selectedTrack;
 
-    const trackHeading = document.getElementById('reg-track-title');
-    if (trackHeading) {
-      trackHeading.textContent = `REGISTER: ${currentTrack.toUpperCase()}`;
-    }
+      const trackHeading = document.getElementById('reg-track-title');
+      if (trackHeading) {
+        trackHeading.textContent = `REGISTER: ${currentTrack.toUpperCase()}`;
+      }
 
-    const trackInput = document.getElementById('reg-track-input');
-    if (trackInput) {
-      trackInput.value = currentTrack;
-    }
+      const trackInput = document.getElementById('reg-track-input');
+      if (trackInput) {
+        trackInput.value = currentTrack;
+      }
 
-    const regTrackAbstract = document.getElementById('reg-track-abstract');
-    if (regTrackAbstract) {
-      regTrackAbstract.textContent = TRACK_ABSTRACTS[currentTrack] || 'No abstract available for this track yet.';
-    }
+      const regTrackAbstract = document.getElementById('reg-track-abstract');
+      if (regTrackAbstract) {
+        regTrackAbstract.textContent = TRACK_ABSTRACTS[currentTrack] || 'No abstract available for this track yet.';
+      }
 
-    const regTrackPdfLink = document.getElementById('reg-track-pdf-link');
-    const pdfData = TRACK_PDFS[currentTrack];
-    if (regTrackPdfLink && pdfData) {
-      regTrackPdfLink.href = pdfData.url;
-      regTrackPdfLink.setAttribute('download', pdfData.filename);
-      regTrackPdfLink.style.display = 'inline-flex';
-    } else if (regTrackPdfLink) {
-      regTrackPdfLink.style.display = 'none';
-    }
+      const regTrackPdfLink = document.getElementById('reg-track-pdf-link');
+      const pdfData = TRACK_PDFS[currentTrack];
+      if (regTrackPdfLink && pdfData) {
+        regTrackPdfLink.href = pdfData.url;
+        regTrackPdfLink.setAttribute('download', pdfData.filename);
+        regTrackPdfLink.style.display = 'inline-flex';
+      } else if (regTrackPdfLink) {
+        regTrackPdfLink.style.display = 'none';
+      }
 
-    const form = document.getElementById('reg-form');
-    const successMsg = document.getElementById('reg-success-msg');
-    const errorEl = document.getElementById('reg-error-msg');
-    if (form) form.style.display = 'block';
-    if (successMsg) successMsg.style.display = 'none';
-    if (errorEl) {
-      errorEl.style.display = 'none';
-      errorEl.textContent = '';
-    }
+      const form = document.getElementById('reg-form');
+      const successMsg = document.getElementById('reg-success-msg');
+      const errorEl = document.getElementById('reg-error-msg');
+      if (form) form.style.display = 'block';
+      if (successMsg) successMsg.style.display = 'none';
+      if (errorEl) {
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+      }
 
-    if (updateHash && window.location.hash !== '#register') {
-      window.history.pushState(null, '', '#register');
-    }
+      if (updateHash && window.location.hash !== '#register') {
+        window.history.pushState(null, '', '#register');
+      }
 
-    // Switch View Visibility
-    const mapView = document.getElementById('map-view');
-    const subpageView = document.getElementById('subpage-view');
-    const regView = document.getElementById('registration-view');
+      // Switch View Visibility
+      const mapView = document.getElementById('map-view');
+      const subpageView = document.getElementById('subpage-view');
+      const regView = document.getElementById('registration-view');
 
-    mapView?.classList.remove('active');
-    subpageView?.classList.remove('active');
-    regView?.classList.add('active');
-    this.odysseyMap?.pauseMapVideo();
+      mapView?.classList.remove('active');
+      subpageView?.classList.remove('active');
+      regView?.classList.add('active');
+      this.odysseyMap?.pauseMapVideo();
 
-    // Show back-to-map button
-    const backBtnReg = document.getElementById('back-to-map-btn');
-    if (backBtnReg) backBtnReg.style.display = 'flex';
+      // Show back-to-map button
+      const backBtnReg = document.getElementById('back-to-map-btn');
+      if (backBtnReg) backBtnReg.style.display = 'flex';
 
-    // Scroll registration page to top
-    const container = document.getElementById('reg-page-content');
-    if (container) container.scrollTop = 0;
+      // Scroll registration page to top
+      const container = document.getElementById('reg-page-content');
+      if (container) container.scrollTop = 0;
 
-    audioSystem.playLyreArpeggio();
+      audioSystem.playLyreArpeggio();
+    };
+
+    this.runWithNavigationLoader(performOpenReg, 'QUEST REGISTRATION', 'Enlisting into Hackathon Quest...');
   }
 
   renderSubpageContent(data) {
