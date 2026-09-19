@@ -2042,21 +2042,19 @@ class OdysseyApp {
 
       if (newVal === currentVal) return;
 
-      // Set initial state before the 3D fold begins:
       // Top back flap has NEW value (revealed when top front folds down)
       topBackNum.textContent = newVal;
       // Bottom back flap has OLD value (visible at start)
       bottomBackNum.textContent = currentVal;
-      // Top front flap has OLD value (folds down towards viewer)
+      // Top front flap has OLD value (folds down)
       topFrontNum.textContent = currentVal;
-      // Bottom front flap has NEW value (unfolds down to cover bottom back)
+      // Bottom front flap has NEW value (unfolds down to land on bottom)
       bottomFrontNum.textContent = newVal;
 
       cardEl.classList.remove('flipping');
-      void cardEl.offsetWidth; // Force reflow to restart CSS 3D animation
+      void cardEl.offsetWidth; // Force reflow to trigger CSS 3D animation
       cardEl.classList.add('flipping');
 
-      // Once fold animation completes (560ms), lock in new value across all flaps
       clearTimeout(cardEl._flipTimer);
       cardEl._flipTimer = setTimeout(() => {
         topBackNum.textContent = newVal;
@@ -2065,7 +2063,7 @@ class OdysseyApp {
         bottomFrontNum.textContent = newVal;
         cardEl.classList.remove('flipping');
         cardEl.dataset.value = newVal;
-      }, 560);
+      }, 540);
     };
 
     let isFirstRun = true;
@@ -2119,7 +2117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Auto-dismiss after 4 seconds
-    const autoDismissTimer = setTimeout(dismissPoster, 4000);
+    const autoDismissTimer = setTimeout(dismissPoster, 8000);
 
     // Manual close button
     posterCloseBtn?.addEventListener('click', () => {

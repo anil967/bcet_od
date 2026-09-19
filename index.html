@@ -26,10 +26,12 @@
 <body class="odyssey-theme">
 
   <!-- ── POSTER POPUP (Auto-dismiss after 4s) ── -->
-  <div id="poster-popup-overlay" class="poster-popup-overlay" role="dialog" aria-label="Odyssey Poster" aria-modal="true">
+  <div id="poster-popup-overlay" class="poster-popup-overlay" role="dialog" aria-label="Odyssey Poster"
+    aria-modal="true">
     <div class="poster-popup-frame">
       <button class="poster-popup-close" id="poster-popup-close" aria-label="Close poster">&#10005;</button>
-      <img src="/images/odyssey_poster.jpg" alt="Odyssey Hackathon 2K26 Poster" class="poster-popup-img" draggable="false">
+      <img src="/images/odyssey_poster.jpg" alt="Odyssey Hackathon 2K26 Poster" class="poster-popup-img"
+        draggable="false">
       <div class="poster-popup-bar">
         <div class="poster-popup-progress" id="poster-popup-progress"></div>
       </div>
@@ -58,10 +60,10 @@
         <div class="odyssey-flip-clock" id="odyssey-flip-clock">
           <div class="clock-segment">
             <div class="clock-card" id="card-days" data-unit="days">
-              <div class="card-flap flap-top-back"><span class="flap-num">24</span></div>
-              <div class="card-flap flap-bottom-back"><span class="flap-num">24</span></div>
-              <div class="card-flap flap-top-front"><span class="flap-num">24</span></div>
-              <div class="card-flap flap-bottom-front"><span class="flap-num">24</span></div>
+              <div class="card-flap flap-top-back"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-bottom-back"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-top-front"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-bottom-front"><span class="flap-num">00</span></div>
               <span class="clock-seam" aria-hidden="true"></span>
             </div>
             <span class="clock-label">Days</span>
@@ -71,10 +73,10 @@
 
           <div class="clock-segment">
             <div class="clock-card" id="card-hours" data-unit="hours">
-              <div class="card-flap flap-top-back"><span class="flap-num">18</span></div>
-              <div class="card-flap flap-bottom-back"><span class="flap-num">18</span></div>
-              <div class="card-flap flap-top-front"><span class="flap-num">18</span></div>
-              <div class="card-flap flap-bottom-front"><span class="flap-num">18</span></div>
+              <div class="card-flap flap-top-back"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-bottom-back"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-top-front"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-bottom-front"><span class="flap-num">00</span></div>
               <span class="clock-seam" aria-hidden="true"></span>
             </div>
             <span class="clock-label">Hours</span>
@@ -84,10 +86,10 @@
 
           <div class="clock-segment">
             <div class="clock-card" id="card-minutes" data-unit="minutes">
-              <div class="card-flap flap-top-back"><span class="flap-num">57</span></div>
-              <div class="card-flap flap-bottom-back"><span class="flap-num">57</span></div>
-              <div class="card-flap flap-top-front"><span class="flap-num">57</span></div>
-              <div class="card-flap flap-bottom-front"><span class="flap-num">57</span></div>
+              <div class="card-flap flap-top-back"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-bottom-back"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-top-front"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-bottom-front"><span class="flap-num">00</span></div>
               <span class="clock-seam" aria-hidden="true"></span>
             </div>
             <span class="clock-label">Minutes</span>
@@ -97,10 +99,10 @@
 
           <div class="clock-segment">
             <div class="clock-card" id="card-seconds" data-unit="seconds">
-              <div class="card-flap flap-top-back"><span class="flap-num">49</span></div>
-              <div class="card-flap flap-bottom-back"><span class="flap-num">49</span></div>
-              <div class="card-flap flap-top-front"><span class="flap-num">49</span></div>
-              <div class="card-flap flap-bottom-front"><span class="flap-num">49</span></div>
+              <div class="card-flap flap-top-back"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-bottom-back"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-top-front"><span class="flap-num">00</span></div>
+              <div class="card-flap flap-bottom-front"><span class="flap-num">00</span></div>
               <span class="clock-seam" aria-hidden="true"></span>
             </div>
             <span class="clock-label">Seconds</span>
@@ -123,18 +125,21 @@
   <header class="odyssey-header">
     <div class="header-brand" id="brand-logo" title="Return to Map">
       <div class="header-logo-wrapper">
-        <img src="/images/odyssey_logo.png" alt="Odyssey Spartan Helmet Logo" class="header-logo-img" width="46" height="46">
+        <img src="/images/odyssey_logo.png" alt="Odyssey Spartan Helmet Logo" class="header-logo-img" width="46"
+          height="46">
       </div>
       <div class="brand-text">
         <h1 class="brand-title">THE ODYSSEY</h1>
-        <span class="brand-subtitle">JOURNEY TO INNOVATION • Ἡ Ὀδύσσεια</span>
+        <span class="brand-subtitle">JOURNEY TO INNOVATION </span>
       </div>
     </div>
 
     <div class="header-controls">
-      <button type="button" class="control-btn back-map-btn" id="back-to-map-btn" aria-label="Back to Map" style="display:none;">
-        <svg class="back-btn-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
+      <button type="button" class="control-btn back-map-btn" id="back-to-map-btn" aria-label="Back to Map"
+        style="display:none;">
+        <svg class="back-btn-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg>
         <span>MAP</span>
       </button>
@@ -205,7 +210,9 @@
                       <h3 class="tooltip-title">The Voyage</h3>
                     </div>
                     <p class="tooltip-tagline">Journey to Innovation &mdash; Navigating Uncharted Waters</p>
-                    <p class="tooltip-desc">The Voyage represents the courageous first step into uncharted territories. Like Odysseus navigating tempestuous waters, true innovation requires bold leadership, adaptive steering, and the resilience to conquer unknown challenges.</p>
+                    <p class="tooltip-desc">The Voyage represents the courageous first step into uncharted territories.
+                      Like Odysseus navigating tempestuous waters, true innovation requires bold leadership, adaptive
+                      steering, and the resilience to conquer unknown challenges.</p>
                     <div class="tooltip-footer">
                       <span class="coords-badge">37&deg;58'N 23&deg;43'E</span>
                       <span class="action-prompt">Click Here &rarr;</span>
@@ -238,7 +245,9 @@
                       <h3 class="tooltip-title">The Realms</h3>
                     </div>
                     <p class="tooltip-tagline">Architectural Pillars of Knowledge &amp; Domain Sanctuaries</p>
-                    <p class="tooltip-desc">The Realms represent foundational pillars, domains, and architectural frameworks of progress. Each domain fosters unique capabilities, specialized talents, and enduring structures.</p>
+                    <p class="tooltip-desc">The Realms represent foundational pillars, domains, and architectural
+                      frameworks of progress. Each domain fosters unique capabilities, specialized talents, and enduring
+                      structures.</p>
                     <div class="tooltip-footer">
                       <span class="coords-badge">36&deg;25'N 25&deg;26'E</span>
                       <span class="action-prompt prompt-status">Complete Step I First &rarr;</span>
@@ -272,7 +281,9 @@
                       <h3 class="tooltip-title">Realm Protocols</h3>
                     </div>
                     <p class="tooltip-tagline">Sacred Codes of Governance, Trust &amp; Operational Decrees</p>
-                    <p class="tooltip-desc">Realm Protocols dictate the unwritten divine laws governing collaboration, ethics, and mutual trust. Xenia&mdash;the sacred code of hospitality&mdash;ensures seamless operational harmony.</p>
+                    <p class="tooltip-desc">Realm Protocols dictate the unwritten divine laws governing collaboration,
+                      ethics, and mutual trust. Xenia&mdash;the sacred code of hospitality&mdash;ensures seamless
+                      operational harmony.</p>
                     <div class="tooltip-footer">
                       <span class="coords-badge">38&deg;29'N 22&deg;30'E</span>
                       <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
@@ -306,7 +317,9 @@
                       <h3 class="tooltip-title">The Legions</h3>
                     </div>
                     <p class="tooltip-tagline">Unified Execution, Hoplite Shield Wall &amp; Strategic Vanguard</p>
-                    <p class="tooltip-desc">The Legions represent unified execution, tactical discipline, and collective strength. Operating like an unbroken hoplite phalanx, aligned teams overcome monumental obstacles.</p>
+                    <p class="tooltip-desc">The Legions represent unified execution, tactical discipline, and collective
+                      strength. Operating like an unbroken hoplite phalanx, aligned teams overcome monumental obstacles.
+                    </p>
                     <div class="tooltip-footer">
                       <span class="coords-badge">37&deg;04'N 22&deg;25'E</span>
                       <span class="action-prompt prompt-status">Follow Serial Path &rarr;</span>
@@ -339,7 +352,9 @@
                       <h3 class="tooltip-title">The Odyssey</h3>
                     </div>
                     <p class="tooltip-tagline">The Pinnacle of Triumph, Golden Mastery &amp; Return Home</p>
-                    <p class="tooltip-desc">The grand culmination of endurance, wisdom, and triumphant achievement. It celebrates the ultimate realization of vision, reclaiming sovereign mastery, and inspiring future innovators.</p>
+                    <p class="tooltip-desc">The grand culmination of endurance, wisdom, and triumphant achievement. It
+                      celebrates the ultimate realization of vision, reclaiming sovereign mastery, and inspiring future
+                      innovators.</p>
                     <div class="tooltip-footer">
                       <span class="coords-badge">38&deg;22'N 20&deg;43'E</span>
                       <span class="action-prompt prompt-status">Final Destination &rarr;</span>

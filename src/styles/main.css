@@ -669,8 +669,8 @@ body.odyssey-theme {
    ========================================================================== */
 
 :root {
-  --clock-card-w: clamp(62px, 5.2vw, 76px);
-  --clock-card-h: clamp(70px, 5.8vw, 84px);
+  --clock-card-w: clamp(66px, 5.5vw, 80px);
+  --clock-card-h: clamp(72px, 6vw, 86px);
 }
 
 .intro-clock-section {
@@ -726,18 +726,19 @@ body.odyssey-theme {
   width: var(--clock-card-w);
   height: var(--clock-card-h);
   border-radius: 9px;
-  background: #120a06;
+  background: #110905;
   border: 1px solid rgba(243, 156, 18, 0.45);
   box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.8),
+    0 10px 24px rgba(0, 0, 0, 0.85),
     0 0 14px rgba(243, 156, 18, 0.12),
-    inset 0 1px 0 rgba(255, 215, 0, 0.35);
+    inset 0 1px 0 rgba(255, 215, 0, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6);
   perspective: 350px;
   transform-style: preserve-3d;
   user-select: none;
 }
 
-/* Individual Flaps */
+/* Individual Flap Halves */
 .card-flap {
   position: absolute;
   left: 0;
@@ -749,24 +750,27 @@ body.odyssey-theme {
   -webkit-backface-visibility: hidden;
 }
 
-/* Numeral text inside flap */
+/* Flap Numeral: 200% height centered across the card */
 .flap-num {
   position: absolute;
   left: 0;
   width: 100%;
-  height: var(--clock-card-h);
-  line-height: var(--clock-card-h);
+  height: 200%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-heading);
-  font-size: clamp(1.7rem, 2.3vw, 2.25rem);
+  font-size: clamp(1.8rem, 2.4vw, 2.3rem);
   font-weight: 700;
-  letter-spacing: 0.04em;
-  background: linear-gradient(180deg, #ffffff 0%, #fff2d0 45%, #ffd700 100%);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+  text-align: center;
+  line-height: 1;
+  color: #fff4d6;
+  background: linear-gradient(180deg, #ffffff 0%, #fff2d0 42%, #ffd700 85%, #d49520 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.95));
   pointer-events: none;
 }
 
@@ -775,8 +779,7 @@ body.odyssey-theme {
 .flap-top-front {
   top: 0;
   border-radius: 8px 8px 0 0;
-  background: linear-gradient(180deg, #28190f 0%, #1c1109 100%);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+  background: linear-gradient(180deg, #25160d 0%, #1a0f08 100%);
   transform-origin: bottom center;
 }
 
@@ -788,44 +791,63 @@ body.odyssey-theme {
 /* Bottom Flaps */
 .flap-bottom-back,
 .flap-bottom-front {
-  bottom: 0;
+  top: 50%;
   border-radius: 0 0 8px 8px;
-  background: linear-gradient(180deg, #100905 0%, #160d07 100%);
-  border-top: 1px solid rgba(255, 215, 0, 0.12);
+  background: linear-gradient(180deg, #140b06 0%, #0e0704 100%);
   transform-origin: top center;
 }
 
 .flap-bottom-back .flap-num,
 .flap-bottom-front .flap-num {
-  bottom: 0;
+  top: -100%;
 }
 
-/* Stacking & Initial 3D Rotation */
+/* IDLE STATE: Only the front top and back bottom are visible.
+   This guarantees ZERO 90-degree black bar artifacts when resting! */
 .flap-top-back {
+  display: none;
   z-index: 1;
 }
 
 .flap-bottom-back {
+  display: block;
   z-index: 1;
 }
 
 .flap-top-front {
-  z-index: 3;
+  display: block;
+  z-index: 2;
   transform: rotateX(0deg);
 }
 
 .flap-bottom-front {
+  display: none;
   z-index: 2;
   transform: rotateX(90deg);
 }
 
-/* Active 3D Folding Animation */
+/* ACTIVE 3D FOLDING ANIMATION */
+.clock-card.flipping .flap-top-back {
+  display: block;
+  z-index: 1;
+}
+
+.clock-card.flipping .flap-bottom-back {
+  display: block;
+  z-index: 1;
+}
+
 .clock-card.flipping .flap-top-front {
+  display: block;
+  z-index: 3;
   animation: flipFoldTop 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .clock-card.flipping .flap-bottom-front {
-  animation: flipFoldBottom 0.28s cubic-bezier(0.2, 0, 0.4, 1) 0.26s forwards;
+  display: block;
+  z-index: 4;
+  transform: rotateX(90deg);
+  animation: flipFoldBottom 0.28s cubic-bezier(0.2, 0, 0.4, 1) 0.24s forwards;
 }
 
 @keyframes flipFoldTop {
@@ -835,14 +857,14 @@ body.odyssey-theme {
   }
   100% {
     transform: rotateX(-90deg);
-    filter: brightness(0.5);
+    filter: brightness(0.55);
   }
 }
 
 @keyframes flipFoldBottom {
   0% {
     transform: rotateX(90deg);
-    filter: brightness(0.5);
+    filter: brightness(0.55);
   }
   100% {
     transform: rotateX(0deg);
@@ -856,10 +878,10 @@ body.odyssey-theme {
   top: 50%;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 1px;
   transform: translateY(-50%);
-  background: #060302;
-  box-shadow: 0 1px 0 rgba(255, 215, 0, 0.2), 0 -1px 0 rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.9);
+  box-shadow: 0 1px 0 rgba(255, 215, 0, 0.15);
   z-index: 10;
   pointer-events: none;
 }
@@ -870,17 +892,21 @@ body.odyssey-theme {
   position: absolute;
   top: -3px;
   width: 4px;
-  height: 8px;
-  background: #0a0705;
-  border-radius: 3px;
+  height: 7px;
+  background: #090503;
+  border: 1px solid rgba(243, 156, 18, 0.35);
+  border-radius: 2px;
+  z-index: 11;
 }
 
 .clock-seam::before {
   left: -2px;
+  border-left: none;
 }
 
 .clock-seam::after {
   right: -2px;
+  border-right: none;
 }
 
 .clock-divider {
@@ -1179,6 +1205,7 @@ body.intro-active .odyssey-viewport {
     border-radius: 7px !important;
   }
 
+  .clock-num,
   .flap-num {
     font-size: clamp(1.35rem, 5.2vw, 1.95rem) !important;
   }
