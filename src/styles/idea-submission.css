@@ -12,6 +12,7 @@ body.odyssey-theme.idea-submission-page {
   overflow-y: auto;
   background: radial-gradient(circle at top, rgba(243, 156, 18, .16), transparent 38%), #0b0907;
 }
+.idea-submission-page [hidden] { display: none !important; }
 .idea-shell { max-width: 920px; margin: 0 auto; padding: 6rem 1.25rem; }
 .idea-card { padding: clamp(1.5rem, 5vw, 4rem); background: rgba(24, 16, 9, .9); border: 1px solid rgba(243, 156, 18, .42); box-shadow: 0 20px 70px rgba(0,0,0,.55); }
 .idea-eyebrow { color: var(--color-gold-bright); letter-spacing: .16em; font: 600 .75rem var(--font-heading); }
@@ -21,12 +22,27 @@ body.odyssey-theme.idea-submission-page {
 .idea-form label { color: #f1e5d4; font: 600 .88rem var(--font-heading); }
 .idea-form input, .idea-form textarea { width: 100%; box-sizing: border-box; padding: .8rem; color: #f8efe2; background: rgba(9, 7, 5, .8); border: 1px solid rgba(243, 156, 18, .4); font: 1rem var(--font-serif); }
 .idea-form textarea { resize: vertical; }
+.theme-display { width: 100%; min-height: 48px; height: auto; box-sizing: border-box; padding: .8rem; color: #f8efe2; background: rgba(9, 7, 5, .8); border: 1px solid rgba(243, 156, 18, .4); font: 1rem var(--font-serif); white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
 .registration-field { width: 100%; display: grid; gap: .75rem; }
 .registration-input { width: 100%; min-width: 0; min-height: 48px; box-sizing: border-box; padding: .8rem 1rem; font-size: 1rem; }
 .verify-button { width: 100%; min-height: 48px; white-space: nowrap; }
 .idea-message { min-height: 1.25rem; color: #ff9d9d; }
 .idea-message.success { color: #9ce7b4; }
 .idea-notice { margin: 1.5rem 0; padding: 1rem; border-left: 3px solid #f1b84c; color: #f8d98a; background: rgba(243, 156, 18, .1); }
+.verification-success {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  margin-bottom: 1.5rem;
+  padding: .8rem 1rem;
+  border: 1px solid rgba(243, 156, 18, .48);
+  background: rgba(20, 15, 9, .8);
+  color: #f8d98a;
+  font: 600 .9rem var(--font-heading);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.verification-badge { color: #9ce7b4; font-size: 1.1rem; }
 .verified-team { margin-top: 2rem; }
 .team-facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: .75rem; margin-bottom: 2rem; }
 .team-facts div { padding: .8rem; border: 1px solid rgba(243, 156, 18, .2); }
