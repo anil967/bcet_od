@@ -186,6 +186,46 @@
   </main>
 
   <!-- Complete Registration Details Modal -->
+  <section class="dashboard-main idea-admin-section" aria-labelledby="idea-submissions-heading">
+    <div class="section-heading-row">
+      <div>
+        <p class="eyebrow">PROJECT INTAKE</p>
+        <h2 id="idea-submissions-heading">Idea Submissions</h2>
+      </div>
+      <input id="idea-search" class="admin-search" type="search" placeholder="Search registration, team or title...">
+    </div>
+    <p id="idea-load-error" class="form-error"></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>REG ID</th><th>TEAM &amp; INSTITUTION</th><th>PROJECT / THEME</th><th>SUBMITTED</th><th>ACTIONS</th></tr></thead>
+        <tbody id="idea-submissions-body"></tbody>
+      </table>
+      <div id="idea-empty-state" class="empty-state" hidden>No idea submissions found.</div>
+    </div>
+  </section>
+
+  <dialog id="idea-delete-dialog" class="idea-delete-dialog">
+    <div class="dialog-header">
+      <div class="dialog-title-group">
+        <p class="eyebrow">DANGER ZONE</p>
+        <h2>Delete Idea Submission?</h2>
+      </div>
+      <button id="close-idea-delete-dialog" class="icon-close-button" type="button" aria-label="Close delete dialog">&times;</button>
+    </div>
+    <div class="idea-delete-dialog-body">
+      <p>Are you sure you want to delete this submission? This action cannot be undone.</p>
+      <dl>
+        <div><dt>Registration ID</dt><dd id="delete-idea-reg-id">—</dd></div>
+        <div><dt>Team</dt><dd id="delete-idea-team">—</dd></div>
+        <div><dt>Project</dt><dd id="delete-idea-project">—</dd></div>
+      </dl>
+      <div class="idea-delete-dialog-actions">
+        <button id="cancel-idea-delete" class="secondary-button" type="button">Cancel</button>
+        <button id="confirm-idea-delete" class="danger-button" type="button">Delete Submission</button>
+      </div>
+    </div>
+  </dialog>
+
   <dialog id="details-dialog" class="details-dialog">
     <div class="dialog-header">
       <div class="dialog-title-group">
