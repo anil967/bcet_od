@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" class="idea-submission-document">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Idea Submission | Odyssey</title>
+  <link rel="stylesheet" href="/src/styles/main.css">
+  <link rel="stylesheet" href="/src/styles/page.css">
+  <link rel="stylesheet" href="/src/styles/idea-submission.css">
+</head>
+<body class="odyssey-theme idea-submission-page">
+  <main class="idea-shell">
+    <section class="idea-card">
+      <p class="idea-eyebrow">ODYSSEY 2026 // TEAM LEADER PORTAL</p>
+      <h1>IDEA SUBMISSION</h1>
+      <p class="idea-intro">Verify your team registration to submit your project abstract and presentation.</p>
+      <form id="verify-form" class="idea-form">
+        <label for="registration-id">Registration ID</label>
+        <div class="registration-field">
+          <input class="registration-input" id="registration-id" name="registrationId" required maxlength="20" autocomplete="off" placeholder="Enter your Registration ID">
+          <button class="gold-action-btn verify-button" type="submit" id="verify-button">VERIFY REGISTRATION</button>
+        </div>
+        <p id="verify-message" class="idea-message" role="alert"></p>
+      </form>
+
+      <section id="verified-team" class="verified-team" hidden>
+        <div class="team-facts" id="team-facts"></div>
+        <div id="already-submitted" class="idea-notice" hidden>You have already submitted your idea.</div>
+        <form id="submission-form" class="idea-form" hidden>
+          <label for="project-title">Project / Idea Title</label>
+          <input id="project-title" name="projectTitle" maxlength="160" required>
+          <label for="theme">Theme / Problem Statement</label>
+          <input id="theme" name="theme" readonly>
+          <label for="abstract">Abstract <span id="word-count">0 / 200 words</span></label>
+          <textarea id="abstract" name="abstract" rows="8" required></textarea>
+          <label for="presentation">PPT / PPTX presentation</label>
+          <input id="presentation" name="presentation" type="file" accept=".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" required>
+          <small>Maximum file size: 8 MB.</small>
+          <button class="gold-action-btn" type="submit" id="submit-button">SUBMIT IDEA</button>
+          <p id="submission-message" class="idea-message" role="alert"></p>
+        </form>
+      </section>
+
+      <section id="success-state" class="success-state" hidden>
+        <p class="idea-eyebrow">MISSION LOGGED</p>
+        <h2>IDEA SUBMITTED SUCCESSFULLY</h2>
+        <div id="success-summary"></div>
+        <p>Your abstract and presentation have been successfully submitted.</p>
+      </section>
+    </section>
+  </main>
+  <script type="module" src="/src/scripts/idea-submission.js"></script>
+</body>
+</html>

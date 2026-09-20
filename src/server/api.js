@@ -1,5 +1,11 @@
 import { ObjectId } from 'mongodb';
-import { saveRegistration, checkConnection, getCollection, generateRegId } from './db.js';
+import {
+  saveRegistration,
+  checkConnection,
+  getCollection,
+  getIdeaSubmissionsCollection,
+  generateRegId,
+} from './db.js';
 import {
   authenticateAdmin,
   expiredSessionCookie,
@@ -7,6 +13,47 @@ import {
   logoutAdmin,
   sessionCookie,
 } from './adminAuth.js';
+
+const MAX_PRESENTATION_BYTES = 8 * 1024 * 1024;
+const MAX_ABSTRACT_WORDS = 200;
+
+function countWords(value) {
+  return String(value || '').trim().split(/\s+/).filter(Boolean).length;
+}
+
+function cleanIdeaRegistration(registration) {
+  return {
+    registrationId: registration.regId,
+    teamName: registration.teamName || '',
+    leaderName: registration.leaderName || '',
+    leaderEmail: registration.leaderEmail || '',
+    institution: registration.institution || registration.college || '',
+    theme: registration.problemStatement || registration.track || '',
+  };
+}
+
+function validatePresentation(file) {
+  if (!file || typeof file !== 'object') return 'A PPT or PPTX presentation is required';
+  const fileName = String(file.fileName || '').trim();
+  const dataUrl = String(file.dataUrl || '');
+  if (!/\.pptx?$/i.test(fileName) || !/^data:application\/(vnd\.ms-powerpoint|vnd\.openxmlformats-officedocument\.presentationml\.presentation);base64,/i.test(dataUrl)) {
+    return 'Only PPT and PPTX presentations are accepted';
+  }
+  const base64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
+  let buffer;
+  try {
+    buffer = Buffer.from(base64, 'base64');
+  } catch {
+    return 'The presentation file could not be read';
+  }
+  if (buffer.length === 0 || buffer.length > MAX_PRESENTATION_BYTES) {
+    return `The presentation must be smaller than ${MAX_PRESENTATION_BYTES / 1024 / 1024} MB`;
+  }
+  const isPpt = buffer.subarray(0, 8).equals(Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]));
+  const isPptx = buffer.subarray(0, 4).equals(Buffer.from([0x50, 0x4b, 0x03, 0x04]));
+  if (!isPpt && !isPptx) return 'The presentation content is not a valid PPT or PPTX file';
+  return null;
+}
 
 async function readJsonBody(req, maxBytes = 1024 * 1024) {
   let body = '';
@@ -76,6 +123,180 @@ export async function handleApiRequest(req, res) {
     res.setHeader('Set-Cookie', expiredSessionCookie());
     res.statusCode = 204;
     res.end();
+    return true;
+  }
+
+  if (pathname === '/api/idea-submission/verify' && req.method === 'POST') {
+    try {
+      const payload = await readJsonBody(req, 16 * 1024);
+      const registrationId = String(payload?.registrationId || '').trim().toUpperCase();
+      if (!/^[A-Z0-9]{4,20}$/.test(registrationId)) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ success: false, message: 'Enter a valid Registration ID' }));
+        return true;
+      }
+      const registration = await (await getCollection()).findOne({ regId: registrationId });
+      if (!registration) {
+        res.statusCode = 404;
+        res.end(JSON.stringify({ success: false, message: 'Registration ID not found' }));
+        return true;
+      }
+      const existing = await (await getIdeaSubmissionsCollection()).findOne({ registrationId });
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        success: true,
+        alreadySubmitted: Boolean(existing),
+        registration: cleanIdeaRegistration(registration),
+      }));
+    } catch (err) {
+      console.error('[API Error] Idea verification failed:', err);
+      res.statusCode = 500;
+      res.end(JSON.stringify({ success: false, message: 'Unable to verify the Registration ID' }));
+    }
+    return true;
+  }
+
+  if (pathname === '/api/idea-submission' && req.method === 'POST') {
+    try {
+      const payload = await readJsonBody(req, 12 * 1024 * 1024);
+      const registrationId = String(payload?.registrationId || '').trim().toUpperCase();
+      const projectTitle = String(payload?.projectTitle || '').trim();
+      const abstract = String(payload?.abstract || '').trim().replace(/\s+/g, ' ');
+      if (!/^[A-Z0-9]{4,20}$/.test(registrationId)) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ success: false, message: 'Enter a valid Registration ID' }));
+        return true;
+      }
+      if (projectTitle.length < 2 || projectTitle.length > 160) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ success: false, message: 'Project title must be between 2 and 160 characters' }));
+        return true;
+      }
+      const wordCount = countWords(abstract);
+      if (!wordCount || wordCount > MAX_ABSTRACT_WORDS) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ success: false, message: `Abstract must contain 1 to ${MAX_ABSTRACT_WORDS} words` }));
+        return true;
+      }
+      const presentationError = validatePresentation(payload.presentation);
+      if (presentationError) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ success: false, message: presentationError }));
+        return true;
+      }
+      const registration = await (await getCollection()).findOne({ regId: registrationId });
+      if (!registration) {
+        res.statusCode = 404;
+        res.end(JSON.stringify({ success: false, message: 'Registration ID not found' }));
+        return true;
+      }
+      const submissions = await getIdeaSubmissionsCollection();
+      const existing = await submissions.findOne({ registrationId });
+      if (existing) {
+        res.statusCode = 409;
+        res.end(JSON.stringify({ success: false, message: 'You have already submitted your idea.' }));
+        return true;
+      }
+      const file = payload.presentation;
+      const document = {
+        ...cleanIdeaRegistration(registration),
+        projectTitle,
+        abstract,
+        ppt: {
+          fileName: String(file.fileName).trim(),
+          fileSize: Buffer.from(file.dataUrl.slice(file.dataUrl.indexOf(',') + 1), 'base64').length,
+          mimeType: String(file.fileType || ''),
+          dataUrl: file.dataUrl,
+        },
+        submittedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        status: 'submitted',
+      };
+      await submissions.insertOne(document);
+      res.statusCode = 201;
+      res.end(JSON.stringify({
+        success: true,
+        submission: {
+          registrationId: document.registrationId,
+          teamName: document.teamName,
+          projectTitle: document.projectTitle,
+        },
+      }));
+    } catch (err) {
+      if (err?.code === 11000) {
+        res.statusCode = 409;
+        res.end(JSON.stringify({ success: false, message: 'You have already submitted your idea.' }));
+        return true;
+      }
+      console.error('[API Error] Idea submission failed:', err);
+      res.statusCode = err.statusCode || 500;
+      res.end(JSON.stringify({ success: false, message: err.statusCode ? err.message : 'Unable to save the idea submission' }));
+    }
+    return true;
+  }
+
+  if (pathname === '/api/admin/idea-submissions' && req.method === 'GET') {
+    if (!requireAdmin(req, res)) return true;
+    try {
+      const submissions = await (await getIdeaSubmissionsCollection()).find({}, {
+        projection: { 'ppt.dataUrl': 0 },
+      }).sort({ submittedAt: -1 }).toArray();
+      res.statusCode = 200;
+      res.end(JSON.stringify({ submissions: submissions.map((item) => ({ ...item, _id: item._id?.toString() })) }));
+    } catch (err) {
+      console.error('[API Error] Loading idea submissions failed:', err);
+      res.statusCode = 500;
+      res.end(JSON.stringify({ success: false, message: 'Unable to load idea submissions' }));
+    }
+    return true;
+  }
+
+  const ideaDownloadMatch = pathname.match(/^\/api\/admin\/idea-submissions\/([^/]+)\/download$/);
+  if (ideaDownloadMatch && req.method === 'GET') {
+    if (!requireAdmin(req, res)) return true;
+    try {
+      const submission = await (await getIdeaSubmissionsCollection()).findOne({ _id: new ObjectId(ideaDownloadMatch[1]) });
+      if (!submission?.ppt?.dataUrl) {
+        res.statusCode = 404;
+        res.end(JSON.stringify({ success: false, message: 'Presentation not found' }));
+        return true;
+      }
+      const comma = submission.ppt.dataUrl.indexOf(',');
+      const data = Buffer.from(submission.ppt.dataUrl.slice(comma + 1), 'base64');
+      res.setHeader('Content-Type', submission.ppt.mimeType || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename="${submission.ppt.fileName.replace(/[^a-z0-9._-]/gi, '_')}"`);
+      res.statusCode = 200;
+      res.end(data);
+    } catch (err) {
+      console.error('[API Error] Downloading idea presentation failed:', err);
+      res.statusCode = 404;
+      res.end(JSON.stringify({ success: false, message: 'Presentation not found' }));
+    }
+    return true;
+  }
+
+  const ideaDeleteMatch = pathname.match(/^\/api\/admin\/idea-submissions\/([^/]+)$/);
+  if (ideaDeleteMatch && req.method === 'DELETE') {
+    if (!requireAdmin(req, res)) return true;
+    if (!ObjectId.isValid(ideaDeleteMatch[1])) {
+      res.statusCode = 400;
+      res.end(JSON.stringify({ success: false, message: 'Invalid idea submission identifier' }));
+      return true;
+    }
+    try {
+      const result = await (await getIdeaSubmissionsCollection()).deleteOne({ _id: new ObjectId(ideaDeleteMatch[1]) });
+      if (result.deletedCount !== 1) {
+        res.statusCode = 404;
+        res.end(JSON.stringify({ success: false, message: 'Idea submission not found' }));
+        return true;
+      }
+      res.statusCode = 200;
+      res.end(JSON.stringify({ success: true, message: 'Idea submission deleted successfully.' }));
+    } catch (err) {
+      console.error('[API Error] Deleting idea submission failed:', err);
+      res.statusCode = 500;
+      res.end(JSON.stringify({ success: false, message: 'Unable to delete idea submission' }));
+    }
     return true;
   }
 

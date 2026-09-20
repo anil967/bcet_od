@@ -98,12 +98,26 @@ const lightboxDownloadLink = document.getElementById('lightbox-download-link');
 const toastBanner = document.getElementById('toast-banner');
 const toastMessage = document.getElementById('toast-message');
 const toastClose = document.getElementById('toast-close');
+const ideaBody = document.getElementById('idea-submissions-body');
+const ideaSearch = document.getElementById('idea-search');
+const ideaEmptyState = document.getElementById('idea-empty-state');
+const ideaLoadError = document.getElementById('idea-load-error');
+const ideaDeleteDialog = document.getElementById('idea-delete-dialog');
+const closeIdeaDeleteDialog = document.getElementById('close-idea-delete-dialog');
+const cancelIdeaDelete = document.getElementById('cancel-idea-delete');
+const confirmIdeaDelete = document.getElementById('confirm-idea-delete');
+const deleteIdeaRegId = document.getElementById('delete-idea-reg-id');
+const deleteIdeaTeam = document.getElementById('delete-idea-team');
+const deleteIdeaProject = document.getElementById('delete-idea-project');
 
 const PAYMENT_STATUS_LABELS = {
   pending_verification: 'Pending',
   verified: 'Verified',
   rejected: 'Rejected',
 };
+
+let ideaSubmissions = [];
+let pendingIdeaDeletion = null;
 
 const escapeHtml = (value) => String(value ?? '')
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -119,9 +133,93 @@ function showToast(message, type = 'success') {
     toastBanner.hidden = true;
   }, 4500);
 }
+
+function renderIdeaSubmissions() {
+  if (!ideaBody) return;
+  const term = (ideaSearch?.value || '').trim().toLowerCase();
+  const filtered = ideaSubmissions.filter((item) => [
+    item.registrationId, item.teamName, item.institution, item.projectTitle, item.theme,
+  ].join(' ').toLowerCase().includes(term));
+  ideaEmptyState.hidden = filtered.length > 0;
+  ideaBody.innerHTML = filtered.map((item) => `
+    <tr>
+      <td><span class="reg-id-badge">${escapeHtml(item.registrationId)}</span></td>
+      <td><strong>${escapeHtml(item.teamName)}</strong><br><span class="college-text">${escapeHtml(item.institution)}</span><br><span class="contact-sub-text">${escapeHtml(item.leaderName)}</span></td>
+      <td><strong>${escapeHtml(item.projectTitle)}</strong><br><span class="college-text">${escapeHtml(item.theme || '—')}</span><details class="admin-abstract"><summary>View abstract</summary><p>${escapeHtml(item.abstract)}</p></details></td>
+      <td>${escapeHtml(formatDisplayDate(item.submittedAt))}</td>
+      <td class="idea-actions">
+        <a class="primary-button" href="/api/admin/idea-submissions/${encodeURIComponent(item._id)}/download">Download PPT</a>
+        <button class="danger-button idea-delete-button" type="button" data-idea-id="${escapeHtml(item._id)}">Delete</button>
+      </td>
+    </tr>`).join('');
+}
+
+function openIdeaDeleteDialog(item) {
+  pendingIdeaDeletion = item;
+  deleteIdeaRegId.textContent = item.registrationId || '—';
+  deleteIdeaTeam.textContent = item.teamName || '—';
+  deleteIdeaProject.textContent = item.projectTitle || '—';
+  confirmIdeaDelete.disabled = false;
+  confirmIdeaDelete.textContent = 'Delete Submission';
+  ideaDeleteDialog.showModal();
+}
+
+async function deleteIdeaSubmission() {
+  if (!pendingIdeaDeletion || confirmIdeaDelete.disabled) return;
+  confirmIdeaDelete.disabled = true;
+  confirmIdeaDelete.textContent = 'Deleting...';
+  try {
+    const response = await fetch(`/api/admin/idea-submissions/${encodeURIComponent(pendingIdeaDeletion._id)}`, {
+      method: 'DELETE',
+      credentials: 'same-origin',
+    });
+    const result = await response.json();
+    if (response.status === 401) {
+      window.location.replace('/admin/login');
+      return;
+    }
+    if (!response.ok) throw new Error(result.message || 'Unable to delete idea submission');
+    ideaSubmissions = ideaSubmissions.filter((item) => item._id !== pendingIdeaDeletion._id);
+    ideaDeleteDialog.close();
+    pendingIdeaDeletion = null;
+    renderIdeaSubmissions();
+    showToast('Idea submission deleted successfully.');
+  } catch (error) {
+    confirmIdeaDelete.disabled = false;
+    confirmIdeaDelete.textContent = 'Delete Submission';
+    showToast(error.message || 'Unable to delete idea submission', 'error');
+  }
+}
+
+async function loadIdeaSubmissions() {
+  if (!ideaBody) return;
+  try {
+    const response = await fetch('/api/admin/idea-submissions', { credentials: 'same-origin' });
+    if (response.status === 401) {
+      window.location.replace('/admin/login');
+      return;
+    }
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Unable to load idea submissions');
+    ideaSubmissions = result.submissions || [];
+    renderIdeaSubmissions();
+  } catch (error) {
+    ideaLoadError.textContent = error.message;
+  }
+}
 if (toastClose) {
   toastClose.addEventListener('click', () => { toastBanner.hidden = true; });
 }
+
+ideaBody?.addEventListener('click', (event) => {
+  const button = event.target.closest('.idea-delete-button');
+  if (!button) return;
+  const item = ideaSubmissions.find((submission) => submission._id === button.dataset.ideaId);
+  if (item) openIdeaDeleteDialog(item);
+});
+closeIdeaDeleteDialog?.addEventListener('click', () => ideaDeleteDialog.close());
+cancelIdeaDelete?.addEventListener('click', () => ideaDeleteDialog.close());
+confirmIdeaDelete?.addEventListener('click', deleteIdeaSubmission);
 
 function formatDisplayDate(dateStr) {
   if (!dateStr) return '—';
@@ -966,6 +1064,7 @@ refreshBtn.addEventListener('click', async () => {
 });
 
 exportBtn.addEventListener('click', exportCsv);
+ideaSearch?.addEventListener('input', renderIdeaSubmissions);
 
 logoutBtn.addEventListener('click', async () => {
   await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
@@ -974,3 +1073,4 @@ logoutBtn.addEventListener('click', async () => {
 
 // Initial Load
 loadRegistrations();
+loadIdeaSubmissions();

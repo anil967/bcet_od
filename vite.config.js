@@ -16,6 +16,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: path.join(__dirname, 'index.html'),
+        ideaSubmission: path.join(__dirname, 'idea_submission.html'),
         adminLogin: path.join(__dirname, 'admin/login.html'),
         adminDashboard: path.join(__dirname, 'admin/dashboard.html'),
       },

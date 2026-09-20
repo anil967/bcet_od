@@ -17,6 +17,7 @@ try {
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB || 'odyssey';
 const collectionName = process.env.MONGODB_COLLECTION || 'student registration';
+const ideaSubmissionsCollectionName = process.env.MONGODB_IDEA_SUBMISSIONS_COLLECTION || 'idea_submissions';
 
 const clientOptions = {
   maxPoolSize: 10,
@@ -62,6 +63,13 @@ export async function getDbClient() {
 export async function getCollection() {
   const connectedClient = await getDbClient();
   return connectedClient.db(dbName).collection(collectionName);
+}
+
+export async function getIdeaSubmissionsCollection() {
+  const connectedClient = await getDbClient();
+  const collection = connectedClient.db(dbName).collection(ideaSubmissionsCollectionName);
+  await collection.createIndex({ registrationId: 1 }, { unique: true });
+  return collection;
 }
 
 export function generateRegId() {
