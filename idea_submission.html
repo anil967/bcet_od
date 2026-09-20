@@ -11,9 +11,11 @@
 <body class="odyssey-theme idea-submission-page">
   <main class="idea-shell">
     <section class="idea-card">
-      <p class="idea-eyebrow">ODYSSEY 2026 // TEAM LEADER PORTAL</p>
-      <h1>IDEA SUBMISSION</h1>
-      <p class="idea-intro">Verify your team registration to submit your project abstract and presentation.</p>
+      <div id="verification-intro">
+        <p class="idea-eyebrow">ODYSSEY 2026 // TEAM LEADER PORTAL</p>
+        <h1>IDEA SUBMISSION</h1>
+        <p class="idea-intro">Verify your team registration to submit your project abstract and presentation.</p>
+      </div>
       <form id="verify-form" class="idea-form">
         <label for="registration-id">Registration ID</label>
         <div class="registration-field">
@@ -24,13 +26,18 @@
       </form>
 
       <section id="verified-team" class="verified-team" hidden>
+        <div id="verification-success" class="verification-success" hidden>
+          <span class="verification-badge">✓</span>
+          <span>REGISTRATION VERIFIED</span>
+        </div>
         <div class="team-facts" id="team-facts"></div>
         <div id="already-submitted" class="idea-notice" hidden>You have already submitted your idea.</div>
         <form id="submission-form" class="idea-form" hidden>
           <label for="project-title">Project / Idea Title</label>
           <input id="project-title" name="projectTitle" maxlength="160" required>
-          <label for="theme">Theme / Problem Statement</label>
-          <input id="theme" name="theme" readonly>
+          <label for="theme-display">Theme / Problem Statement</label>
+          <div id="theme-display" class="theme-display" role="status"></div>
+          <input id="theme" name="theme" type="hidden">
           <label for="abstract">Abstract <span id="word-count">0 / 200 words</span></label>
           <textarea id="abstract" name="abstract" rows="8" required></textarea>
           <label for="presentation">PPT / PPTX presentation</label>

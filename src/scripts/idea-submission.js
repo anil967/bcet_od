@@ -1,4 +1,5 @@
 const verifyForm = document.getElementById('verify-form');
+const verificationIntro = document.getElementById('verification-intro');
 const registrationInput = document.getElementById('registration-id');
 const verifyButton = document.getElementById('verify-button');
 const verifyMessage = document.getElementById('verify-message');
@@ -7,6 +8,7 @@ const teamFacts = document.getElementById('team-facts');
 const alreadySubmitted = document.getElementById('already-submitted');
 const submissionForm = document.getElementById('submission-form');
 const themeInput = document.getElementById('theme');
+const themeDisplay = document.getElementById('theme-display');
 const abstractInput = document.getElementById('abstract');
 const wordCount = document.getElementById('word-count');
 const presentationInput = document.getElementById('presentation');
@@ -14,6 +16,7 @@ const submitButton = document.getElementById('submit-button');
 const submissionMessage = document.getElementById('submission-message');
 const successState = document.getElementById('success-state');
 const successSummary = document.getElementById('success-summary');
+const verificationSuccess = document.getElementById('verification-success');
 
 let verifiedRegistration = null;
 let submissionState = 'INITIAL';
@@ -33,10 +36,23 @@ function setMessage(element, message, error = true) {
 
 function setState(nextState) {
   submissionState = nextState;
-  verifyForm.hidden = nextState !== 'INITIAL';
-  verifiedTeam.hidden = nextState !== 'VERIFIED';
-  submissionForm.hidden = nextState !== 'VERIFIED' || alreadySubmitted.hidden === false;
-  successState.hidden = nextState !== 'SUBMITTED';
+  const isInitial = nextState === 'INITIAL';
+  const isVerified = nextState === 'VERIFIED';
+  const isSubmitted = nextState === 'SUBMITTED';
+
+  verificationIntro.hidden = !isInitial;
+  verifyForm.hidden = !isInitial;
+  verifiedTeam.hidden = !isVerified;
+  verificationSuccess.hidden = !isVerified;
+  submissionForm.hidden = !isVerified || alreadySubmitted.hidden === false;
+  successState.hidden = !isSubmitted;
+
+  if (isSubmitted) {
+    verifyForm.hidden = true;
+    verifiedTeam.hidden = true;
+    verificationSuccess.hidden = true;
+    submissionForm.hidden = true;
+  }
 }
 
 setState('INITIAL');
@@ -79,10 +95,16 @@ verifyForm.addEventListener('submit', async (event) => {
     if (!response.ok) throw new Error(result.message || 'Registration could not be verified');
     verifiedRegistration = result.registration;
     renderFacts(verifiedRegistration);
-    themeInput.value = verifiedRegistration.theme || '';
+    const theme = verifiedRegistration.theme || '';
+    themeInput.value = theme;
+    themeDisplay.textContent = theme;
+    verifyMessage.textContent = '';
+    verifyMessage.hidden = true;
+    registrationInput.value = '';
     alreadySubmitted.hidden = !result.alreadySubmitted;
     setState('VERIFIED');
   } catch (error) {
+    verifyMessage.hidden = false;
     setState('INITIAL');
     setMessage(verifyMessage, error.message, true);
   } finally {
@@ -123,6 +145,7 @@ submissionForm.addEventListener('submit', async (event) => {
       body: JSON.stringify({
         registrationId: verifiedRegistration.registrationId,
         projectTitle: document.getElementById('project-title').value,
+        theme: themeInput.value,
         abstract: abstractInput.value,
         presentation: { fileName: file.name, fileType: file.type, dataUrl },
       }),
