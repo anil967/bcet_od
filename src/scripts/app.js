@@ -1558,6 +1558,7 @@ class OdysseyApp {
                 <li>Must be original work and any kind of plagiarism or malpractice activity will lead to disqualification.</li>
                 <li>For any kind of problem, immediately contact the organizing team.</li>
                 <li>There will be total 3 rounds in the event.</li>
+                <li><span aria-label="Warning">⚠️</span> Pre-built models are strictly not allowed.</li>
               </ol>
             </div>
 
