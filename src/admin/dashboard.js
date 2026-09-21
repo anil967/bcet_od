@@ -32,6 +32,8 @@ const kpiTotal = document.getElementById('kpi-total');
 const kpiTotalSub = document.getElementById('kpi-total-sub');
 const kpiVerified = document.getElementById('kpi-verified');
 const kpiVerifiedSub = document.getElementById('kpi-verified-sub');
+const kpiSelected = document.getElementById('kpi-selected');
+const kpiSelectedSub = document.getElementById('kpi-selected-sub');
 const kpiPending = document.getElementById('kpi-pending');
 const kpiAccommodation = document.getElementById('kpi-accommodation');
 const kpiParticipants = document.getElementById('kpi-participants');
@@ -40,6 +42,7 @@ const kpiParticipants = document.getElementById('kpi-participants');
 const countAll = document.getElementById('count-all');
 const countPending = document.getElementById('count-pending');
 const countVerified = document.getElementById('count-verified');
+const countSelected = document.getElementById('count-selected');
 const countRejected = document.getElementById('count-rejected');
 const statusTabs = document.querySelectorAll('.status-tab');
 
@@ -61,7 +64,12 @@ const paymentProofImg = document.getElementById('payment-proof-img');
 const viewFullSlipBtn = document.getElementById('view-full-slip-btn');
 const noProofText = document.getElementById('no-proof-text');
 const paymentVerifyStatus = document.getElementById('payment-verify-status');
+const paymentStatusBanner = document.getElementById('payment-status-banner');
+const bannerStatusTitle = document.getElementById('banner-status-title');
+const bannerStatusDesc = document.getElementById('banner-status-desc');
+const statusHint = document.getElementById('status-hint');
 const verifyBtn = document.getElementById('verify-payment');
+const selectBtn = document.getElementById('select-team-btn');
 const rejectBtn = document.getElementById('reject-payment');
 const resetBtn = document.getElementById('reset-payment');
 const deleteBtn = document.getElementById('delete-registration-btn');
@@ -98,26 +106,12 @@ const lightboxDownloadLink = document.getElementById('lightbox-download-link');
 const toastBanner = document.getElementById('toast-banner');
 const toastMessage = document.getElementById('toast-message');
 const toastClose = document.getElementById('toast-close');
-const ideaBody = document.getElementById('idea-submissions-body');
-const ideaSearch = document.getElementById('idea-search');
-const ideaEmptyState = document.getElementById('idea-empty-state');
-const ideaLoadError = document.getElementById('idea-load-error');
-const ideaDeleteDialog = document.getElementById('idea-delete-dialog');
-const closeIdeaDeleteDialog = document.getElementById('close-idea-delete-dialog');
-const cancelIdeaDelete = document.getElementById('cancel-idea-delete');
-const confirmIdeaDelete = document.getElementById('confirm-idea-delete');
-const deleteIdeaRegId = document.getElementById('delete-idea-reg-id');
-const deleteIdeaTeam = document.getElementById('delete-idea-team');
-const deleteIdeaProject = document.getElementById('delete-idea-project');
-
 const PAYMENT_STATUS_LABELS = {
   pending_verification: 'Pending',
   verified: 'Verified',
+  selected: 'Selected',
   rejected: 'Rejected',
 };
-
-let ideaSubmissions = [];
-let pendingIdeaDeletion = null;
 
 const escapeHtml = (value) => String(value ?? '')
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -134,92 +128,9 @@ function showToast(message, type = 'success') {
   }, 4500);
 }
 
-function renderIdeaSubmissions() {
-  if (!ideaBody) return;
-  const term = (ideaSearch?.value || '').trim().toLowerCase();
-  const filtered = ideaSubmissions.filter((item) => [
-    item.registrationId, item.teamName, item.institution, item.projectTitle, item.theme,
-  ].join(' ').toLowerCase().includes(term));
-  ideaEmptyState.hidden = filtered.length > 0;
-  ideaBody.innerHTML = filtered.map((item) => `
-    <tr>
-      <td><span class="reg-id-badge">${escapeHtml(item.registrationId)}</span></td>
-      <td><strong>${escapeHtml(item.teamName)}</strong><br><span class="college-text">${escapeHtml(item.institution)}</span><br><span class="contact-sub-text">${escapeHtml(item.leaderName)}</span></td>
-      <td><strong>${escapeHtml(item.projectTitle)}</strong><br><span class="college-text">${escapeHtml(item.theme || '—')}</span><details class="admin-abstract"><summary>View abstract</summary><p>${escapeHtml(item.abstract)}</p></details></td>
-      <td>${escapeHtml(formatDisplayDate(item.submittedAt))}</td>
-      <td class="idea-actions">
-        <a class="primary-button" href="/api/admin/idea-submissions/${encodeURIComponent(item._id)}/download">Download PPT</a>
-        <button class="danger-button idea-delete-button" type="button" data-idea-id="${escapeHtml(item._id)}">Delete</button>
-      </td>
-    </tr>`).join('');
-}
-
-function openIdeaDeleteDialog(item) {
-  pendingIdeaDeletion = item;
-  deleteIdeaRegId.textContent = item.registrationId || '—';
-  deleteIdeaTeam.textContent = item.teamName || '—';
-  deleteIdeaProject.textContent = item.projectTitle || '—';
-  confirmIdeaDelete.disabled = false;
-  confirmIdeaDelete.textContent = 'Delete Submission';
-  ideaDeleteDialog.showModal();
-}
-
-async function deleteIdeaSubmission() {
-  if (!pendingIdeaDeletion || confirmIdeaDelete.disabled) return;
-  confirmIdeaDelete.disabled = true;
-  confirmIdeaDelete.textContent = 'Deleting...';
-  try {
-    const response = await fetch(`/api/admin/idea-submissions/${encodeURIComponent(pendingIdeaDeletion._id)}`, {
-      method: 'DELETE',
-      credentials: 'same-origin',
-    });
-    const result = await response.json();
-    if (response.status === 401) {
-      window.location.replace('/admin/login');
-      return;
-    }
-    if (!response.ok) throw new Error(result.message || 'Unable to delete idea submission');
-    ideaSubmissions = ideaSubmissions.filter((item) => item._id !== pendingIdeaDeletion._id);
-    ideaDeleteDialog.close();
-    pendingIdeaDeletion = null;
-    renderIdeaSubmissions();
-    showToast('Idea submission deleted successfully.');
-  } catch (error) {
-    confirmIdeaDelete.disabled = false;
-    confirmIdeaDelete.textContent = 'Delete Submission';
-    showToast(error.message || 'Unable to delete idea submission', 'error');
-  }
-}
-
-async function loadIdeaSubmissions() {
-  if (!ideaBody) return;
-  try {
-    const response = await fetch('/api/admin/idea-submissions', { credentials: 'same-origin' });
-    if (response.status === 401) {
-      window.location.replace('/admin/login');
-      return;
-    }
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.message || 'Unable to load idea submissions');
-    ideaSubmissions = result.submissions || [];
-    renderIdeaSubmissions();
-  } catch (error) {
-    ideaLoadError.textContent = error.message;
-  }
-}
 if (toastClose) {
   toastClose.addEventListener('click', () => { toastBanner.hidden = true; });
 }
-
-ideaBody?.addEventListener('click', (event) => {
-  const button = event.target.closest('.idea-delete-button');
-  if (!button) return;
-  const item = ideaSubmissions.find((submission) => submission._id === button.dataset.ideaId);
-  if (item) openIdeaDeleteDialog(item);
-});
-closeIdeaDeleteDialog?.addEventListener('click', () => ideaDeleteDialog.close());
-cancelIdeaDelete?.addEventListener('click', () => ideaDeleteDialog.close());
-confirmIdeaDelete?.addEventListener('click', deleteIdeaSubmission);
 
 function formatDisplayDate(dateStr) {
   if (!dateStr) return '—';
@@ -254,7 +165,9 @@ function normaliseRegistration(item) {
 // Update KPI cards and Filter tab counts
 function updateKpiCards() {
   const total = state.registrations.length;
-  const verified = state.registrations.filter(r => r.paymentStatus === 'verified').length;
+  // Teams with verified payments include both 'verified' teams and 'selected' teams
+  const verified = state.registrations.filter(r => r.paymentStatus === 'verified' || r.paymentStatus === 'selected').length;
+  const selected = state.registrations.filter(r => r.paymentStatus === 'selected').length;
   const pending = state.registrations.filter(r => r.paymentStatus === 'pending_verification').length;
   const rejected = state.registrations.filter(r => r.paymentStatus === 'rejected').length;
   const accommodation = state.registrations.filter(r => String(r.accommodation).toLowerCase().includes('yes')).length;
@@ -270,6 +183,9 @@ function updateKpiCards() {
   const verifiedPercent = total > 0 ? Math.round((verified / total) * 100) : 0;
   kpiVerifiedSub.textContent = `${verifiedPercent}% approval rate`;
 
+  if (kpiSelected) kpiSelected.textContent = selected;
+  if (kpiSelectedSub) kpiSelectedSub.textContent = `${selected} team${selected === 1 ? '' : 's'} shortlisted`;
+
   kpiPending.textContent = pending;
   kpiAccommodation.textContent = accommodation;
   kpiParticipants.textContent = totalParticipants;
@@ -277,6 +193,7 @@ function updateKpiCards() {
   countAll.textContent = total;
   countPending.textContent = pending;
   countVerified.textContent = verified;
+  if (countSelected) countSelected.textContent = selected;
   countRejected.textContent = rejected;
 }
 
@@ -296,7 +213,15 @@ function applyFilters() {
     ].join(' ').toLowerCase();
 
     const matchesSearch = !term || searchable.includes(term);
-    const matchesStatus = !state.activeStatusTab || item.paymentStatus === state.activeStatusTab;
+
+    // Filter by status tab:
+    // When 'verified' section is chosen, include both 'verified' and 'selected' teams
+    let matchesStatus = true;
+    if (state.activeStatusTab === 'verified') {
+      matchesStatus = item.paymentStatus === 'verified' || item.paymentStatus === 'selected';
+    } else if (state.activeStatusTab) {
+      matchesStatus = item.paymentStatus === state.activeStatusTab;
+    }
     
     let matchesAccommodation = true;
     if (accommodationFilter.value === 'Yes') {
@@ -342,7 +267,8 @@ function renderTable() {
     const hasStay = String(item.accommodation).toLowerCase().includes('yes');
     const memberCount = item.teamSize || ((item.members?.length || 0) + 1);
     const statusClass = item.paymentStatus === 'verified' ? 'status-verified' :
-      (item.paymentStatus === 'rejected' ? 'status-rejected' : 'status-pending');
+      (item.paymentStatus === 'rejected' ? 'status-rejected' :
+      (item.paymentStatus === 'selected' ? 'status-selected' : 'status-pending'));
     const statusLabel = PAYMENT_STATUS_LABELS[item.paymentStatus] || item.paymentStatus;
 
     return `
@@ -392,6 +318,11 @@ function renderTable() {
               <button class="quick-action-btn quick-verify-btn" data-quick-verify="${item._id}" title="Quick Verify">✓</button>
               <button class="quick-action-btn quick-reject-btn" data-quick-reject="${item._id}" title="Quick Reject">✕</button>
             ` : ''}
+            ${item.paymentStatus === 'selected' ? `
+              <button class="quick-action-btn quick-unselect-btn" data-quick-unselect="${item._id}" title="Selected team! Click to unselect">★ Selected</button>
+            ` : `
+              <button class="quick-action-btn quick-select-btn" data-quick-select="${item._id}" title="Move team to Selected section">★ Select</button>
+            `}
           </div>
         </td>
       </tr>
@@ -407,13 +338,20 @@ function renderDetails(item) {
   modalTeamName.textContent = item.teamName || 'Registration Details';
 
   const statusClass = item.paymentStatus === 'verified' ? 'status-verified' :
-    (item.paymentStatus === 'rejected' ? 'status-rejected' : 'status-pending');
+    (item.paymentStatus === 'rejected' ? 'status-rejected' :
+    (item.paymentStatus === 'selected' ? 'status-selected' : 'status-pending'));
   const statusLabel = PAYMENT_STATUS_LABELS[item.paymentStatus] || item.paymentStatus;
   modalStatusBadge.className = `status-badge ${statusClass}`;
   modalStatusBadge.textContent = statusLabel;
 
-  paymentVerifyStatus.className = `status-badge ${statusClass}`;
-  paymentVerifyStatus.textContent = statusLabel;
+  // On the payment proof card header: if the team is selected or verified, payment proof is verified!
+  if (item.paymentStatus === 'selected') {
+    paymentVerifyStatus.className = 'status-badge status-verified';
+    paymentVerifyStatus.textContent = 'Verified';
+  } else {
+    paymentVerifyStatus.className = `status-badge ${statusClass}`;
+    paymentVerifyStatus.textContent = statusLabel;
+  }
 
   modalCollege.textContent = item.institution || '—';
   modalAccommodation.textContent = item.accommodation || 'No';
@@ -435,11 +373,11 @@ function renderDetails(item) {
   } else {
     modalMembersList.innerHTML = members.map((m, idx) => `
       <div class="member-item-card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="member-card-top-row">
           <span class="member-slot-tag">MEMBER SLOT ${m.memberSlot || idx + 2}</span>
-          <span style="font-weight: 600; color: #fff;">${escapeHtml(m.name || 'Member')}</span>
+          <span class="member-name-text">${escapeHtml(m.name || 'Member')}</span>
         </div>
-        <div class="contact-sub-text" style="margin-top: 4px;">
+        <div class="contact-sub-text">
           ${m.phone ? `<a href="tel:${escapeHtml(m.phone)}">📞 ${escapeHtml(m.phone)}</a>` : ''}
           ${m.email ? `<a href="mailto:${escapeHtml(m.email)}">✉️ ${escapeHtml(m.email)}</a>` : ''}
         </div>
@@ -460,11 +398,70 @@ function renderDetails(item) {
     noProofText.hidden = false;
   }
 
-  // Button states
-  const isPending = item.paymentStatus === 'pending_verification';
-  verifyBtn.disabled = item.paymentStatus === 'verified';
-  rejectBtn.disabled = item.paymentStatus === 'rejected';
-  resetBtn.disabled = isPending;
+  // Dynamic payment status state
+  const status = item.paymentStatus || 'pending_verification';
+  const isSelected = status === 'selected';
+  const isPaymentVerified = status === 'verified' || isSelected; // When selected, payment is already verified!
+  const isRejected = status === 'rejected';
+  const isPending = status === 'pending_verification';
+
+  // Live status banner updates
+  if (paymentStatusBanner) {
+    paymentStatusBanner.className = `payment-status-banner status-${isPending ? 'pending' : status}`;
+  }
+  if (bannerStatusTitle) {
+    if (isSelected) bannerStatusTitle.textContent = 'TEAM SELECTED & VERIFIED';
+    else if (status === 'verified') bannerStatusTitle.textContent = 'PAYMENT VERIFIED';
+    else if (isRejected) bannerStatusTitle.textContent = 'PAYMENT REJECTED';
+    else bannerStatusTitle.textContent = 'PENDING VERIFICATION';
+  }
+  if (bannerStatusDesc) {
+    if (isSelected) bannerStatusDesc.textContent = 'Payment verified ✓ • Shortlisted for final round';
+    else if (status === 'verified') bannerStatusDesc.textContent = 'Slip verified by administrator • Registration active';
+    else if (isRejected) bannerStatusDesc.textContent = 'Slip rejected • Registration not confirmed';
+    else bannerStatusDesc.textContent = 'Awaiting slip verification by administrator';
+  }
+  if (statusHint) {
+    if (isSelected) statusHint.textContent = 'Current: Selected & Verified ★✓';
+    else if (status === 'verified') statusHint.textContent = 'Current: Verified ✓';
+    else if (isRejected) statusHint.textContent = 'Current: Rejected ✕';
+    else statusHint.textContent = 'Awaiting review';
+  }
+
+  // Button states and dynamic labels
+  // Note: When a team is Selected, verifyBtn remains in the Verified state (green active)
+  if (verifyBtn) {
+    verifyBtn.classList.toggle('active', isPaymentVerified);
+    verifyBtn.innerHTML = isPaymentVerified
+      ? '<span class="btn-icon">✓</span><span class="btn-text">Verified</span>'
+      : '<span class="btn-icon">✓</span><span class="btn-text">Verify Payment</span>';
+    verifyBtn.disabled = isPaymentVerified;
+    verifyBtn.title = isPaymentVerified ? 'Payment is verified' : 'Verify payment';
+  }
+
+  if (selectBtn) {
+    selectBtn.classList.toggle('active', isSelected);
+    selectBtn.disabled = isRejected;
+    selectBtn.innerHTML = isSelected
+      ? '<span class="btn-icon">★</span><span class="btn-text">Selected</span>'
+      : '<span class="btn-icon">★</span><span class="btn-text">Select Team</span>';
+    selectBtn.title = isSelected
+      ? 'Team is selected! Click to unselect'
+      : 'Select this team for the final round';
+  }
+
+  if (rejectBtn) {
+    rejectBtn.classList.toggle('active', isRejected);
+    rejectBtn.disabled = isRejected;
+    rejectBtn.innerHTML = isRejected
+      ? '<span class="btn-icon">✕</span><span class="btn-text">Rejected</span>'
+      : '<span class="btn-icon">✕</span><span class="btn-text">Reject Payment</span>';
+  }
+
+  if (resetBtn) {
+    resetBtn.disabled = isPending;
+    resetBtn.innerHTML = '<span class="btn-icon">↺</span><span class="btn-text">Reset to Pending</span>';
+  }
 
   if (!detailsDialog.open) detailsDialog.showModal();
 }
@@ -927,6 +924,18 @@ body.addEventListener('click', (e) => {
     return;
   }
 
+  const quickSelect = e.target.closest('[data-quick-select]');
+  if (quickSelect) {
+    updatePaymentStatus(quickSelect.dataset.quickSelect, 'selected');
+    return;
+  }
+
+  const quickUnselect = e.target.closest('[data-quick-unselect]');
+  if (quickUnselect) {
+    updatePaymentStatus(quickUnselect.dataset.quickUnselect, 'verified');
+    return;
+  }
+
   const quickReject = e.target.closest('[data-quick-reject]');
   if (quickReject) {
     updatePaymentStatus(quickReject.dataset.quickReject, 'rejected');
@@ -937,7 +946,18 @@ body.addEventListener('click', (e) => {
 // Modal Actions
 closeDialogBtn.addEventListener('click', () => detailsDialog.close());
 verifyBtn.addEventListener('click', () => {
-  if (state.selectedRegistration) updatePaymentStatus(state.selectedRegistration._id, 'verified');
+  if (!state.selectedRegistration) return;
+  const current = state.selectedRegistration.paymentStatus;
+  // If already verified or selected, do nothing - do NOT downgrade selected status!
+  if (current === 'verified' || current === 'selected') return;
+  updatePaymentStatus(state.selectedRegistration._id, 'verified');
+});
+selectBtn?.addEventListener('click', () => {
+  if (!state.selectedRegistration) return;
+  // Toggle: if already selected, clicking unselects back to verified; otherwise selects team
+  const current = state.selectedRegistration.paymentStatus;
+  const targetStatus = current === 'selected' ? 'verified' : 'selected';
+  updatePaymentStatus(state.selectedRegistration._id, targetStatus);
 });
 rejectBtn.addEventListener('click', () => {
   if (state.selectedRegistration) updatePaymentStatus(state.selectedRegistration._id, 'rejected');
@@ -1064,7 +1084,6 @@ refreshBtn.addEventListener('click', async () => {
 });
 
 exportBtn.addEventListener('click', exportCsv);
-ideaSearch?.addEventListener('input', renderIdeaSubmissions);
 
 logoutBtn.addEventListener('click', async () => {
   await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
@@ -1073,4 +1092,3 @@ logoutBtn.addEventListener('click', async () => {
 
 // Initial Load
 loadRegistrations();
-loadIdeaSubmissions();

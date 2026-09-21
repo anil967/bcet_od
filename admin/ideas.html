@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Odyssey Admin // Idea Submissions Command</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles/admin.css">
+</head>
+<body class="admin-shell dashboard-shell">
+  <!-- Top Navigation Bar -->
+  <header class="dashboard-header">
+    <div class="brand-group">
+      <div class="brand-crest">
+        <span class="crest-icon">⚡</span>
+      </div>
+      <div>
+        <p class="eyebrow">ODYSSEY 2026 // CONTROL ROOM</p>
+        <h1 class="brand-title">Idea Submissions Command</h1>
+      </div>
+    </div>
+
+    <!-- Navigation Switcher -->
+    <nav class="admin-nav-bar" aria-label="Control Room Navigation">
+      <a href="/admin/dashboard" class="admin-nav-item" title="Squad Registrations Command">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Registrations</span>
+      </a>
+      <a href="/admin/ideas" class="admin-nav-item active" title="Idea Submissions Portal">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        <span>Idea Submissions</span>
+      </a>
+    </nav>
+
+    <div class="header-actions">
+      <div class="live-indicator" title="Connected to MongoDB Atlas">
+        <span class="pulse-dot"></span>
+        <span class="indicator-text">DATABASE LIVE</span>
+      </div>
+      <button id="refresh-button" class="icon-action-btn" title="Refresh Idea Submissions">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        <span>Refresh</span>
+      </button>
+      <div class="admin-profile-pill">
+        <span class="admin-role-badge">ADMIN</span>
+      </div>
+      <button id="logout-button" class="secondary-button logout-btn" title="Sign out of Admin Session">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        <span>Log Out</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <!-- Notification / Toast Bar -->
+    <div id="toast-banner" class="toast-banner" hidden>
+      <span id="toast-message"></span>
+      <button id="toast-close" class="clear-search-btn" title="Dismiss">&times;</button>
+    </div>
+
+    <!-- KPI Metric Cards Row -->
+    <section class="kpi-grid" aria-label="Key Performance Indicators">
+      <div class="kpi-card" id="kpi-card-all" title="Click to reset filter">
+        <div class="kpi-header">
+          <span class="kpi-title">TOTAL SUBMISSIONS</span>
+          <span class="kpi-icon">💡</span>
+        </div>
+        <div class="kpi-value" id="kpi-total">0</div>
+        <div class="kpi-subtext">Project proposals logged</div>
+      </div>
+
+      <div class="kpi-card kpi-institutions" title="Unique institutions submitting projects">
+        <div class="kpi-header">
+          <span class="kpi-title">INSTITUTIONS</span>
+          <span class="kpi-icon">🏛️</span>
+        </div>
+        <div class="kpi-value" id="kpi-institutions">0</div>
+        <div class="kpi-subtext">Distinct colleges/universities</div>
+      </div>
+
+      <div class="kpi-card kpi-themes" title="Unique problem themes represented">
+        <div class="kpi-header">
+          <span class="kpi-title">THEMES &amp; TRACKS</span>
+          <span class="kpi-icon">🎯</span>
+        </div>
+        <div class="kpi-value" id="kpi-themes">0</div>
+        <div class="kpi-subtext">Diverse solution domains</div>
+      </div>
+
+      <div class="kpi-card kpi-ppt" title="Presentations submitted">
+        <div class="kpi-header">
+          <span class="kpi-title">PRESENTATIONS</span>
+          <span class="kpi-icon">📊</span>
+        </div>
+        <div class="kpi-value" id="kpi-ppts">0</div>
+        <div class="kpi-subtext">PPT/PPTX slide decks</div>
+      </div>
+    </section>
+
+    <!-- Toolbar & Filters -->
+    <section class="toolbar-container" aria-label="Idea Submission filters and controls">
+      <div class="toolbar-top">
+        <!-- Search Input -->
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="idea-search" type="text" placeholder="Search by Reg ID, Team, College, Project Title, Theme..." autocomplete="off">
+          <button id="clear-search" class="clear-search-btn" title="Clear search" hidden>&times;</button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons-group">
+          <button id="export-button" class="primary-button export-btn" title="Export current view to CSV for Jury Evaluation">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="toolbar-bottom">
+        <div class="secondary-filters">
+          <div class="filter-select-wrapper">
+            <label for="theme-filter">Domain Theme:</label>
+            <select id="theme-filter">
+              <option value="">All Themes</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Table Meta Bar -->
+    <div class="summary-row">
+      <div class="meta-left">
+        <span id="result-count" class="result-count">Loading idea submissions…</span>
+      </div>
+      <div class="meta-right">
+        <span id="load-error" class="form-error"></span>
+      </div>
+    </div>
+
+    <!-- Main Data Table -->
+    <div class="table-wrap">
+      <table id="ideas-table">
+        <thead>
+          <tr>
+            <th data-sort="regId" class="col-regid" style="width: 130px;">REG ID</th>
+            <th data-sort="teamName" class="col-team">TEAM &amp; INSTITUTION</th>
+            <th data-sort="projectTitle">PROJECT &amp; THEME</th>
+            <th data-sort="submittedAt" class="col-date" style="width: 170px;">SUBMITTED</th>
+            <th class="col-actions" style="width: 220px;">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="ideas-body">
+          <!-- Populated by ideas.js -->
+        </tbody>
+      </table>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state" hidden>
+        <div class="empty-icon">💡</div>
+        <h3>No Idea Submissions Found</h3>
+        <p>No project submissions match your current search or theme filter.</p>
+        <button id="reset-filters-btn" class="secondary-button" style="margin-top: 12px;">Reset Filters</button>
+      </div>
+
+      <!-- Loading Skeleton -->
+      <div id="loading-state" class="loading-state">
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Full Abstract & Project Dossier Dialog -->
+  <dialog id="idea-dossier-dialog" class="idea-dossier-dialog">
+    <div class="dialog-header">
+      <div class="dialog-title-group">
+        <span id="dossier-reg-id" class="reg-id-badge copy-trigger" title="Click to copy Reg ID">ODXXXX</span>
+        <h2 id="dossier-team-name">Team Name</h2>
+        <span id="dossier-theme-tag" class="theme-chip">Theme</span>
+      </div>
+      <button id="close-dossier-dialog" class="icon-close-button" aria-label="Close modal">&times;</button>
+    </div>
+
+    <div class="idea-dossier-body">
+      <div class="idea-dossier-meta">
+        <div class="idea-meta-item">
+          <span class="meta-label">College / Institution</span>
+          <span id="dossier-institution" class="meta-val">—</span>
+        </div>
+        <div class="idea-meta-item">
+          <span class="meta-label">Team Leader</span>
+          <span id="dossier-leader-name" class="meta-val">—</span>
+        </div>
+        <div class="idea-meta-item">
+          <span class="meta-label">Leader Phone</span>
+          <a id="dossier-leader-phone" class="contact-link" href="#" target="_blank">
+            <span class="icon">📞</span>
+            <span class="text">—</span>
+          </a>
+        </div>
+        <div class="idea-meta-item">
+          <span class="meta-label">Leader Email</span>
+          <a id="dossier-leader-email" class="contact-link" href="#" target="_blank">
+            <span class="icon">✉️</span>
+            <span class="text">—</span>
+          </a>
+        </div>
+        <div class="idea-meta-item">
+          <span class="meta-label">Submitted On</span>
+          <span id="dossier-submitted-at" class="meta-val">—</span>
+        </div>
+      </div>
+
+      <div>
+        <h3 id="dossier-project-title" style="font-family: var(--font-heading); font-size: 18px; color: #fff; margin: 0 0 12px;">Project Title</h3>
+        <div class="idea-abstract-card">
+          <h4>EXECUTIVE ABSTRACT</h4>
+          <p id="dossier-abstract" class="idea-abstract-text">—</p>
+        </div>
+      </div>
+
+      <div class="idea-presentation-bar">
+        <div class="idea-file-info">
+          <span class="idea-file-icon">📊</span>
+          <div>
+            <div class="idea-file-name" id="dossier-ppt-name">Presentation Deck</div>
+            <span class="contact-sub-text" id="dossier-ppt-size">PPT / PPTX File</span>
+          </div>
+        </div>
+        <a id="dossier-download-btn" class="primary-button btn-download-ppt" href="#" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Download PPT</span>
+        </a>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Delete Confirmation Dialog -->
+  <dialog id="idea-delete-dialog" class="idea-delete-dialog">
+    <div class="dialog-header">
+      <div class="dialog-title-group">
+        <p class="eyebrow">DANGER ZONE</p>
+        <h2>Delete Idea Submission?</h2>
+      </div>
+      <button id="close-idea-delete-dialog" class="icon-close-button" type="button" aria-label="Close delete dialog">&times;</button>
+    </div>
+    <div class="idea-delete-dialog-body">
+      <p>Are you sure you want to delete this project submission? This action cannot be undone and will permanently erase the abstract and presentation record.</p>
+      <dl>
+        <div><dt>Registration ID</dt><dd id="delete-idea-reg-id">—</dd></div>
+        <div><dt>Team</dt><dd id="delete-idea-team">—</dd></div>
+        <div><dt>Project</dt><dd id="delete-idea-project">—</dd></div>
+      </dl>
+      <div class="idea-delete-dialog-actions">
+        <button id="cancel-idea-delete" class="secondary-button" type="button">Cancel</button>
+        <button id="confirm-idea-delete" class="danger-button" type="button">Delete Submission</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="/src/admin/ideas.js"></script>
+</body>
+</html>

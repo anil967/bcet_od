@@ -107,7 +107,11 @@ export function isAdminPageRequest(pathname) {
     clean === '/admin/login' ||
     clean === '/admin/login.html' ||
     clean === '/admin/dashboard' ||
-    clean === '/admin/dashboard.html'
+    clean === '/admin/dashboard.html' ||
+    clean === '/admin/ideas' ||
+    clean === '/admin/ideas.html' ||
+    clean === '/admin/idea-submissions' ||
+    clean === '/admin/idea-submissions.html'
   );
 }
 
@@ -116,7 +120,16 @@ export function protectAdminPageRequest(req, res) {
   if (!isAdminPageRequest(pathname)) return false;
 
   const session = authenticateAdmin(req);
-  if ((pathname === '/admin/dashboard' || pathname === '/admin/dashboard.html') && !session) {
+  const isProtectedAdminPage = (
+    pathname === '/admin/dashboard' ||
+    pathname === '/admin/dashboard.html' ||
+    pathname === '/admin/ideas' ||
+    pathname === '/admin/ideas.html' ||
+    pathname === '/admin/idea-submissions' ||
+    pathname === '/admin/idea-submissions.html'
+  );
+
+  if (isProtectedAdminPage && !session) {
     res.writeHead(302, { Location: '/admin/login' });
     res.end();
     return true;

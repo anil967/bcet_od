@@ -22,6 +22,18 @@
       </div>
     </div>
 
+    <!-- Navigation Switcher -->
+    <nav class="admin-nav-bar" aria-label="Control Room Navigation">
+      <a href="/admin/dashboard" class="admin-nav-item active" title="Registrations Command">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Registrations</span>
+      </a>
+      <a href="/admin/ideas" class="admin-nav-item" title="Go to Idea Submissions Page">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        <span>Idea Submissions</span>
+      </a>
+    </nav>
+
     <div class="header-actions">
       <div class="live-indicator" title="Connected to MongoDB Atlas">
         <span class="pulse-dot"></span>
@@ -65,6 +77,15 @@
         </div>
         <div class="kpi-value" id="kpi-verified">0</div>
         <div class="kpi-subtext" id="kpi-verified-sub">0% verified rate</div>
+      </div>
+
+      <div class="kpi-card kpi-selected" data-kpi-filter="selected" title="Click to view selected teams">
+        <div class="kpi-header">
+          <span class="kpi-title">SELECTED TEAMS</span>
+          <span class="kpi-icon">⭐</span>
+        </div>
+        <div class="kpi-value" id="kpi-selected">0</div>
+        <div class="kpi-subtext" id="kpi-selected-sub">Shortlisted squads</div>
       </div>
 
       <div class="kpi-card kpi-pending" data-kpi-filter="pending_verification" title="Click to view pending reviews">
@@ -120,6 +141,7 @@
           <button class="status-tab active" data-status="">All Teams <span class="tab-count" id="count-all">0</span></button>
           <button class="status-tab" data-status="pending_verification">Pending <span class="tab-count count-pending" id="count-pending">0</span></button>
           <button class="status-tab" data-status="verified">Verified <span class="tab-count count-verified" id="count-verified">0</span></button>
+          <button class="status-tab" data-status="selected">Selected <span class="tab-count count-selected" id="count-selected">0</span></button>
           <button class="status-tab" data-status="rejected">Rejected <span class="tab-count count-rejected" id="count-rejected">0</span></button>
         </div>
 
@@ -186,46 +208,6 @@
   </main>
 
   <!-- Complete Registration Details Modal -->
-  <section class="dashboard-main idea-admin-section" aria-labelledby="idea-submissions-heading">
-    <div class="section-heading-row">
-      <div>
-        <p class="eyebrow">PROJECT INTAKE</p>
-        <h2 id="idea-submissions-heading">Idea Submissions</h2>
-      </div>
-      <input id="idea-search" class="admin-search" type="search" placeholder="Search registration, team or title...">
-    </div>
-    <p id="idea-load-error" class="form-error"></p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>REG ID</th><th>TEAM &amp; INSTITUTION</th><th>PROJECT / THEME</th><th>SUBMITTED</th><th>ACTIONS</th></tr></thead>
-        <tbody id="idea-submissions-body"></tbody>
-      </table>
-      <div id="idea-empty-state" class="empty-state" hidden>No idea submissions found.</div>
-    </div>
-  </section>
-
-  <dialog id="idea-delete-dialog" class="idea-delete-dialog">
-    <div class="dialog-header">
-      <div class="dialog-title-group">
-        <p class="eyebrow">DANGER ZONE</p>
-        <h2>Delete Idea Submission?</h2>
-      </div>
-      <button id="close-idea-delete-dialog" class="icon-close-button" type="button" aria-label="Close delete dialog">&times;</button>
-    </div>
-    <div class="idea-delete-dialog-body">
-      <p>Are you sure you want to delete this submission? This action cannot be undone.</p>
-      <dl>
-        <div><dt>Registration ID</dt><dd id="delete-idea-reg-id">—</dd></div>
-        <div><dt>Team</dt><dd id="delete-idea-team">—</dd></div>
-        <div><dt>Project</dt><dd id="delete-idea-project">—</dd></div>
-      </dl>
-      <div class="idea-delete-dialog-actions">
-        <button id="cancel-idea-delete" class="secondary-button" type="button">Cancel</button>
-        <button id="confirm-idea-delete" class="danger-button" type="button">Delete Submission</button>
-      </div>
-    </div>
-  </dialog>
-
   <dialog id="details-dialog" class="details-dialog">
     <div class="dialog-header">
       <div class="dialog-title-group">
@@ -296,15 +278,27 @@
         <div class="modal-payment-column">
           <div class="payment-card">
             <div class="payment-card-header">
-              <h3>PAYMENT PROOF SLIP</h3>
-              <span id="payment-verify-status" class="status-badge-inline">Pending</span>
+              <div class="header-titles">
+                <span class="card-eyebrow">PROOF OF PAYMENT</span>
+                <h3>Payment Proof Slip</h3>
+              </div>
+              <span id="payment-verify-status" class="status-badge status-pending">Pending</span>
+            </div>
+
+            <!-- Prominent Live Status Banner -->
+            <div id="payment-status-banner" class="payment-status-banner status-pending">
+              <span class="status-indicator-dot"></span>
+              <div class="status-banner-text">
+                <strong id="banner-status-title">PENDING VERIFICATION</strong>
+                <span id="banner-status-desc">Awaiting slip verification by administrator</span>
+              </div>
             </div>
 
             <div id="payment-proof-container" class="payment-proof-box">
               <img id="payment-proof-img" src="" alt="Payment Receipt Slip" class="proof-thumbnail">
               <div class="proof-overlay">
-                <button id="view-full-slip-btn" class="view-slip-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                <button id="view-full-slip-btn" class="view-slip-btn" type="button">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
                   <span>Zoom / Full Screen</span>
                 </button>
               </div>
@@ -312,23 +306,33 @@
             </div>
 
             <div class="payment-controls">
-              <div class="control-label">Change Verification Status:</div>
+              <div class="control-label-row">
+                <span class="control-label">CHANGE STATUS:</span>
+                <span id="status-hint" class="status-hint">Select a status to update</span>
+              </div>
               <div class="payment-action-buttons">
-                <button id="verify-payment" class="primary-button verify-btn">
-                  <span>✓</span> Verify Payment
+                <button id="verify-payment" class="status-action-btn btn-verify" type="button">
+                  <span class="btn-icon">✓</span>
+                  <span class="btn-text">Verify Payment</span>
                 </button>
-                <button id="reject-payment" class="danger-button reject-btn">
-                  <span>✕</span> Reject Payment
+                <button id="select-team-btn" class="status-action-btn btn-select" type="button" title="Select this team for the final round">
+                  <span class="btn-icon">★</span>
+                  <span class="btn-text">Select Team</span>
                 </button>
-                <button id="reset-payment" class="secondary-button reset-btn" title="Reset back to pending verification">
-                  <span>↺</span> Reset to Pending
+                <button id="reject-payment" class="status-action-btn btn-reject" type="button">
+                  <span class="btn-icon">✕</span>
+                  <span class="btn-text">Reject Payment</span>
+                </button>
+                <button id="reset-payment" class="status-action-btn btn-reset" type="button" title="Reset back to pending verification">
+                  <span class="btn-icon">↺</span>
+                  <span class="btn-text">Reset to Pending</span>
                 </button>
               </div>
             </div>
 
             <!-- Danger Zone: Delete Entry -->
             <div class="danger-zone">
-              <button id="delete-registration-btn" class="text-danger-btn" title="Permanently delete this registration">
+              <button id="delete-registration-btn" class="text-danger-btn" type="button" title="Permanently delete this registration">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                 <span>Delete Registration</span>
               </button>

@@ -81,11 +81,40 @@ export function generateRegId() {
   return id;
 }
 
+export async function checkTeamNameExists(teamName) {
+  const normalized = String(teamName || '').trim();
+  if (!normalized || normalized.length < 3) return false;
+  const col = await getCollection();
+  const escaped = normalized.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const existing = await col.findOne(
+    { teamName: { $regex: new RegExp(`^${escaped}$`, 'i') } },
+    { projection: { _id: 1, teamName: 1 } }
+  );
+  return Boolean(existing);
+}
+
 export async function saveRegistration(registrationData) {
   const col = await getCollection();
+
+  // Enforce unique team name (case-insensitive check)
+  const normalizedTeamName = String(registrationData.teamName || '').trim();
+  if (normalizedTeamName) {
+    const escaped = normalizedTeamName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const existing = await col.findOne(
+      { teamName: { $regex: new RegExp(`^${escaped}$`, 'i') } },
+      { projection: { _id: 1, teamName: 1 } }
+    );
+    if (existing) {
+      const err = new Error('This team name is already taken. Please choose another.');
+      err.statusCode = 409;
+      throw err;
+    }
+  }
+
   const regId = generateRegId();
   const doc = {
     ...registrationData,
+    teamName: normalizedTeamName,
     regId,
     registeredAt: new Date().toISOString(),
     status: 'pending_verification',

@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 import {
   saveRegistration,
+  checkTeamNameExists,
   checkConnection,
   getCollection,
   getIdeaSubmissionsCollection,
@@ -321,7 +322,7 @@ export async function handleApiRequest(req, res) {
   const statusMatch = pathname.match(/^\/api\/admin\/registrations\/([^/]+)\/status$/);
   if (statusMatch && req.method === 'PATCH') {
     if (!requireAdmin(req, res)) return true;
-    const allowedStatuses = new Set(['pending_verification', 'verified', 'rejected']);
+    const allowedStatuses = new Set(['pending_verification', 'verified', 'rejected', 'selected']);
     try {
       const { status } = await readJsonBody(req, 16 * 1024);
       if (!allowedStatuses.has(status)) {
@@ -438,6 +439,28 @@ export async function handleApiRequest(req, res) {
     } catch (err) {
       res.statusCode = 500;
       res.end(JSON.stringify({ status: 'error', message: err.message }));
+    }
+    return true;
+  }
+
+  // Check if team name already exists
+  if (pathname === '/api/check-team-name' && req.method === 'GET') {
+    try {
+      const nameParam = url.searchParams.get('name') || '';
+      const exists = await checkTeamNameExists(nameParam);
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        success: true,
+        exists,
+        teamName: nameParam.trim(),
+        message: exists
+          ? 'This team name is already taken'
+          : 'Team name is available',
+      }));
+    } catch (err) {
+      console.error('[API Error] /api/check-team-name failed:', err);
+      res.statusCode = 500;
+      res.end(JSON.stringify({ success: false, message: 'Unable to check team name' }));
     }
     return true;
   }

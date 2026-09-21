@@ -2829,6 +2829,55 @@
   outline: none;
 }
 
+.reg-field input.input-error-border {
+  border-color: #f43f5e !important;
+  background: rgba(30, 10, 15, 0.9) !important;
+}
+
+.reg-field input.input-success-border {
+  border-color: #10b981 !important;
+  background: rgba(10, 25, 18, 0.9) !important;
+}
+
+.team-name-status-msg {
+  font-size: 0.82rem;
+  margin-top: 0.35rem;
+  padding: 5px 8px;
+  line-height: 1.4;
+  font-family: var(--font-body);
+  transition: all 0.2s ease;
+  border-radius: 0 !important;
+}
+
+.team-name-status-msg.status-checking {
+  color: var(--color-gold-bright, #f39c12);
+  background: rgba(243, 156, 18, 0.1);
+  border-left: 2px solid var(--color-gold-bright, #f39c12);
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+}
+
+.team-name-status-msg.status-taken {
+  color: #fb7185;
+  background: rgba(244, 63, 94, 0.14);
+  border-left: 2px solid #f43f5e;
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.team-name-status-msg.status-available {
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.12);
+  border-left: 2px solid #10b981;
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
 #reg-track-input {
   background: rgba(12, 8, 4, 0.85) !important;
   border: 1px solid rgba(243, 156, 18, 0.25) !important;

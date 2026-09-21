@@ -476,7 +476,8 @@
                 <div class="reg-field">
                   <label for="reg-team-name">Legion / Team Name</label>
                   <input type="text" id="reg-team-name" placeholder="e.g. Achaean Innovators" required minlength="3"
-                    maxlength="60" title="Team name: 3–60 chars">
+                    maxlength="60" title="Team name: 3–60 chars" autocomplete="off">
+                  <div id="team-name-status" class="team-name-status-msg" style="display: none;" aria-live="polite"></div>
                 </div>
                 <div class="reg-field">
                   <label for="reg-institution">Institution / Organization Name</label>
