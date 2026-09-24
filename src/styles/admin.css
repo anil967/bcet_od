@@ -914,6 +914,19 @@ tbody td {
   background: #f43f5e;
 }
 
+.idea-status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: rgba(243, 156, 18, 0.12);
+  border: 1px solid rgba(243, 156, 18, 0.35);
+  color: var(--gold-bright);
+}
+
 .member-chip {
   display: inline-flex;
   align-items: center;

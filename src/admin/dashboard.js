@@ -55,6 +55,7 @@ const modalStatusBadge = document.getElementById('modal-status-badge');
 const modalCollege = document.getElementById('modal-college');
 const modalAccommodation = document.getElementById('modal-accommodation');
 const modalDate = document.getElementById('modal-date');
+const modalIdeaStatus = document.getElementById('modal-idea-status');
 const modalLeaderName = document.getElementById('modal-leader-name');
 const modalLeaderPhone = document.getElementById('modal-leader-phone');
 const modalLeaderEmail = document.getElementById('modal-leader-email');
@@ -282,6 +283,7 @@ function renderTable() {
           <div class="team-title-wrap">
             <span class="team-name-text">${escapeHtml(item.teamName || 'Unnamed Squad')}</span>
             <span class="college-text">${escapeHtml(item.institution || '—')}</span>
+            ${item.hasSubmittedIdea ? '<span class="idea-status-chip" title="Project proposal and presentation submitted">💡 Idea Submitted</span>' : ''}
           </div>
         </td>
         <td>
@@ -315,7 +317,7 @@ function renderTable() {
           <div class="row-actions-group">
             <button class="view-row-btn" data-view-index="${index}">View</button>
             ${item.paymentStatus === 'pending_verification' ? `
-              <button class="quick-action-btn quick-verify-btn" data-quick-verify="${item._id}" title="Quick Verify">✓</button>
+              <button class="quick-action-btn quick-verify-btn" data-quick-verify="${item._id}" title="Quick Verify Payment & Unlock Idea Submission">✓</button>
               <button class="quick-action-btn quick-reject-btn" data-quick-reject="${item._id}" title="Quick Reject">✕</button>
             ` : ''}
             ${item.paymentStatus === 'selected' ? `
@@ -416,10 +418,19 @@ function renderDetails(item) {
     else bannerStatusTitle.textContent = 'PENDING VERIFICATION';
   }
   if (bannerStatusDesc) {
-    if (isSelected) bannerStatusDesc.textContent = 'Payment verified ✓ • Shortlisted for final round';
-    else if (status === 'verified') bannerStatusDesc.textContent = 'Slip verified by administrator • Registration active';
-    else if (isRejected) bannerStatusDesc.textContent = 'Slip rejected • Registration not confirmed';
-    else bannerStatusDesc.textContent = 'Awaiting slip verification by administrator';
+    if (isSelected) bannerStatusDesc.textContent = 'Payment verified ✓ • Shortlisted for final round • Eligible for idea submission';
+    else if (status === 'verified') bannerStatusDesc.textContent = 'Slip verified by administrator • Eligible for idea submission';
+    else if (isRejected) bannerStatusDesc.textContent = 'Slip rejected • Idea submission locked';
+    else bannerStatusDesc.textContent = 'Awaiting slip verification by administrator • Idea submission locked';
+  }
+  if (modalIdeaStatus) {
+    if (item.hasSubmittedIdea) {
+      modalIdeaStatus.innerHTML = '<span style="color:#34d399; font-weight:700;">Submitted ✓</span>';
+    } else if (isPaymentVerified) {
+      modalIdeaStatus.innerHTML = '<span style="color:var(--gold-bright);">Eligible (Awaiting upload)</span>';
+    } else {
+      modalIdeaStatus.innerHTML = '<span style="color:#fbbf24;">Locked (Needs payment verification)</span>';
+    }
   }
   if (statusHint) {
     if (isSelected) statusHint.textContent = 'Current: Selected & Verified ★✓';
@@ -520,7 +531,15 @@ async function updatePaymentStatus(id, status) {
 
     updateKpiCards();
     applyFilters();
-    showToast(`Payment marked as ${PAYMENT_STATUS_LABELS[status] || status}`);
+    if (status === 'verified') {
+      showToast('Payment verified. Team can now submit idea.');
+    } else if (status === 'selected') {
+      showToast('Team selected & payment verified. Team can submit idea.');
+    } else if (status === 'rejected') {
+      showToast('Payment marked as Rejected. Idea submission locked.');
+    } else {
+      showToast(`Payment marked as ${PAYMENT_STATUS_LABELS[status] || status}`);
+    }
   } catch (err) {
     showToast(err.message, 'error');
   }

@@ -30,6 +30,7 @@ function cleanIdeaRegistration(registration) {
     leaderEmail: registration.leaderEmail || '',
     institution: registration.institution || registration.college || '',
     theme: registration.problemStatement || registration.track || '',
+    paymentStatus: registration.status || 'pending_verification',
   };
 }
 
@@ -142,6 +143,23 @@ export async function handleApiRequest(req, res) {
         res.end(JSON.stringify({ success: false, message: 'Registration ID not found' }));
         return true;
       }
+      const paymentStatus = registration.status || 'pending_verification';
+      const isPaymentVerified = paymentStatus === 'verified' || paymentStatus === 'selected';
+      if (!isPaymentVerified) {
+        res.statusCode = 403;
+        if (paymentStatus === 'rejected') {
+          res.end(JSON.stringify({
+            success: false,
+            message: 'Payment verification was rejected. Please contact administrator.',
+          }));
+        } else {
+          res.end(JSON.stringify({
+            success: false,
+            message: 'Payment verification is pending. You can submit your idea once verified by administrator.',
+          }));
+        }
+        return true;
+      }
       const existing = await (await getIdeaSubmissionsCollection()).findOne({ registrationId });
       res.statusCode = 200;
       res.end(JSON.stringify({
@@ -189,6 +207,23 @@ export async function handleApiRequest(req, res) {
       if (!registration) {
         res.statusCode = 404;
         res.end(JSON.stringify({ success: false, message: 'Registration ID not found' }));
+        return true;
+      }
+      const submissionPaymentStatus = registration.status || 'pending_verification';
+      const isSubmissionPaymentVerified = submissionPaymentStatus === 'verified' || submissionPaymentStatus === 'selected';
+      if (!isSubmissionPaymentVerified) {
+        res.statusCode = 403;
+        if (submissionPaymentStatus === 'rejected') {
+          res.end(JSON.stringify({
+            success: false,
+            message: 'Payment verification was rejected. Please contact administrator.',
+          }));
+        } else {
+          res.end(JSON.stringify({
+            success: false,
+            message: 'Payment verification is pending. You can submit your idea once verified by administrator.',
+          }));
+        }
         return true;
       }
       const submissions = await getIdeaSubmissionsCollection();
@@ -305,9 +340,17 @@ export async function handleApiRequest(req, res) {
     if (!requireAdmin(req, res)) return true;
     try {
       const registrations = await (await getCollection()).find({}).sort({ registeredAt: -1 }).toArray();
+      let submittedRegIds = new Set();
+      try {
+        const submittedDocs = await (await getIdeaSubmissionsCollection()).find({}, { projection: { registrationId: 1 } }).toArray();
+        submittedRegIds = new Set(submittedDocs.map((doc) => doc.registrationId));
+      } catch (subErr) {
+        console.warn('[API Warning] Could not fetch idea submission regIds:', subErr);
+      }
       const serialised = registrations.map((registration) => ({
         ...registration,
         _id: registration._id?.toString(),
+        hasSubmittedIdea: submittedRegIds.has(registration.regId),
       }));
       res.statusCode = 200;
       res.end(JSON.stringify({ registrations: serialised }));
