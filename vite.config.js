@@ -19,6 +19,7 @@ export default defineConfig({
         ideaSubmission: path.join(__dirname, 'idea_submission.html'),
         adminLogin: path.join(__dirname, 'admin/login.html'),
         adminDashboard: path.join(__dirname, 'admin/dashboard.html'),
+        adminIdeas: path.join(__dirname, 'admin/ideas.html'),
       },
     },
   },
@@ -34,6 +35,8 @@ export default defineConfig({
             req.url = '/admin/login.html';
           } else if (requestPath === '/admin/dashboard' || requestPath === '/admin/dashboard/') {
             req.url = '/admin/dashboard.html';
+          } else if (requestPath === '/admin/ideas' || requestPath === '/admin/ideas/' || requestPath === '/admin/idea-submissions' || requestPath === '/admin/idea-submissions/') {
+            req.url = '/admin/ideas.html';
           }
 
           if (protectAdminPageRequest(req, res)) return;
@@ -63,8 +66,10 @@ export default defineConfig({
         const dist = path.join(__dirname, 'dist');
         const loginHtml = path.join(dist, 'admin', 'login.html');
         const dashboardHtml = path.join(dist, 'admin', 'dashboard.html');
+        const ideasHtml = path.join(dist, 'admin', 'ideas.html');
         const loginDir = path.join(dist, 'admin', 'login');
         const dashboardDir = path.join(dist, 'admin', 'dashboard');
+        const ideasDir = path.join(dist, 'admin', 'ideas');
 
         if (fs.existsSync(loginHtml)) {
           fs.mkdirSync(loginDir, { recursive: true });
@@ -73,6 +78,10 @@ export default defineConfig({
         if (fs.existsSync(dashboardHtml)) {
           fs.mkdirSync(dashboardDir, { recursive: true });
           fs.copyFileSync(dashboardHtml, path.join(dashboardDir, 'index.html'));
+        }
+        if (fs.existsSync(ideasHtml)) {
+          fs.mkdirSync(ideasDir, { recursive: true });
+          fs.copyFileSync(ideasHtml, path.join(ideasDir, 'index.html'));
         }
       }
     }

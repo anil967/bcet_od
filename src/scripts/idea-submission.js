@@ -68,6 +68,7 @@ function renderFacts(registration) {
     ['Team Leader', registration.leaderName],
     ['Institution', registration.institution],
     ['Theme', registration.theme || 'Not specified'],
+    ['Payment Status', '✓ Verified by Administrator'],
   ].map(([label, value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join('');
 }
 

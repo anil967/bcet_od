@@ -252,6 +252,96 @@ class OdysseyApp {
       });
     });
 
+    // ── Real-Time Team Name Uniqueness Check ────────────────────────────────
+    const teamNameInput = document.getElementById('reg-team-name');
+    const teamNameStatus = document.getElementById('team-name-status');
+    let teamNameCheckTimeout = null;
+    let isTeamNameTaken = false;
+    let lastCheckedTeamName = '';
+
+    const escapeTeamHtml = (str) => String(str ?? '').replace(/[&<>"']/g, m => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[m]));
+
+    const checkTeamNameAvailability = async (name) => {
+      const trimmed = (name || '').trim();
+      if (!trimmed || trimmed.length < 3) {
+        if (teamNameStatus) {
+          teamNameStatus.style.display = 'none';
+          teamNameStatus.className = 'team-name-status-msg';
+          teamNameStatus.textContent = '';
+        }
+        teamNameInput?.classList.remove('input-error-border', 'input-success-border');
+        isTeamNameTaken = false;
+        return { exists: false, empty: true };
+      }
+
+      if (teamNameStatus) {
+        teamNameStatus.style.display = 'flex';
+        teamNameStatus.className = 'team-name-status-msg status-checking';
+        teamNameStatus.innerHTML = '<span>⏳ Checking availability...</span>';
+      }
+
+      try {
+        const res = await fetch(`/api/check-team-name?name=${encodeURIComponent(trimmed)}`);
+        const data = await res.json();
+
+        // If user changed input while fetching, discard stale response
+        if (teamNameInput && teamNameInput.value.trim().toLowerCase() !== trimmed.toLowerCase()) {
+          return { stale: true };
+        }
+
+        lastCheckedTeamName = trimmed;
+        if (data.exists) {
+          isTeamNameTaken = true;
+          teamNameInput?.classList.add('input-error-border');
+          teamNameInput?.classList.remove('input-success-border');
+          if (teamNameStatus) {
+            teamNameStatus.style.display = 'flex';
+            teamNameStatus.className = 'team-name-status-msg status-taken';
+            teamNameStatus.innerHTML = '<span>⚠️ Team name already taken. Please choose another.</span>';
+          }
+          return { exists: true };
+        } else {
+          isTeamNameTaken = false;
+          teamNameInput?.classList.remove('input-error-border');
+          teamNameInput?.classList.add('input-success-border');
+          if (teamNameStatus) {
+            teamNameStatus.style.display = 'flex';
+            teamNameStatus.className = 'team-name-status-msg status-available';
+            teamNameStatus.innerHTML = '<span>✓ Team name available!</span>';
+          }
+          return { exists: false };
+        }
+      } catch (err) {
+        console.warn('Team name check error:', err);
+        if (teamNameStatus) teamNameStatus.style.display = 'none';
+        return { error: true };
+      }
+    };
+
+    teamNameInput?.addEventListener('input', () => {
+      clearTimeout(teamNameCheckTimeout);
+      const val = (teamNameInput.value || '').trim();
+      if (val.length < 3) {
+        teamNameInput.classList.remove('input-error-border', 'input-success-border');
+        if (teamNameStatus) teamNameStatus.style.display = 'none';
+        isTeamNameTaken = false;
+        return;
+      }
+      teamNameCheckTimeout = setTimeout(() => {
+        checkTeamNameAvailability(teamNameInput.value);
+      }, 350);
+    });
+
+    teamNameInput?.addEventListener('blur', () => {
+      clearTimeout(teamNameCheckTimeout);
+      const val = (teamNameInput.value || '').trim();
+      if (val.length >= 3 && val.toLowerCase() !== lastCheckedTeamName.toLowerCase()) {
+        checkTeamNameAvailability(teamNameInput.value);
+      }
+    });
+
     regForm?.addEventListener('submit', async (e) => {
 
       e.preventDefault();
@@ -281,6 +371,24 @@ class OdysseyApp {
       if (!teamName || teamName.length < 3) {
         showError('⚠️ Team name must be at least 3 characters.'); return;
       }
+
+      // Block registration if team name already exists
+      if (isTeamNameTaken) {
+        showError('⚠️ This team name is already taken. Please choose another.');
+        teamNameInput?.focus();
+        return;
+      }
+
+      // Pre-flight check if team name was changed and not yet verified
+      if (teamName.toLowerCase() !== lastCheckedTeamName.toLowerCase()) {
+        const checkResult = await checkTeamNameAvailability(teamName);
+        if (checkResult.exists) {
+          showError('⚠️ This team name is already taken. Please choose another.');
+          teamNameInput?.focus();
+          return;
+        }
+      }
+
       if (!institution || institution.length < 3) {
         showError('⚠️ Institution name must be at least 3 characters.'); return;
       }
@@ -433,11 +541,16 @@ class OdysseyApp {
         if (regSuccessMsg) regSuccessMsg.style.display = 'flex';
       } catch (err) {
         console.error('Registration failed:', err);
+        const errorMsg = err.message || 'Please check connection';
         if (errorEl) {
-          errorEl.textContent = `⚠️ Error saving registration: ${err.message || 'Please check connection'}`;
+          errorEl.textContent = errorMsg.startsWith('⚠️') ? errorMsg : `⚠️ ${errorMsg}`;
           errorEl.style.display = 'block';
         } else {
-          alert(`Registration Error: ${err.message}`);
+          alert(`Registration Error: ${errorMsg}`);
+        }
+        if (errorMsg.toLowerCase().includes('team')) {
+          teamNameInput?.classList.add('input-error-border');
+          teamNameInput?.focus();
         }
       } finally {
         if (submitBtn) {
