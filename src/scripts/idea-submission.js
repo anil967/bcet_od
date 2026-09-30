@@ -20,6 +20,7 @@ const verificationSuccess = document.getElementById('verification-success');
 
 let verifiedRegistration = null;
 let submissionState = 'INITIAL';
+const MAX_PRESENTATION_BYTES = 8 * 1024 * 1024;
 
 const escapeHtml = (value) => String(value ?? '')
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -128,8 +129,8 @@ submissionForm.addEventListener('submit', async (event) => {
     setMessage(submissionMessage, 'Please choose a PPT or PPTX presentation.', true);
     return;
   }
-  if (file.size > 8 * 1024 * 1024) {
-    setMessage(submissionMessage, 'The presentation must be smaller than 8 MB.', true);
+  if (file.size > MAX_PRESENTATION_BYTES) {
+    setMessage(submissionMessage, 'The presentation must be 8 MB or smaller.', true);
     return;
   }
   if (count > 200 || count === 0) {

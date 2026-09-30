@@ -16,6 +16,7 @@ import {
 } from './adminAuth.js';
 
 const MAX_PRESENTATION_BYTES = 8 * 1024 * 1024;
+const MAX_IDEA_SUBMISSION_BODY_BYTES = 16 * 1024 * 1024;
 const MAX_ABSTRACT_WORDS = 200;
 
 function countWords(value) {
@@ -177,7 +178,7 @@ export async function handleApiRequest(req, res) {
 
   if (pathname === '/api/idea-submission' && req.method === 'POST') {
     try {
-      const payload = await readJsonBody(req, 12 * 1024 * 1024);
+      const payload = await readJsonBody(req, MAX_IDEA_SUBMISSION_BODY_BYTES);
       const registrationId = String(payload?.registrationId || '').trim().toUpperCase();
       const projectTitle = String(payload?.projectTitle || '').trim();
       const abstract = String(payload?.abstract || '').trim().replace(/\s+/g, ' ');
