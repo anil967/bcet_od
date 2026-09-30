@@ -26,8 +26,77 @@ body.odyssey-theme.idea-submission-page {
 .registration-field { width: 100%; display: grid; gap: .75rem; }
 .registration-input { width: 100%; min-width: 0; min-height: 48px; box-sizing: border-box; padding: .8rem 1rem; font-size: 1rem; }
 .verify-button { width: 100%; min-height: 48px; white-space: nowrap; }
-.idea-message { min-height: 1.25rem; color: #ff9d9d; }
-.idea-message.success { color: #9ce7b4; }
+.idea-message {
+  display: none;
+  min-height: 1.25rem;
+  margin-top: 0.9rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 4px;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  transition: all 0.25s ease;
+  word-break: break-word;
+}
+.idea-message:not(:empty) {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.idea-message.error {
+  color: #ffc4c4;
+  background: rgba(220, 38, 38, 0.16);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+.idea-message.success {
+  color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.16);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  border-left: 4px solid #22c55e;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+.idea-message.info {
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-left: 4px solid #f59e0b;
+}
+.idea-message.loading {
+  color: #f1e5d4;
+  background: rgba(243, 156, 18, 0.12);
+  border: 1px solid rgba(243, 156, 18, 0.4);
+  border-left: 4px solid #f39c12;
+}
+.idea-message .msg-icon {
+  flex-shrink: 0;
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+.idea-message .msg-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.idea-message .msg-title {
+  font-weight: 700;
+  font-family: var(--font-heading);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+}
+.idea-message .msg-text {
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.idea-message .msg-help {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  font-style: italic;
+  margin-top: 0.2rem;
+}
 .idea-notice { margin: 1.5rem 0; padding: 1rem; border-left: 3px solid #f1b84c; color: #f8d98a; background: rgba(243, 156, 18, .1); }
 .verification-success {
   display: flex;

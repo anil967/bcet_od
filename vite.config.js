@@ -49,9 +49,14 @@ export default defineConfig({
             try {
               const handled = await handleApiRequest(req, res);
               if (handled) return;
+              res.statusCode = 404;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ success: false, message: 'API route not found' }));
+              return;
             } catch (err) {
               console.error('Middleware API error:', err);
               res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({ error: err.message }));
               return;
             }

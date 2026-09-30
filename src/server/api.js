@@ -38,7 +38,7 @@ function validatePresentation(file) {
   if (!file || typeof file !== 'object') return 'A PPT or PPTX presentation is required';
   const fileName = String(file.fileName || '').trim();
   const dataUrl = String(file.dataUrl || '');
-  if (!/\.pptx?$/i.test(fileName) || !/^data:application\/(vnd\.ms-powerpoint|vnd\.openxmlformats-officedocument\.presentationml\.presentation);base64,/i.test(dataUrl)) {
+  if (!/\.pptx?$/i.test(fileName) || !/^data:(application\/(vnd\.ms-powerpoint|vnd\.openxmlformats-officedocument\.presentationml\.presentation|octet-stream|x-mspowerpoint|powerpoint|mspowerpoint))?;?base64,/i.test(dataUrl)) {
     return 'Only PPT and PPTX presentations are accepted';
   }
   const base64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
@@ -61,7 +61,12 @@ async function readJsonBody(req, maxBytes = 1024 * 1024) {
   let body = '';
   for await (const chunk of req) {
     body += chunk;
-    if (body.length > maxBytes) throw Object.assign(new Error('Payload too large'), { statusCode: 413 });
+    if (body.length > maxBytes) {
+      throw Object.assign(
+        new Error('The uploaded file is too large for the server. Please compress your presentation and try again.'),
+        { statusCode: 413 }
+      );
+    }
   }
   try {
     return JSON.parse(body);
@@ -570,6 +575,12 @@ export async function handleApiRequest(req, res) {
         message: err.message || 'Internal server error while saving to database'
       }));
     }
+    return true;
+  }
+
+  if (pathname.startsWith('/api/')) {
+    res.statusCode = 404;
+    res.end(JSON.stringify({ success: false, message: 'API route not found' }));
     return true;
   }
 
