@@ -21,7 +21,6 @@ const verificationSuccess = document.getElementById('verification-success');
 
 let verifiedRegistration = null;
 let submissionState = 'INITIAL';
-const MAX_PRESENTATION_BYTES = 8 * 1024 * 1024;
 
 const MAX_FILE_BYTES = 8 * 1024 * 1024; // 8 MB
 const RECOMMENDED_FILE_BYTES = 4.5 * 1024 * 1024; // 4.5 MB for smoother network uploads
@@ -410,8 +409,6 @@ submissionForm.addEventListener('submit', async (event) => {
     projectTitleInput?.focus();
     return;
   }
-  if (file.size > MAX_PRESENTATION_BYTES) {
-    setMessage(submissionMessage, 'The presentation must be 8 MB or smaller.', true);
 
   if (projectTitle.length > 160) {
     setMessage(submissionMessage, 'Project title must be 160 characters or fewer.', 'error');
