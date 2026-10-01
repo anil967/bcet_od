@@ -1,5 +1,11 @@
 import { handleApiRequest } from '../src/server/api.js';
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export default async function handler(req, res) {
   try {
     const handled = await handleApiRequest(req, res);

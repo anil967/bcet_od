@@ -1,3 +1,4 @@
+import { Readable } from 'node:stream';
 import { ObjectId } from 'mongodb';
 import {
   saveRegistration,
@@ -15,7 +16,7 @@ import {
   sessionCookie,
 } from './adminAuth.js';
 
-const MAX_PRESENTATION_BYTES = 8 * 1024 * 1024;
+const MAX_PRESENTATION_BYTES = 4 * 1024 * 1024; // 4 MB
 const MAX_IDEA_SUBMISSION_BODY_BYTES = 16 * 1024 * 1024;
 const MAX_ABSTRACT_WORDS = 200;
 
@@ -59,6 +60,9 @@ function validatePresentation(file) {
 }
 
 async function readJsonBody(req, maxBytes = 1024 * 1024) {
+  if (req.body && typeof req.body === 'object') {
+    return req.body;
+  }
   let body = '';
   for await (const chunk of req) {
     body += chunk;
@@ -183,10 +187,60 @@ export async function handleApiRequest(req, res) {
 
   if (pathname === '/api/idea-submission' && req.method === 'POST') {
     try {
-      const payload = await readJsonBody(req, MAX_IDEA_SUBMISSION_BODY_BYTES);
-      const registrationId = String(payload?.registrationId || '').trim().toUpperCase();
-      const projectTitle = String(payload?.projectTitle || '').trim();
-      const abstract = String(payload?.abstract || '').trim().replace(/\s+/g, ' ');
+      const contentLength = parseInt(req.headers['content-length'] || '0', 10);
+      if (contentLength > 4.5 * 1024 * 1024) {
+        res.statusCode = 413;
+        res.end(JSON.stringify({ success: false, message: 'The uploaded file exceeds the 4 MB limit. Please compress your presentation and try again.' }));
+        return true;
+      }
+
+      const contentType = req.headers['content-type'] || '';
+      let registrationId = '';
+      let projectTitle = '';
+      let theme = '';
+      let abstract = '';
+      let fileBuffer = null;
+      let fileName = '';
+      let fileType = '';
+
+      if (contentType.includes('multipart/form-data')) {
+        const webReq = new Request(`http://${req.headers.host || 'localhost'}${req.url}`, {
+          method: req.method,
+          headers: req.headers,
+          body: Readable.toWeb(req),
+          duplex: 'half',
+        });
+        const formData = await webReq.formData();
+        registrationId = String(formData.get('registrationId') || '').trim().toUpperCase();
+        projectTitle = String(formData.get('projectTitle') || '').trim();
+        theme = String(formData.get('theme') || '').trim();
+        abstract = String(formData.get('abstract') || '').trim().replace(/\s+/g, ' ');
+        const file = formData.get('presentation');
+        if (file && typeof file === 'object' && typeof file.arrayBuffer === 'function') {
+          fileName = String(file.name || '').trim();
+          fileType = String(file.type || '');
+          fileBuffer = Buffer.from(await file.arrayBuffer());
+        }
+      } else {
+        const payload = await readJsonBody(req, MAX_IDEA_SUBMISSION_BODY_BYTES);
+        registrationId = String(payload?.registrationId || '').trim().toUpperCase();
+        projectTitle = String(payload?.projectTitle || '').trim();
+        theme = String(payload?.theme || '').trim();
+        abstract = String(payload?.abstract || '').trim().replace(/\s+/g, ' ');
+        const file = payload?.presentation;
+        if (file && typeof file === 'object' && file.dataUrl) {
+          fileName = String(file.fileName || '').trim();
+          fileType = String(file.fileType || '');
+          const comma = file.dataUrl.indexOf(',');
+          const base64 = comma !== -1 ? file.dataUrl.slice(comma + 1) : file.dataUrl;
+          try {
+            fileBuffer = Buffer.from(base64, 'base64');
+          } catch {
+            fileBuffer = null;
+          }
+        }
+      }
+
       if (!/^[A-Z0-9]{4,20}$/.test(registrationId)) {
         res.statusCode = 400;
         res.end(JSON.stringify({ success: false, message: 'Enter a valid Registration ID' }));
@@ -203,12 +257,33 @@ export async function handleApiRequest(req, res) {
         res.end(JSON.stringify({ success: false, message: `Abstract must contain 1 to ${MAX_ABSTRACT_WORDS} words` }));
         return true;
       }
-      const presentationError = validatePresentation(payload.presentation);
-      if (presentationError) {
+
+      if (!fileBuffer || fileBuffer.length === 0) {
         res.statusCode = 400;
-        res.end(JSON.stringify({ success: false, message: presentationError }));
+        res.end(JSON.stringify({ success: false, message: 'A PPT or PPTX presentation file is required' }));
         return true;
       }
+
+      if (fileBuffer.length > MAX_PRESENTATION_BYTES) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ success: false, message: 'The presentation must be 4 MB or smaller' }));
+        return true;
+      }
+
+      if (!/\.pptx?$/i.test(fileName)) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ success: false, message: 'Only PPT and PPTX presentations are accepted' }));
+        return true;
+      }
+
+      const isPpt = fileBuffer.subarray(0, 8).equals(Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]));
+      const isPptx = fileBuffer.subarray(0, 4).equals(Buffer.from([0x50, 0x4b, 0x03, 0x04]));
+      if (!isPpt && !isPptx) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ success: false, message: 'The presentation content is not a valid PPT or PPTX file' }));
+        return true;
+      }
+
       const registration = await (await getCollection()).findOne({ regId: registrationId });
       if (!registration) {
         res.statusCode = 404;
@@ -239,16 +314,24 @@ export async function handleApiRequest(req, res) {
         res.end(JSON.stringify({ success: false, message: 'You have already submitted your idea.' }));
         return true;
       }
-      const file = payload.presentation;
+
+      const isPptxFile = /\.pptx$/i.test(fileName);
+      const standardMime = isPptxFile
+        ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        : 'application/vnd.ms-powerpoint';
+      const finalMime = fileType && fileType !== 'application/octet-stream' ? fileType : standardMime;
+      const dataUrl = `data:${finalMime};base64,${fileBuffer.toString('base64')}`;
+
       const document = {
         ...cleanIdeaRegistration(registration),
         projectTitle,
+        theme: theme || registration.problemStatement || registration.track || '',
         abstract,
         ppt: {
-          fileName: String(file.fileName).trim(),
-          fileSize: Buffer.from(file.dataUrl.slice(file.dataUrl.indexOf(',') + 1), 'base64').length,
-          mimeType: String(file.fileType || ''),
-          dataUrl: file.dataUrl,
+          fileName,
+          fileSize: fileBuffer.length,
+          mimeType: finalMime,
+          dataUrl,
         },
         submittedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

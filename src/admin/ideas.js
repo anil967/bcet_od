@@ -250,7 +250,8 @@ function openDossierDialog(item) {
     dossierPptName.textContent = item.ppt?.fileName || 'Presentation Deck';
   }
   if (dossierPptSize) {
-    dossierPptSize.textContent = item.ppt?.size ? formatFileSize(item.ppt.size) : 'PPT / PPTX presentation';
+    const size = item.ppt?.fileSize || item.ppt?.size;
+    dossierPptSize.textContent = size ? formatFileSize(size) : 'PPT / PPTX presentation';
   }
   if (dossierDownloadBtn) {
     dossierDownloadBtn.href = `/api/admin/idea-submissions/${encodeURIComponent(item._id)}/download`;

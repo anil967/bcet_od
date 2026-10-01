@@ -22,8 +22,8 @@ const verificationSuccess = document.getElementById('verification-success');
 let verifiedRegistration = null;
 let submissionState = 'INITIAL';
 
-const MAX_FILE_BYTES = 8 * 1024 * 1024; // 8 MB
-const RECOMMENDED_FILE_BYTES = 4.5 * 1024 * 1024; // 4.5 MB for smoother network uploads
+const MAX_FILE_BYTES = 4 * 1024 * 1024; // 4 MB
+const RECOMMENDED_FILE_BYTES = 3.8 * 1024 * 1024; // 3.8 MB for smooth network uploads
 
 const escapeHtml = (value) => String(value ?? '')
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -293,7 +293,7 @@ presentationInput.addEventListener('change', () => {
     presentationInput.value = '';
     setMessage(
       submissionMessage,
-      `The selected presentation is ${sizeMb} MB, which exceeds the 8 MB limit.`,
+      `The selected presentation is ${sizeMb} MB, which exceeds the 4 MB limit.`,
       'error',
       'Tip: Compress images inside your slides or remove large video embeds to reduce file size.'
     );
@@ -306,7 +306,7 @@ presentationInput.addEventListener('change', () => {
       submissionMessage,
       `Selected: "${file.name}" (${sizeMb} MB).`,
       'info',
-      'Tip: Files under 4 MB upload fastest. Ensure you have a stable connection when submitting.'
+      'Tip: Files under 3.5 MB upload fastest. Ensure you have a stable connection when submitting.'
     );
     return;
   }
@@ -447,9 +447,9 @@ submissionForm.addEventListener('submit', async (event) => {
     const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
     setMessage(
       submissionMessage,
-      `Your presentation file is ${sizeMb} MB. The maximum allowed size is 8 MB.`,
+      `Your presentation file is ${sizeMb} MB. The maximum allowed size is 4 MB.`,
       'error',
-      'Tip: Compress images or remove embedded media to decrease file size.'
+      'Tip: Compress images inside your slides or remove large video embeds to reduce file size.'
     );
     return;
   }
@@ -465,39 +465,16 @@ submissionForm.addEventListener('submit', async (event) => {
   );
 
   try {
-    let dataUrl = await readFileAsDataUrl(file);
-
-    // Normalize presentation MIME type if browser provided generic octet-stream
-    let fileType = file.type;
-    const isPptx = /\.pptx$/i.test(file.name);
-    const standardMime = isPptx
-      ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-      : 'application/vnd.ms-powerpoint';
-
-    if (!fileType || fileType === 'application/octet-stream') {
-      fileType = standardMime;
-    }
-
-    // Ensure dataUrl has proper mime prefix so server validation succeeds
-    if (typeof dataUrl === 'string' && (dataUrl.startsWith('data:;') || dataUrl.startsWith('data:application/octet-stream;'))) {
-      const commaIdx = dataUrl.indexOf(',');
-      if (commaIdx !== -1) {
-        dataUrl = `data:${fileType};base64,${dataUrl.slice(commaIdx + 1)}`;
-      }
-    }
-
-    const payload = {
-      registrationId: verifiedRegistration.registrationId,
-      projectTitle,
-      theme: themeInput.value,
-      abstract: abstractText,
-      presentation: { fileName: file.name, fileType, dataUrl },
-    };
+    const formData = new FormData();
+    formData.append('registrationId', verifiedRegistration.registrationId);
+    formData.append('projectTitle', projectTitle);
+    formData.append('theme', themeInput.value);
+    formData.append('abstract', abstractText);
+    formData.append('presentation', file, file.name);
 
     const response = await fetch('/api/idea-submission', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: formData,
     });
 
     const parsed = await parseApiResponse(response);
