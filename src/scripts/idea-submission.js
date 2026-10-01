@@ -23,7 +23,6 @@ let verifiedRegistration = null;
 let submissionState = 'INITIAL';
 
 const MAX_FILE_BYTES = 8 * 1024 * 1024; // 8 MB
-const RECOMMENDED_FILE_BYTES = 4.5 * 1024 * 1024; // 4.5 MB for smoother network uploads
 
 const escapeHtml = (value) => String(value ?? '')
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -300,16 +299,6 @@ presentationInput.addEventListener('change', () => {
     return;
   }
 
-  if (file.size > RECOMMENDED_FILE_BYTES) {
-    const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-    setMessage(
-      submissionMessage,
-      `Selected: "${file.name}" (${sizeMb} MB).`,
-      'info',
-      'Tip: Files under 4 MB upload fastest. Ensure you have a stable connection when submitting.'
-    );
-    return;
-  }
 
   // Clean state for valid file
   setMessage(submissionMessage, '');
