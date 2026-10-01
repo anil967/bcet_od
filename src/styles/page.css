@@ -1457,8 +1457,8 @@
     left: -38px !important;
   }
 
-  /* Clean up the very last item's line */
-  .timeline-item:nth-child(6)::before {
+  /* Keep the trail from extending past the final milestone */
+  .timeline-item:last-child::before {
     display: none !important;
   }
 

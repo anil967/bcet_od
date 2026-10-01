@@ -1674,6 +1674,7 @@ class OdysseyApp {
                 <li>Must be original work and any kind of plagiarism or malpractice activity will lead to disqualification.</li>
                 <li>For any kind of problem, immediately contact the organizing team.</li>
                 <li>There will be total 3 rounds in the event.</li>
+                <li><span aria-label="Warning">⚠️</span> Pre-built models are strictly not allowed.</li>
               </ol>
             </div>
 
@@ -1704,28 +1705,17 @@ class OdysseyApp {
                   <div class="timeline-marker">2</div>
                   <div class="timeline-content">
                     <div class="timeline-header">
-                      <h3 class="timeline-title">The Final Call</h3>
-                      <span class="timeline-date">30th Sept 2026</span>
+                      <h3 class="timeline-title">Registration End</h3>
+                      <span class="timeline-date">2nd oct 2026</span>
                     </div>
                     <p class="timeline-desc">The final call is here—take your last step forward and claim your place in the ODYSSEY.</p>
                   </div>
                 </div>
 
+                
                 <!-- Milestone 3 -->
                 <div class="timeline-item">
                   <div class="timeline-marker">3</div>
-                  <div class="timeline-content">
-                    <div class="timeline-header">
-                      <h3 class="timeline-title">Interaction with Mortals</h3>
-                      <span class="timeline-date">1st Oct & 2nd Oct 2026</span>
-                    </div>
-                    <p class="timeline-desc">Where innovators meet, ideas speak, and the worthy are chosen for the next quest.</p>
-                  </div>
-                </div>
-
-                <!-- Milestone 4 -->
-                <div class="timeline-item">
-                  <div class="timeline-marker">4</div>
                   <div class="timeline-content">
                     <div class="timeline-header">
                       <h3 class="timeline-title">Call for Final Verdict</h3>
@@ -1735,9 +1725,9 @@ class OdysseyApp {
                   </div>
                 </div>
 
-                <!-- Milestone 5 -->
+                <!-- Milestone 4 -->
                 <div class="timeline-item highlight-item">
-                  <div class="timeline-marker">5</div>
+                  <div class="timeline-marker">4</div>
                   <div class="timeline-content">
                     <div class="timeline-header">
                       <h3 class="timeline-title">The ODYSSEY BEGINS</h3>
@@ -1747,7 +1737,7 @@ class OdysseyApp {
                   </div>
                 </div>
 
-                <!-- Milestone 6 -->
+                <!-- Milestone 5 -->
                 <div class="timeline-item champion-item">
                   <div class="timeline-marker">👑</div>
                   <div class="timeline-content">
