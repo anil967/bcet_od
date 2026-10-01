@@ -541,7 +541,10 @@ class OdysseyApp {
         if (regSuccessMsg) regSuccessMsg.style.display = 'flex';
       } catch (err) {
         console.error('Registration failed:', err);
-        const errorMsg = err.message || 'Please check connection';
+        let errorMsg = err.message || 'Please check your connection and try again.';
+        if (/json\.parse|syntaxerror|unexpected (character|token)|valid json/i.test(errorMsg)) {
+          errorMsg = 'Server returned an unexpected response. Please check your network and try again.';
+        }
         if (errorEl) {
           errorEl.textContent = errorMsg.startsWith('⚠️') ? errorMsg : `⚠️ ${errorMsg}`;
           errorEl.style.display = 'block';

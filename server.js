@@ -37,8 +37,18 @@ const server = http.createServer(async (req, res) => {
 
   // Handle API routes
   if (req.url && req.url.startsWith('/api/')) {
-    const handled = await handleApiRequest(req, res);
-    if (handled) return;
+    try {
+      const handled = await handleApiRequest(req, res);
+      if (handled) return;
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, message: 'API route not found' }));
+      return;
+    } catch (err) {
+      console.error('[Server Error] API handler failed:', err);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, message: 'Internal server error' }));
+      return;
+    }
   }
 
   // Serve static files from dist in production
