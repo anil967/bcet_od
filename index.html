@@ -435,39 +435,81 @@
     <section id="registration-view" class="view-section">
       <div class="subpage-container reg-page-container" id="reg-page-content">
         <div class="reg-page-hero">
-          <span class="reg-hero-badge">HACKATHON QUEST REGISTRATION</span>
-          <h1 class="reg-hero-title" id="reg-track-title">REGISTER: TECH FOR BHARAT &amp; SOCIAL IMPACT</h1>
-          <p class="reg-hero-subtitle">Step into ODYSSEY — Begin your Journey to Innovation</p>
+          <span class="reg-hero-badge reg-closed-hero-badge">QUEST REGISTRATION CONCLUDED</span>
+          <h1 class="reg-hero-title" id="reg-track-title">QUEST: TECH FOR BHARAT &amp; SOCIAL IMPACT</h1>
+          <p class="reg-hero-subtitle">Registration for ODYSSEY Hackathon is officially closed</p>
         </div>
 
         <div class="reg-page-body">
 
-          <form id="reg-form">
-            <!-- Selected Problem Statement -->
-            <div class="reg-field reg-track-field" style="margin-bottom: 1.5rem;">
-              <label for="reg-track-input">Selected Quest / Problem Statement</label>
-              <input type="text" id="reg-track-input" readonly
-                style="color: var(--color-gold-bright); font-weight: 700; cursor: default; letter-spacing: 0.5px;">
+          <!-- Selected Problem Statement Abstract (Available for all teams to review & download) -->
+          <div class="reg-track-abstract-box" id="reg-track-abstract-box">
+            <div class="reg-track-abstract-label">Problem Statement Abstract</div>
+            <p id="reg-track-abstract">Select a track to view the abstract.</p>
+            <div class="reg-track-pdf-wrap" id="reg-track-pdf-wrap"
+              style="margin-top: 0.85rem; display: flex; align-items: center;">
+              <a href="#" id="reg-track-pdf-link" class="hack-pdf-btn" download target="_blank"
+                rel="noopener noreferrer" style="font-size: 0.76rem; padding: 0.45rem 1rem;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+                  aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Download Problem Statement</span>
+              </a>
             </div>
+          </div>
 
-            <!-- Problem Statement Abstract -->
-            <div class="reg-track-abstract-box" id="reg-track-abstract-box">
-              <div class="reg-track-abstract-label">Problem Statement Abstract</div>
-              <p id="reg-track-abstract">Select a track to view the abstract.</p>
-              <div class="reg-track-pdf-wrap" id="reg-track-pdf-wrap"
-                style="margin-top: 0.85rem; display: flex; align-items: center;">
-                <a href="#" id="reg-track-pdf-link" class="hack-pdf-btn" download target="_blank"
-                  rel="noopener noreferrer" style="font-size: 0.76rem; padding: 0.45rem 1rem;">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
-                    aria-hidden="true">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                  </svg>
-                  <span>Download Problem Statement</span>
-                </a>
+          <!-- REGISTRATION CLOSED NOTICE -->
+          <div class="reg-closed-container" id="reg-closed-notice">
+            <div class="reg-closed-card">
+              <div class="reg-closed-badge-wrap">
+                <span class="reg-closed-status-pill">
+                  <span class="closed-pulse-dot"></span> REGISTRATIONS OFFICIALLY CONCLUDED
+                </span>
+              </div>
+              <h2 class="reg-closed-headline">The Gates of Odyssey Have Concluded Enlistment</h2>
+              <p class="reg-closed-sub">
+                The registration window for <strong>ODYSSEY Hackathon 2026</strong> closed on <strong>2nd October 2026</strong>.
+                New registrations are no longer being accepted. A heartfelt thank you to all the legions, innovators, and mentors from across Bharat who took up the quest!
+              </p>
+
+              <div class="reg-closed-grid">
+                <div class="reg-closed-card-box">
+                  <div class="closed-box-icon">📜</div>
+                  <h3 class="closed-box-title">Already Registered?</h3>
+                  <p class="closed-box-desc">
+                    Keep your <strong>Registration ID</strong> safe. Verified teams can submit their project abstract and presentation directly through the official submission portal.
+                  </p>
+                  <a href="/idea_submission.html" class="gold-action-btn reg-closed-cta-btn">
+                    💡 Go to Idea Submission Portal
+                  </a>
+                </div>
+
+                <div class="reg-closed-card-box">
+                  <div class="closed-box-icon">⚡</div>
+                  <h3 class="closed-box-title">What Comes Next?</h3>
+                  <p class="closed-box-desc">
+                    The convenor &amp; review council is screening submissions and validating payment slips. The announcement of shortlisted teams for the Grand Odyssey is scheduled for <strong>5th October 2026</strong>.
+                  </p>
+                  <button type="button" class="gold-outline-btn reg-closed-map-btn" id="reg-closed-map-btn">
+                    🗺️ Return to Realm Map
+                  </button>
+                </div>
+              </div>
+
+              <div class="reg-closed-footer-banner">
+                <span class="closed-footer-icon">⚖️</span>
+                <span>For any queries regarding your existing registration or verification status, contact the organizing committee at <a href="mailto:jrrout751@ybl" class="closed-contact-link">jrrout751@ybl</a></span>
               </div>
             </div>
+          </div>
+
+          <!-- PRESERVED REGISTRATION FORM (HIDDEN WHILE REGISTRATION IS CLOSED) -->
+          <form id="reg-form" style="display: none;">
+            <!-- Selected Problem Statement Hidden Input (Preserved for compatibility) -->
+            <input type="hidden" id="reg-track-input" readonly>
 
             <!-- Team & Leader Info -->
             <div class="reg-section-block">

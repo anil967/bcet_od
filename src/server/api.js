@@ -599,6 +599,18 @@ export async function handleApiRequest(req, res) {
 
   // Registration endpoint
   if (pathname === '/api/register' && req.method === 'POST') {
+    // Registration closed guard (Registration concluded on 2nd Oct 2026)
+    const REGISTRATION_OPEN = false;
+    if (!REGISTRATION_OPEN) {
+      res.statusCode = 403;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({
+        success: false,
+        message: 'Registration has officially closed for ODYSSEY Hackathon 2026.'
+      }));
+      return true;
+    }
+
     try {
       try {
         const payload = await readJsonBody(req, 20 * 1024 * 1024);

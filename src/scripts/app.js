@@ -678,6 +678,13 @@ class OdysseyApp {
         this.showLockedNotice(stepIdx);
       }
     });
+
+    const regClosedMapBtn = document.getElementById('reg-closed-map-btn');
+    regClosedMapBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      audioSystem.playClick();
+      this.showMapView();
+    });
   }
 
   updateMapSidebar(stepNumber, shouldCenter = true) {
@@ -999,7 +1006,7 @@ class OdysseyApp {
 
       const trackHeading = document.getElementById('reg-track-title');
       if (trackHeading) {
-        trackHeading.textContent = `REGISTER: ${currentTrack.toUpperCase()}`;
+        trackHeading.textContent = `QUEST: ${currentTrack.toUpperCase()}`;
       }
 
       const trackInput = document.getElementById('reg-track-input');
@@ -1023,9 +1030,11 @@ class OdysseyApp {
       }
 
       const form = document.getElementById('reg-form');
+      const closedNotice = document.getElementById('reg-closed-notice');
       const successMsg = document.getElementById('reg-success-msg');
       const errorEl = document.getElementById('reg-error-msg');
-      if (form) form.style.display = 'block';
+      if (form) form.style.display = 'none';
+      if (closedNotice) closedNotice.style.display = 'block';
       if (successMsg) successMsg.style.display = 'none';
       if (errorEl) {
         errorEl.style.display = 'none';
@@ -1057,7 +1066,7 @@ class OdysseyApp {
       audioSystem.playLyreArpeggio();
     };
 
-    this.runWithNavigationLoader(performOpenReg, 'QUEST REGISTRATION', 'Enlisting into Hackathon Quest...');
+    this.runWithNavigationLoader(performOpenReg, 'QUEST DETAILS', 'Opening Quest Track & Details...');
   }
 
   renderSubpageContent(data) {
@@ -1467,7 +1476,7 @@ class OdysseyApp {
                 <div class="hack-kpi-number">I</div>
                 <h2 class="hack-kpi-title">Software Deployment with AI Implementation</h2>
                 <div class="hack-kpi-actions">
-                  <div class="hack-kpi-cta">Join the Quest</div>
+                  <div class="hack-kpi-status-tag closed"><span class="closed-lock">🔒</span> Registration Closed</div>
                   <a href="/problem-statements/ps1-software-deployment-with-ai.pdf" download="ODYSSEY_PS1_Software_Deployment_AI.pdf" target="_blank" rel="noopener noreferrer" class="hack-pdf-btn" title="Download Problem Statement PDF">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1483,7 +1492,7 @@ class OdysseyApp {
                 <div class="hack-kpi-number">II</div>
                 <h2 class="hack-kpi-title">IOT with Software Solutions</h2>
                 <div class="hack-kpi-actions">
-                  <div class="hack-kpi-cta">Join the Quest</div>
+                  <div class="hack-kpi-status-tag closed"><span class="closed-lock">🔒</span> Registration Closed</div>
                   <a href="/problem-statements/ps2-iot-with-software-solutions.pdf" download="ODYSSEY_PS2_IoT_Software_Solutions.pdf" target="_blank" rel="noopener noreferrer" class="hack-pdf-btn" title="Download Problem Statement PDF">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1499,7 +1508,7 @@ class OdysseyApp {
                 <div class="hack-kpi-number">III</div>
                 <h2 class="hack-kpi-title">Tech for Bharat & Social Impact</h2>
                 <div class="hack-kpi-actions">
-                  <div class="hack-kpi-cta">Join the Quest</div>
+                  <div class="hack-kpi-status-tag closed"><span class="closed-lock">🔒</span> Registration Closed</div>
                   <a href="/problem-statements/ps3-tech-for-bharat-social-impact.pdf" download="ODYSSEY_PS3_Tech_For_Bharat_Social_Impact.pdf" target="_blank" rel="noopener noreferrer" class="hack-pdf-btn" title="Download Problem Statement PDF">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1515,7 +1524,7 @@ class OdysseyApp {
                 <div class="hack-kpi-number">IV</div>
                 <h2 class="hack-kpi-title">Automation Development / Agentic AI Development</h2>
                 <div class="hack-kpi-actions">
-                  <div class="hack-kpi-cta">Join the Quest</div>
+                  <div class="hack-kpi-status-tag closed"><span class="closed-lock">🔒</span> Registration Closed</div>
                   <a href="/problem-statements/ps4-automation-agentic-ai-development.pdf" download="ODYSSEY_PS4_Automation_Agentic_AI_Development.pdf" target="_blank" rel="noopener noreferrer" class="hack-pdf-btn" title="Download Problem Statement PDF">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1628,19 +1637,11 @@ class OdysseyApp {
     kpiCards.forEach(card => {
       observer.observe(card);
 
-      // Stop propagation on PDF link click so it doesn't trigger registration arrow
+      // PDF link click sound
       card.querySelectorAll('.hack-pdf-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
+        btn.addEventListener('click', () => {
           audioSystem.playClick();
         });
-      });
-
-      // Click event for "Join the Quest" -> Shoot Weapon Arrow & Open Registration
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('.hack-pdf-btn')) return;
-        const trackTitle = card.getAttribute('data-track') || card.querySelector('.hack-kpi-title')?.textContent || 'Hackathon Track';
-        this.triggerWeaponArrow(trackTitle);
       });
     });
   }
