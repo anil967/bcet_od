@@ -1808,10 +1808,116 @@ class OdysseyApp {
                 <span class="aboutus-divider-icon">🛡️</span>
               </div>
             </div>
+
+            <!-- Sponsor Logos Grid -->
+            <div class="sponsors-grid" style="
+              display: flex;
+              flex-wrap: wrap;
+              justify-content: center;
+              align-items: center;
+              gap: 2.5rem;
+              margin-top: 2.5rem;
+              width: 100%;
+              padding-bottom: 2rem;
+            ">
+              <div class="sponsor-card sponsor-reveal" data-delay="0" style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.35s ease, opacity 0.6s ease, translate 0.6s ease;
+                opacity: 0;
+                translate: 0 40px;
+              ">
+                <img src="/images/sponsor_tvs.png" alt="Balasore TVS" style="max-height: 85px; max-width: 210px; object-fit: contain; border-radius: 8px;">
+              </div>
+
+              <div class="sponsor-card sponsor-reveal" data-delay="100" style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.35s ease, opacity 0.6s ease, translate 0.6s ease;
+                opacity: 0;
+                translate: 0 40px;
+              ">
+                <img src="/images/sponsor_roastly.jpg" alt="Roastly" style="max-height: 85px; max-width: 210px; object-fit: contain; border-radius: 8px;">
+              </div>
+
+              <div class="sponsor-card sponsor-reveal" data-delay="200" style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.35s ease, opacity 0.6s ease, translate 0.6s ease;
+                opacity: 0;
+                translate: 0 40px;
+              ">
+                <img src="/images/sponsor_ohoride.png" alt="OHO Ride" style="max-height: 85px; max-width: 210px; object-fit: contain; border-radius: 8px;">
+              </div>
+
+              <div class="sponsor-card sponsor-reveal" data-delay="300" style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.35s ease, opacity 0.6s ease, translate 0.6s ease;
+                opacity: 0;
+                translate: 0 40px;
+              ">
+                <img src="/images/sponsor_nalco.png" alt="NALCO" style="max-height: 85px; max-width: 210px; object-fit: contain; border-radius: 8px;">
+              </div>
+
+              <div class="sponsor-card sponsor-reveal" data-delay="400" style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.35s ease, opacity 0.6s ease, translate 0.6s ease;
+                opacity: 0;
+                translate: 0 40px;
+              ">
+                <img src="/images/sponsor_yamaha.png" alt="Yamaha" style="max-height: 85px; max-width: 210px; object-fit: contain; border-radius: 8px;">
+              </div>
+
+              <div class="sponsor-card sponsor-reveal" data-delay="500" style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.35s ease, opacity 0.6s ease, translate 0.6s ease;
+                opacity: 0;
+                translate: 0 40px;
+              ">
+                <img src="/images/sponsor_suresuccess.jpg" alt="Sure Success" style="max-height: 85px; max-width: 210px; object-fit: contain; border-radius: 8px;">
+              </div>
+            </div>
+
           </section>
         </div>
       </div>
     `;
+
+    // Scroll-reveal animation for sponsor cards
+    const sponsorCards = container.querySelectorAll('.sponsor-reveal');
+    const sponsorObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const delay = parseInt(entry.target.dataset.delay) || 0;
+          setTimeout(() => {
+            entry.target.style.opacity = '1';
+            entry.target.style.translate = '0 0';
+          }, delay);
+          sponsorObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    sponsorCards.forEach(card => {
+      sponsorObserver.observe(card);
+
+      // Hover lift effect
+      card.addEventListener('mouseenter', () => {
+        card.style.transform = 'translateY(-5px) scale(1.05)';
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
   }
 
   /* ─── Legions: Custom Legions & Leadership Page (15 KPI Cards) ─── */
