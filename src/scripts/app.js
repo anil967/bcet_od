@@ -1720,7 +1720,7 @@ class OdysseyApp {
                   <div class="timeline-content">
                     <div class="timeline-header">
                       <h3 class="timeline-title">Call for Final Verdict</h3>
-                      <span class="timeline-date">5th Oct 2026</span>
+                      <span class="timeline-date">6th Oct 2026</span>
                     </div>
                     <p class="timeline-desc">The final verdict is cast—only the worthy shall advance to the next realm.</p>
                   </div>
