@@ -72,11 +72,17 @@ function AdminLayout() {
         <div className="mx-auto flex min-h-14 max-w-6xl flex-wrap items-center justify-between gap-2 px-3 py-2 sm:h-16 sm:px-4 sm:py-0">
           <div className="flex items-center gap-2.5">
             <img
-              src={logoImg}
-              alt="OdysseyBite logo"
-              className="size-8 rounded-full object-cover shadow-sm ring-1 ring-primary/40 sm:size-9"
+              src={logoImg || "/food/logo.png"}
+              alt=""
+              aria-hidden="true"
+              className="size-8 rounded-full object-cover shadow-sm ring-1 ring-primary/40 sm:size-9 bg-secondary"
               width={36}
               height={36}
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (target.src.includes("/images/odyssey-cafe-logo.png")) return;
+                target.src = "/images/odyssey-cafe-logo.png";
+              }}
             />
             <div>
               <p className="font-display text-base font-bold uppercase leading-none text-primary sm:text-lg">OdysseyBite</p>
@@ -177,11 +183,17 @@ function AdminLogin() {
         className="voyage-panel w-full max-w-sm rounded-md border border-border bg-card p-5 sm:p-6 shadow-[var(--shadow-card)]"
       >
         <img
-          src={logoImg}
-          alt="OdysseyBite crest"
-          className="mb-4 size-14 rounded-full object-cover shadow-md ring-2 ring-primary/50"
+          src={logoImg || "/food/logo.png"}
+          alt=""
+          aria-hidden="true"
+          className="mb-4 size-14 rounded-full object-cover shadow-md ring-2 ring-primary/50 bg-secondary"
           width={56}
           height={56}
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (target.src.includes("/images/odyssey-cafe-logo.png")) return;
+            target.src = "/images/odyssey-cafe-logo.png";
+          }}
         />
         <h1 className="text-2xl font-extrabold">Admin login</h1>
         <p className="mt-1 text-xs sm:text-sm text-muted-foreground">

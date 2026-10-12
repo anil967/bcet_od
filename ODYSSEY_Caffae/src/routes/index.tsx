@@ -52,11 +52,20 @@ function Menu() {
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-border">
         <img
-          src={heroImage}
-          alt="A voyage across the sea toward a golden city"
+          src={heroImage || "/food/hero.jpg"}
+          alt=""
+          aria-hidden="true"
           width={1920}
           height={1080}
           className="absolute inset-0 size-full object-cover object-[64%_center]"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (!target.src.includes("/images/odyssey-hero.jpg")) {
+              target.src = "/images/odyssey-hero.jpg";
+            } else {
+              target.style.display = "none";
+            }
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/40" />
@@ -141,7 +150,19 @@ function Menu() {
       <footer className="border-t border-border py-8 text-center text-xs text-muted-foreground sm:text-sm">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-2 px-4">
           <div className="flex items-center gap-2">
-            <img src={logoImg} alt="OdysseyBite logo" className="size-6 rounded-full object-cover ring-1 ring-primary/40" width={24} height={24} />
+            <img
+              src={logoImg || "/food/logo.png"}
+              alt=""
+              aria-hidden="true"
+              className="size-6 rounded-full object-cover ring-1 ring-primary/40 bg-secondary"
+              width={24}
+              height={24}
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (target.src.includes("/images/odyssey-cafe-logo.png")) return;
+                target.src = "/images/odyssey-cafe-logo.png";
+              }}
+            />
             <p className="font-display font-semibold uppercase tracking-wider text-foreground">OdysseyBite</p>
           </div>
           <p className="text-muted-foreground">Provisions delivered directly to your hackathon table.</p>

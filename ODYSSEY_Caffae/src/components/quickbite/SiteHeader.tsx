@@ -21,11 +21,17 @@ export function SiteHeader({
         {/* Brand */}
         <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-90">
           <img
-            src={logoImg}
-            alt="OdysseyBite logo"
-            className="size-9 rounded-full object-cover shadow-sm ring-1 ring-primary/40"
+            src={logoImg || "/food/logo.png"}
+            alt=""
+            aria-hidden="true"
+            className="size-9 rounded-full object-cover shadow-sm ring-1 ring-primary/40 bg-secondary"
             width={36}
             height={36}
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (target.src.includes("/images/odyssey-cafe-logo.png")) return;
+              target.src = "/images/odyssey-cafe-logo.png";
+            }}
           />
           <div className="flex flex-col">
             <span className="font-display text-base font-bold uppercase tracking-wider text-primary sm:text-lg">
