@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { api, type Order } from "@/lib/api-client";
@@ -46,6 +47,17 @@ function AdminOrders() {
     onError: () => toast.error("Could not update that order."),
   });
 
+  const deleteOrder = useMutation({
+    mutationFn: async (id: string) => {
+      await api.orders.delete(id);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+      toast.success("Order deleted");
+    },
+    onError: () => toast.error("Could not delete that order."),
+  });
+
   const active = (orders ?? []).filter((o) => o.status !== "Delivered");
 
   return (
@@ -86,16 +98,30 @@ function AdminOrders() {
                     {new Date(order.created_at).toLocaleString()}
                   </p>
                 </div>
-                <div className="text-left sm:text-right">
-                  <p className="text-base sm:text-lg font-bold text-primary">{formatPrice(order.total)}</p>
-                  {order.payment_method ? (
-                    <p className="text-xs font-semibold text-primary">
-                      {order.payment_method === "qr" ? "Paid via QR" : "Paid"}
-                    </p>
-                  ) : null}
-                  <span className="inline-block mt-0.5 rounded-sm bg-secondary px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                    {order.status}
-                  </span>
+                <div className="flex items-start gap-2">
+                  <div className="text-left sm:text-right">
+                    <p className="text-base sm:text-lg font-bold text-primary">{formatPrice(order.total)}</p>
+                    {order.payment_method ? (
+                      <p className="text-xs font-semibold text-primary">
+                        {order.payment_method === "qr" ? "Paid via QR" : "Paid"}
+                      </p>
+                    ) : null}
+                    <span className="inline-block mt-0.5 rounded-sm bg-secondary px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      {order.status}
+                    </span>
+                  </div>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
+                    onClick={() => {
+                      if (confirm(`Delete order ${order.code}?`)) deleteOrder.mutate(order.id);
+                    }}
+                    aria-label={`Delete order ${order.code}`}
+                    title="Delete order from database"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
                 </div>
               </div>
 

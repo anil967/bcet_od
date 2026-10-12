@@ -135,6 +135,12 @@ export const api = {
       });
       if (!res.ok) throw new Error("Failed to update order status");
     },
+    async delete(id: string): Promise<void> {
+      const res = await fetch(`${API_BASE}/orders?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete order");
+    },
   },
 
   settings: {

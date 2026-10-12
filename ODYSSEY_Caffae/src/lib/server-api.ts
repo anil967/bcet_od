@@ -236,6 +236,22 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
         await ordersCol.insertOne(orderDoc);
         return jsonResponse({ success: true, ...orderDoc });
       }
+
+      if (request.method === "DELETE") {
+        const id = url.searchParams.get("id");
+        const code = url.searchParams.get("code");
+        if (id) {
+          const filter: Record<string, unknown>[] = [{ id }];
+          if (ObjectId.isValid(id)) filter.push({ _id: new ObjectId(id) });
+          await ordersCol.deleteOne({ $or: filter });
+          return jsonResponse({ success: true, deleted: id });
+        }
+        if (code) {
+          await ordersCol.deleteOne({ code: code.trim().toUpperCase() });
+          return jsonResponse({ success: true, deleted: code });
+        }
+        return jsonResponse({ error: "Missing id or code parameter" }, 400);
+      }
     }
 
     // Order status update
