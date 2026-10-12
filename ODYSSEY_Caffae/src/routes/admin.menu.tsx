@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Plus, Trash2, X } from "lucide-react";
+import { Pencil, Plus, Trash2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { api } from "@/lib/api-client";
@@ -63,6 +63,52 @@ const emptyDraft: Draft = {
   image_url: "",
   is_available: true,
 };
+
+function processImageFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) {
+      reject(new Error("Please select a valid image file."));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      const img = new window.Image();
+      img.onerror = () => resolve(dataUrl);
+      img.onload = () => {
+        const MAX_DIM = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width > height) {
+            height = Math.round((height * MAX_DIM) / width);
+            width = MAX_DIM;
+          } else {
+            width = Math.round((width * MAX_DIM) / height);
+            height = MAX_DIM;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(dataUrl);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressed = canvas.toDataURL("image/jpeg", 0.82);
+        resolve(compressed);
+      };
+      img.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 function AdminMenu() {
   const queryClient = useQueryClient();
@@ -230,14 +276,74 @@ function AdminMenu() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="m-image">Image URL (optional)</Label>
-              <Input
-                id="m-image"
-                value={draft.image_url}
-                onChange={(e) => setDraft({ ...draft, image_url: e.target.value })}
-                placeholder="https://…"
-              />
+            <div className="grid gap-1.5 sm:col-span-2">
+              <Label>Item Image (Upload from device or paste link)</Label>
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                <label
+                  htmlFor="m-image-file"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium border border-border/80 rounded-md cursor-pointer bg-secondary/50 hover:bg-secondary text-foreground transition-colors shrink-0"
+                >
+                  <Upload className="size-4 text-primary" />
+                  <span>Upload Image File</span>
+                  <input
+                    id="m-image-file"
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      try {
+                        const base64 = await processImageFile(file);
+                        setDraft({ ...draft, image_url: base64 });
+                        toast.success("Image selected");
+                      } catch (err: unknown) {
+                        toast.error(err instanceof Error ? err.message : "Failed to load image");
+                      }
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+                <div className="flex-1 min-w-0">
+                  <Input
+                    id="m-image"
+                    value={draft.image_url.startsWith("data:") ? "" : draft.image_url}
+                    onChange={(e) => setDraft({ ...draft, image_url: e.target.value })}
+                    placeholder="or paste image URL (https://…)"
+                  />
+                </div>
+              </div>
+
+              {draft.image_url && draft.image_url.trim().length > 0 && (
+                <div className="mt-2 flex items-center gap-3 p-2.5 rounded-lg border border-border/70 bg-secondary/20">
+                  <img
+                    src={draft.image_url}
+                    alt="Preview"
+                    className="w-14 h-14 rounded-md object-cover border border-border/50 shrink-0"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = "none";
+                    }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-foreground">Selected Image</p>
+                    <p className="text-[11px] text-muted-foreground truncate">
+                      {draft.image_url.startsWith("data:")
+                        ? "Uploaded image from device (ready to save)"
+                        : draft.image_url}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:bg-destructive/10 text-xs h-8 shrink-0"
+                    onClick={() => setDraft({ ...draft, image_url: "" })}
+                  >
+                    <X className="size-3.5 mr-1" />
+                    Remove
+                  </Button>
+                </div>
+              )}
             </div>
             <div className="grid gap-1.5 sm:col-span-2">
               <Label htmlFor="m-desc">Short description</Label>
