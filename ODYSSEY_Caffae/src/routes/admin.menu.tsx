@@ -59,7 +59,7 @@ const emptyDraft: Draft = {
   name: "",
   description: "",
   price: "",
-  category: "Meals",
+  category: "Snacks",
   image_url: "",
   is_available: true,
 };

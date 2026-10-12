@@ -13,7 +13,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/quickbite";
 import { usePaymentEnabled } from "@/lib/settings";
-import qrAsset from "@/assets/payment-qr.jpeg.asset.json";
+import paymentQrImg from "@/assets/payment-qr.png";
 
 export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const { lines, setQuantity, remove, total, clear } = useCart();
@@ -189,12 +189,18 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
                     <p className="text-xs">
                       Scan and pay <strong className="text-primary font-bold">{formatPrice(grandTotal)}</strong>
                     </p>
-                    <img
-                      src={qrAsset.url}
-                      alt="Payment QR code"
-                      className="mx-auto w-40 rounded-sm border border-border/60 shadow-xs"
-                    />
-                    <label className="flex items-center justify-center gap-2 text-xs font-medium cursor-pointer text-foreground hover:text-primary transition-colors">
+                    <div className="mx-auto w-44 rounded-md border border-border/80 bg-white p-2 shadow-xs">
+                      <img
+                        src={paymentQrImg}
+                        alt="Payment QR code — Anshuman Nayak"
+                        className="mx-auto w-full object-contain"
+                      />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs font-semibold text-foreground">Anshuman Nayak</p>
+                      <p className="text-[11px] text-muted-foreground font-mono select-all">UPI ID: 9040799416@okbizaxis</p>
+                    </div>
+                    <label className="flex items-center justify-center gap-2 text-xs font-medium cursor-pointer text-foreground hover:text-primary transition-colors pt-1">
                       <Checkbox
                         checked={paidConfirmed}
                         onCheckedChange={(v) => setPaidConfirmed(v === true)}
