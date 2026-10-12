@@ -206,20 +206,30 @@ const INITIAL_MENU_ITEMS = [
 ];
 
 async function seedInitialData(db: Db) {
+  const settingsCol = db.collection("app_settings");
   const menuCol = db.collection("menu_items");
-  const count = await menuCol.countDocuments();
-  if (count === 0) {
-    const now = new Date().toISOString();
-    const items = INITIAL_MENU_ITEMS.map((item, idx) => ({
-      ...item,
-      id: `item_${Date.now()}_${idx}`,
-      created_at: now,
-    }));
-    await menuCol.insertMany(items);
-    console.log(`[MongoDB] Seeded ${items.length} initial menu items.`);
+
+  // Only seed sample menu items once on a fresh database, never re-seed after an admin deletes items
+  const seededSetting = await settingsCol.findOne({ key: "menu_seeded" });
+  if (!seededSetting) {
+    const count = await menuCol.countDocuments();
+    if (count === 0) {
+      const now = new Date().toISOString();
+      const items = INITIAL_MENU_ITEMS.map((item, idx) => ({
+        ...item,
+        id: `item_${Date.now()}_${idx}`,
+        created_at: now,
+      }));
+      await menuCol.insertMany(items);
+      console.log(`[MongoDB] Seeded ${items.length} initial menu items.`);
+    }
+    await settingsCol.insertOne({
+      key: "menu_seeded",
+      bool_value: true,
+      updated_at: new Date().toISOString(),
+    });
   }
 
-  const settingsCol = db.collection("app_settings");
   const paymentSetting = await settingsCol.findOne({ key: "payment_enabled" });
   if (!paymentSetting) {
     await settingsCol.insertOne({
