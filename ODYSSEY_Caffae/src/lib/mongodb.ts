@@ -10,15 +10,21 @@ try {
 
 const DEFAULT_URI =
   "mongodb+srv://bcetfalcon2025_db_user:hrms1234@caffe.vucnjvp.mongodb.net/odyssey_caffe?retryWrites=true&w=majority&appName=caffe";
-const MONGODB_URI = process.env["MONGODB_URI"] || DEFAULT_URI;
-const MONGODB_DB_NAME = process.env["MONGODB_DB_NAME"] || "odyssey_caffe";
+const CAFE_MONGODB_URI =
+  process.env["CAFE_MONGODB_URI"] ||
+  process.env["MONGODB_CAFE_URI"] ||
+  DEFAULT_URI;
+const CAFE_MONGODB_DB_NAME =
+  process.env["CAFE_MONGODB_DB_NAME"] ||
+  process.env["MONGODB_CAFE_DB_NAME"] ||
+  "odyssey_caffe";
 
 let clientPromise: Promise<MongoClient> | null = null;
 let isInitialized = false;
 
 export async function getMongoClient(): Promise<MongoClient> {
   if (!clientPromise) {
-    const client = new MongoClient(MONGODB_URI);
+    const client = new MongoClient(CAFE_MONGODB_URI);
     clientPromise = client.connect();
   }
   return clientPromise;
@@ -26,7 +32,7 @@ export async function getMongoClient(): Promise<MongoClient> {
 
 export async function getDb(): Promise<Db> {
   const client = await getMongoClient();
-  const db = client.db(MONGODB_DB_NAME);
+  const db = client.db(CAFE_MONGODB_DB_NAME);
   if (!isInitialized) {
     isInitialized = true;
     await seedInitialData(db).catch((err) =>
