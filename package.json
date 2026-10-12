@@ -3,11 +3,15 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "workspaces": [
+    "ODYSSEY_Caffae"
+  ],
   "scripts": {
+    "postinstall": "npm --prefix ODYSSEY_Caffae install",
     "dev": "node scripts/dev.js",
     "dev:main": "vite --host --port 5173",
     "dev:food": "npm --prefix ODYSSEY_Caffae run dev",
-    "build": "vite build && npm --prefix ODYSSEY_Caffae run build",
+    "build": "vite build && npm --prefix ODYSSEY_Caffae install && npm --prefix ODYSSEY_Caffae run build && node scripts/bundle-dist.js",
     "build:main": "vite build",
     "build:food": "npm --prefix ODYSSEY_Caffae run build",
     "preview": "vite preview",

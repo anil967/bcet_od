@@ -11,6 +11,18 @@
     {
       "source": "/admin",
       "destination": "/admin/login"
+    },
+    {
+      "source": "/food/api/(.*)",
+      "destination": "/api/food"
+    },
+    {
+      "source": "/food",
+      "destination": "/food/index.html"
+    },
+    {
+      "source": "/food/",
+      "destination": "/food/index.html"
     }
   ]
 }
