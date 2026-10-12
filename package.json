@@ -4,8 +4,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host --port 5173",
-    "build": "vite build",
+    "dev": "node scripts/dev.js",
+    "dev:main": "vite --host --port 5173",
+    "dev:food": "npm --prefix ODYSSEY_Caffae run dev",
+    "build": "vite build && npm --prefix ODYSSEY_Caffae run build",
+    "build:main": "vite build",
+    "build:food": "npm --prefix ODYSSEY_Caffae run build",
     "preview": "vite preview",
     "start": "node server.js"
   },

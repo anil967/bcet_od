@@ -11,6 +11,13 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    proxy: {
+      '/food': {
+        target: 'http://localhost:5180',
+        changeOrigin: true,
+        ws: true,
+      },
+    },
   },
   build: {
     rollupOptions: {
@@ -29,6 +36,11 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use(async (req, res, next) => {
           const requestPath = req.url ? req.url.split('?')[0] : '';
+          if (requestPath === '/food') {
+            res.writeHead(302, { Location: '/food/' });
+            res.end();
+            return;
+          }
           if (requestPath === '/admin' || requestPath === '/admin/') {
             req.url = '/admin/login.html';
           } else if (requestPath === '/admin/login' || requestPath === '/admin/login/') {

@@ -85,4 +85,3 @@ odyssey web/
    ```bash
    npm run build
    ```
-3. **Direct Local Viewing**: Open `index.html` directly in any modern browser.

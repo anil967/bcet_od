@@ -13,7 +13,7 @@ const state = {
   parsedImportRows: [],
 };
 
-// DOM References
+// DOM Reference
 const body = document.getElementById('registrations-body');
 const searchInput = document.getElementById('search');
 const clearSearchBtn = document.getElementById('clear-search');

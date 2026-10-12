@@ -25,6 +25,40 @@ const MIME_TYPES = {
   '.mpeg': 'audio/mpeg'
 };
 
+function proxyToFoodServer(req, res) {
+  const foodPort = process.env.FOOD_PORT || 5180;
+  const options = {
+    hostname: '127.0.0.1',
+    port: foodPort,
+    path: req.url,
+    method: req.method,
+    headers: { ...req.headers, host: `localhost:${foodPort}` },
+  };
+
+  const proxyReq = http.request(options, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    proxyRes.pipe(res);
+  });
+
+  proxyReq.on('error', (err) => {
+    console.error('[Food Proxy Error]:', err.message);
+    res.writeHead(502, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(`
+      <!DOCTYPE html>
+      <html>
+        <head><title>Odyssey Cafe - Connecting</title></head>
+        <body style="font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 40px; text-align: center;">
+          <h2 style="color: #f59e0b;">OdysseyBite Cafe Service Connecting...</h2>
+          <p>Please make sure the Odyssey Caffae service is running on port ${foodPort}.</p>
+          <p><a href="/" style="color: #38bdf8;">&larr; Back to Odyssey Main Site</a></p>
+        </body>
+      </html>
+    `);
+  });
+
+  req.pipe(proxyReq);
+}
+
 const server = http.createServer(async (req, res) => {
   if (protectAdminPageRequest(req, res)) return;
 
@@ -32,6 +66,17 @@ const server = http.createServer(async (req, res) => {
   if (requestPath === '/project-submission' || requestPath === '/project-submission/' || requestPath.startsWith('/api/project-submissions')) {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Not Found');
+    return;
+  }
+
+  // Handle Food / Cafe routes
+  if (requestPath === '/food') {
+    res.writeHead(302, { Location: '/food/' });
+    res.end();
+    return;
+  }
+  if (requestPath.startsWith('/food/')) {
+    proxyToFoodServer(req, res);
     return;
   }
 
