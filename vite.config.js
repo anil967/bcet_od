@@ -23,17 +23,32 @@ function isPortOpen(port) {
   });
 }
 
-function ensureCafeServerRunning() {
-  isPortOpen(5180).then((inUse) => {
-    if (!inUse && !cafeProcess) {
-      console.log('\x1b[35m[Vite]\x1b[0m Auto-launching OdysseyBite Cafe server on port 5180...');
-      const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-      cafeProcess = spawn(npmCmd, ['run', 'dev'], {
-        cwd: path.join(__dirname, 'ODYSSEY_Caffae'),
-        shell: true,
-        stdio: 'inherit',
-      });
-    }
+function checkPortActive(port) {
+  return new Promise((resolve) => {
+    const s = net.connect(port, '127.0.0.1', () => {
+      s.destroy();
+      resolve(true);
+    });
+    s.on('error', () => resolve(false));
+  });
+}
+
+async function getActiveCafePort() {
+  if (await checkPortActive(5180)) return 5180;
+  if (await checkPortActive(5181)) return 5181;
+  return null;
+}
+
+async function ensureCafeServerRunning() {
+  const activePort = await getActiveCafePort();
+  if (activePort || cafeProcess) return;
+
+  console.log('\x1b[35m[Vite]\x1b[0m Auto-launching OdysseyBite Cafe server on port 5180...');
+  const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  cafeProcess = spawn(npmCmd, ['run', 'dev'], {
+    cwd: path.join(__dirname, 'ODYSSEY_Caffae'),
+    shell: true,
+    stdio: 'inherit',
   });
 }
 
@@ -46,8 +61,21 @@ export default defineConfig({
         target: 'http://localhost:5180',
         changeOrigin: true,
         ws: true,
-        configure: (proxy) => {
-          proxy.on('error', (err, req, res) => {
+        configure: (proxy, options) => {
+          proxy.on('error', async (err, req, res) => {
+            if (err && err.code === 'ECONNREFUSED' && res && !res.headersSent && typeof res.writeHead === 'function') {
+              const currentTarget = options.target || 'http://localhost:5180';
+              const altPort = currentTarget.includes('5180') ? 5181 : 5180;
+              const isAltActive = await checkPortActive(altPort);
+
+              if (isAltActive) {
+                options.target = `http://localhost:${altPort}`;
+                console.log(`\x1b[35m[Vite]\x1b[0m Cafe server active on port ${altPort}. Routing proxy to ${options.target}`);
+                proxy.web(req, res, { target: options.target });
+                return;
+              }
+            }
+
             ensureCafeServerRunning();
             if (res && typeof res.writeHead === 'function' && !res.headersSent) {
               const url = req.url || '';
