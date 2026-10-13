@@ -214,6 +214,23 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
         const id = `ord_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
         const now = new Date().toISOString();
 
+        let sanitizedTxnId: string | null = null;
+        if (body.transaction_id && typeof body.transaction_id === "string") {
+          const digits = body.transaction_id.replace(/\D/g, "");
+          if (digits.length !== 12) {
+            return jsonResponse(
+              { error: "Transaction ID must be exactly 12 digits." },
+              { status: 400 }
+            );
+          }
+          sanitizedTxnId = digits;
+        } else if (body.payment_method === "qr") {
+          return jsonResponse(
+            { error: "12-digit UPI Transaction ID is required for QR payments." },
+            { status: 400 }
+          );
+        }
+
         const orderDoc: OrderDoc = {
           id,
           code,
@@ -223,7 +240,7 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
           total: Number(body.total),
           delivery_charge: Number(body.delivery_charge || 0),
           payment_method: body.payment_method || null,
-          transaction_id: body.transaction_id ? body.transaction_id.trim() : null,
+          transaction_id: sanitizedTxnId,
           created_at: now,
           updated_at: now,
           order_items: (body.items || []).map((item, idx) => ({

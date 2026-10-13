@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
-import { Minus, Plus, CheckCircle2, Trash2, QrCode } from "lucide-react";
+import { Minus, Plus, CheckCircle2, Trash2, QrCode, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { api } from "@/lib/api-client";
@@ -26,8 +26,52 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
   const paymentEnabled = usePaymentEnabled();
   const grandTotal = total;
 
+  const handleTxnChange = (val: string) => {
+    // Strictly only receive digits (0-9) and max 12 digits
+    const cleanDigits = val.replace(/\D/g, "").slice(0, 12);
+    setTransactionId(cleanDigits);
+  };
+
+  const handleTxnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (
+      e.key === "Backspace" ||
+      e.key === "Delete" ||
+      e.key === "Tab" ||
+      e.key === "ArrowLeft" ||
+      e.key === "ArrowRight" ||
+      e.key === "Enter" ||
+      e.ctrlKey ||
+      e.metaKey
+    ) {
+      return;
+    }
+    // Block any non-digit character
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const isTxnValid = !paymentEnabled
+    ? transactionId.length === 0 || transactionId.length === 12
+    : transactionId.length === 12;
+
+  const paymentReady = !paymentEnabled || (paidConfirmed && isTxnValid);
+  const canSubmit =
+    lines.length > 0 &&
+    paymentReady &&
+    name.trim().length > 1 &&
+    table.trim().length > 0 &&
+    isTxnValid;
+
   const placeOrder = useMutation({
     mutationFn: async () => {
+      if (paymentEnabled && transactionId.trim().length !== 12) {
+        throw new Error("Please enter a valid 12-digit UPI Transaction ID.");
+      }
+      if (transactionId.trim().length > 0 && transactionId.trim().length !== 12) {
+        throw new Error("Transaction ID must be exactly 12 digits.");
+      }
+
       const order = await api.orders.create({
         customer_name: name.trim(),
         table_number: table.trim(),
@@ -50,12 +94,8 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
       setTransactionId("");
       clear();
     },
-    onError: () => toast.error("Could not place the order. Please try again."),
+    onError: (err: Error) => toast.error(err.message || "Could not place the order. Please try again."),
   });
-
-  const paymentReady = !paymentEnabled || paidConfirmed;
-  const canSubmit =
-    lines.length > 0 && paymentReady && name.trim().length > 1 && table.trim().length > 0;
 
   return (
     <Sheet
@@ -179,16 +219,51 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
                 </div>
                 <div className="grid gap-1">
                   <Label htmlFor="cart-txn" className="text-xs flex items-center justify-between">
-                    <span>Transaction ID / Ref No</span>
-                    <span className="text-[10px] text-muted-foreground font-normal">(UPI UTR)</span>
+                    <span className="font-semibold text-foreground">
+                      Transaction ID / UTR {paymentEnabled ? <span className="text-primary">*</span> : null}
+                    </span>
+                    <span
+                      className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded transition-colors ${
+                        transactionId.length === 12
+                          ? "bg-emerald-500/20 text-emerald-400"
+                          : transactionId.length > 0
+                          ? "bg-amber-500/20 text-amber-400"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {transactionId.length}/12 digits
+                    </span>
                   </Label>
                   <Input
                     id="cart-txn"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={12}
+                    autoComplete="off"
                     value={transactionId}
-                    onChange={(e) => setTransactionId(e.target.value)}
-                    placeholder="e.g. 12-digit UPI Transaction ID"
-                    className="h-9 font-mono text-xs"
+                    onChange={(e) => handleTxnChange(e.target.value)}
+                    onKeyDown={handleTxnKeyDown}
+                    placeholder="Enter 12-digit UPI UTR (numbers only)"
+                    className={`h-9 font-mono text-xs tracking-wider transition-colors ${
+                      transactionId.length === 12
+                        ? "border-emerald-500 focus-visible:ring-emerald-500"
+                        : transactionId.length > 0
+                        ? "border-amber-500 focus-visible:ring-amber-500"
+                        : ""
+                    }`}
                   />
+                  <div className="text-[11px] leading-tight">
+                    {transactionId.length === 12 ? (
+                      <span className="text-emerald-500 font-medium">✓ 12-digit Transaction ID confirmed</span>
+                    ) : transactionId.length > 0 ? (
+                      <span className="text-amber-500 font-medium">
+                        Must be exactly 12 digits ({12 - transactionId.length} remaining)
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">Only 12 numeric digits allowed</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -231,9 +306,27 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
                 className="w-full font-bold shadow-md"
                 size="lg"
                 disabled={!canSubmit || placeOrder.isPending}
-                onClick={() => placeOrder.mutate()}
+                onClick={() => {
+                  if (paymentEnabled && transactionId.length !== 12) {
+                    toast.error("Please enter the 12-digit UPI Transaction ID.");
+                    return;
+                  }
+                  if (transactionId.length > 0 && transactionId.length !== 12) {
+                    toast.error("Transaction ID must be exactly 12 digits.");
+                    return;
+                  }
+                  placeOrder.mutate();
+                }}
               >
-                {placeOrder.isPending ? "Placing order…" : `Place order · ${formatPrice(grandTotal)}`}
+                {placeOrder.isPending ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin mr-2" /> Placing order…
+                  </>
+                ) : paymentEnabled && transactionId.length !== 12 ? (
+                  `Enter 12-digit Txn ID (${transactionId.length}/12)`
+                ) : (
+                  `Place order · ${formatPrice(grandTotal)}`
+                )}
               </Button>
             </div>
           </>

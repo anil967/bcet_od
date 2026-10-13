@@ -126,7 +126,10 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("Failed to place order");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.error || "Failed to place order");
+      }
       return res.json();
     },
     async updateStatus(id: string, status: string): Promise<void> {
