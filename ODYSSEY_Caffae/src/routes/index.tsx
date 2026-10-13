@@ -96,16 +96,16 @@ function Menu() {
         </div>
       </section>
 
-      {/* Category Shortcuts for Mobile */}
-      <div className="sticky top-16 z-30 border-b border-border bg-background/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-4 py-2.5 scrollbar-none">
+      {/* Category Navigation Bar */}
+      <div className="sticky top-16 z-30 border-b border-border/80 bg-background/95 backdrop-blur-md px-3 py-2.5 sm:px-4">
+        <div className="mx-auto grid max-w-md grid-cols-3 gap-2 sm:max-w-xl sm:gap-3">
           {CATEGORIES.map((cat) => (
             <a
               key={cat}
               href={`#cat-${cat}`}
-              className="shrink-0 rounded-full border border-border bg-secondary/40 px-3 py-1 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/60 hover:text-foreground"
+              className="flex items-center justify-center rounded-full border border-border/80 bg-secondary/50 px-2.5 py-2 text-center text-xs font-bold text-muted-foreground transition-all duration-200 hover:border-primary/80 hover:bg-primary/15 hover:text-primary active:scale-95 sm:px-4 sm:py-2 sm:text-sm shadow-xs"
             >
-              {cat}
+              <span className="truncate">{cat}</span>
             </a>
           ))}
         </div>
