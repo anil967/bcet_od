@@ -235,7 +235,7 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
           id,
           code,
           customer_name: body.customer_name.trim(),
-          table_number: body.table_number.trim(),
+          table_number: (body.table_number ? body.table_number.trim().replace(/\D/g, "").slice(0, 2) : "") || body.table_number.trim().slice(0, 2),
           status: "Placed",
           total: Number(body.total),
           delivery_charge: Number(body.delivery_charge || 0),

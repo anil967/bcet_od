@@ -190,13 +190,20 @@ function TrackPage() {
                   />
                 </div>
                 <div className="grid gap-1">
-                  <Label htmlFor="t-table" className="text-xs">Table number</Label>
+                  <Label htmlFor="t-table" className="text-xs flex items-center justify-between">
+                    <span>Table number</span>
+                    <span className="text-[10px] text-muted-foreground font-normal">(Max 2 digits)</span>
+                  </Label>
                   <Input
                     id="t-table"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={2}
                     value={table}
-                    onChange={(e) => setTable(e.target.value)}
-                    placeholder="e.g. 12 or B04"
-                    className="h-9"
+                    onChange={(e) => setTable(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                    placeholder="e.g. 12"
+                    className="h-9 font-mono"
                   />
                 </div>
               </div>

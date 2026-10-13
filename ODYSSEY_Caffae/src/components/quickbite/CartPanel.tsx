@@ -208,13 +208,40 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
                   />
                 </div>
                 <div className="grid gap-1">
-                  <Label htmlFor="cart-table" className="text-xs">Table number</Label>
+                  <Label htmlFor="cart-table" className="text-xs flex items-center justify-between">
+                    <span>Table number</span>
+                    <span className="text-[10px] text-muted-foreground font-normal">(Max 2 digits)</span>
+                  </Label>
                   <Input
                     id="cart-table"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={2}
                     value={table}
-                    onChange={(e) => setTable(e.target.value)}
-                    placeholder="e.g. Table 12 or B04"
-                    className="h-9"
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, "").slice(0, 2);
+                      setTable(digits);
+                    }}
+                    onKeyDown={(e) => {
+                      if (
+                        e.key === "Backspace" ||
+                        e.key === "Delete" ||
+                        e.key === "Tab" ||
+                        e.key === "ArrowLeft" ||
+                        e.key === "ArrowRight" ||
+                        e.key === "Enter" ||
+                        e.ctrlKey ||
+                        e.metaKey
+                      ) {
+                        return;
+                      }
+                      if (!/^[0-9]$/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    placeholder="e.g. 12"
+                    className="h-9 font-mono"
                   />
                 </div>
                 <div className="grid gap-1">
