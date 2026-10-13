@@ -253,17 +253,6 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
                         : ""
                     }`}
                   />
-                  <div className="text-[11px] leading-tight">
-                    {transactionId.length === 12 ? (
-                      <span className="text-emerald-500 font-medium">✓ 12-digit Transaction ID confirmed</span>
-                    ) : transactionId.length > 0 ? (
-                      <span className="text-amber-500 font-medium">
-                        Must be exactly 12 digits ({12 - transactionId.length} remaining)
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground">Only 12 numeric digits allowed</span>
-                    )}
-                  </div>
                 </div>
               </div>
 
