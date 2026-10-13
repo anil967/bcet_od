@@ -185,6 +185,11 @@ function OrderCard({ order }: { order: TrackedOrder }) {
           <p className="font-semibold text-foreground">
             {order.customer_name} · Table {order.table_number}
           </p>
+          {order.transaction_id ? (
+            <p className="text-[10px] font-mono text-primary mt-0.5">
+              Txn: {order.transaction_id}
+            </p>
+          ) : null}
           <p className="text-[11px] mt-0.5">{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
         </div>
       </div>

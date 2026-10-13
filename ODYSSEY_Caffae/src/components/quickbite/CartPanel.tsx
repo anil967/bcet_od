@@ -19,6 +19,7 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
   const { lines, setQuantity, remove, total, clear } = useCart();
   const [name, setName] = useState("");
   const [table, setTable] = useState("");
+  const [transactionId, setTransactionId] = useState("");
   const [placed, setPlaced] = useState<{ code: string } | null>(null);
   const [paidConfirmed, setPaidConfirmed] = useState(false);
 
@@ -30,6 +31,7 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
       const order = await api.orders.create({
         customer_name: name.trim(),
         table_number: table.trim(),
+        transaction_id: transactionId.trim() || null,
         total: grandTotal,
         delivery_charge: 0,
         payment_method: paymentEnabled ? "qr" : null,
@@ -45,6 +47,7 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
     onSuccess: (order) => {
       setPlaced({ code: order.code });
       setPaidConfirmed(false);
+      setTransactionId("");
       clear();
     },
     onError: () => toast.error("Could not place the order. Please try again."),
@@ -172,6 +175,19 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
                     onChange={(e) => setTable(e.target.value)}
                     placeholder="e.g. Table 12 or B04"
                     className="h-9"
+                  />
+                </div>
+                <div className="grid gap-1">
+                  <Label htmlFor="cart-txn" className="text-xs flex items-center justify-between">
+                    <span>Transaction ID / Ref No</span>
+                    <span className="text-[10px] text-muted-foreground font-normal">(UPI UTR)</span>
+                  </Label>
+                  <Input
+                    id="cart-txn"
+                    value={transactionId}
+                    onChange={(e) => setTransactionId(e.target.value)}
+                    placeholder="e.g. 12-digit UPI Transaction ID"
+                    className="h-9 font-mono text-xs"
                   />
                 </div>
               </div>

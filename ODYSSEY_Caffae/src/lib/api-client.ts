@@ -29,6 +29,7 @@ export type Order = {
   total: number;
   delivery_charge: number;
   payment_method: string | null;
+  transaction_id?: string | null;
   created_at: string;
   order_items: OrderItem[];
 };
@@ -112,6 +113,7 @@ export const api = {
       total: number;
       delivery_charge?: number;
       payment_method?: string | null;
+      transaction_id?: string | null;
       items: Array<{
         menu_item_id?: string;
         item_name: string;

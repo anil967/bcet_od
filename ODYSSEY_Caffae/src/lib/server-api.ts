@@ -51,6 +51,7 @@ type OrderDoc = Document & {
   total: number;
   delivery_charge: number;
   payment_method: string | null;
+  transaction_id?: string | null;
   created_at: string;
   updated_at: string;
   order_items: OrderItemDoc[];
@@ -200,6 +201,7 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
           total: number;
           delivery_charge?: number;
           payment_method?: string | null;
+          transaction_id?: string | null;
           items: Array<{
             menu_item_id?: string;
             item_name: string;
@@ -221,6 +223,7 @@ export async function handleApiRequest(request: Request): Promise<Response | nul
           total: Number(body.total),
           delivery_charge: Number(body.delivery_charge || 0),
           payment_method: body.payment_method || null,
+          transaction_id: body.transaction_id ? body.transaction_id.trim() : null,
           created_at: now,
           updated_at: now,
           order_items: (body.items || []).map((item, idx) => ({
@@ -381,6 +384,7 @@ function formatOrder(doc: OrderDoc) {
     total: Number(doc["total"] || 0),
     delivery_charge: Number(doc["delivery_charge"] || 0),
     payment_method: doc["payment_method"] || null,
+    transaction_id: doc["transaction_id"] || null,
     created_at: doc["created_at"] || new Date().toISOString(),
     order_items: doc["order_items"] || [],
   };

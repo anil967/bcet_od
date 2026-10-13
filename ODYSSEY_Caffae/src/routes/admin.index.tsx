@@ -94,6 +94,12 @@ function AdminOrders() {
                   <p className="text-sm font-semibold">
                     {order.customer_name} · Table {order.table_number}
                   </p>
+                  {order.transaction_id ? (
+                    <p className="text-xs font-mono text-primary flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground">Txn ID:</span>
+                      <span className="font-semibold">{order.transaction_id}</span>
+                    </p>
+                  ) : null}
                   <p className="text-xs text-muted-foreground">
                     {new Date(order.created_at).toLocaleString()}
                   </p>
