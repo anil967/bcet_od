@@ -296,13 +296,12 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
                     <div className="mx-auto w-44 rounded-md border border-border/80 bg-white p-2 shadow-xs">
                       <img
                         src={paymentQrImg}
-                        alt="Payment QR code — Anshuman Nayak"
+                        alt="Payment QR code — Priti Mohan Biswal"
                         className="mx-auto w-full object-contain"
                       />
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-semibold text-foreground">Anshuman Nayak</p>
-                      <p className="text-[11px] text-muted-foreground font-mono select-all">UPI ID: 9040799416@okbizaxis</p>
+                      <p className="text-xs font-semibold text-foreground">Priti Mohan Biswal</p>
                     </div>
                     <label className="flex items-center justify-center gap-2 text-xs font-medium cursor-pointer text-foreground hover:text-primary transition-colors pt-1">
                       <Checkbox
