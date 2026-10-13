@@ -208,10 +208,7 @@ export function CartPanel({ open, onOpenChange }: { open: boolean; onOpenChange:
                   />
                 </div>
                 <div className="grid gap-1">
-                  <Label htmlFor="cart-table" className="text-xs flex items-center justify-between">
-                    <span>Table number</span>
-                    <span className="text-[10px] text-muted-foreground font-normal">(Max 2 digits)</span>
-                  </Label>
+                  <Label htmlFor="cart-table" className="text-xs">Table number</Label>
                   <Input
                     id="cart-table"
                     type="text"

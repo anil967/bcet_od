@@ -190,10 +190,7 @@ function TrackPage() {
                   />
                 </div>
                 <div className="grid gap-1">
-                  <Label htmlFor="t-table" className="text-xs flex items-center justify-between">
-                    <span>Table number</span>
-                    <span className="text-[10px] text-muted-foreground font-normal">(Max 2 digits)</span>
-                  </Label>
+                  <Label htmlFor="t-table" className="text-xs">Table number</Label>
                   <Input
                     id="t-table"
                     type="text"
