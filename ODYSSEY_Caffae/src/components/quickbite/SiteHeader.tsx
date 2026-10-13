@@ -44,13 +44,6 @@ export function SiteHeader({
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Desktop Nav */}
           <nav className="hidden items-center gap-1 text-xs font-semibold uppercase sm:flex">
-            <a
-              href="/"
-              className="rounded-sm px-3 py-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-primary flex items-center gap-1"
-            >
-              <ArrowLeft className="size-3.5" />
-              <span>Odyssey Map</span>
-            </a>
             <Link
               to="/"
               className="rounded-sm px-3 py-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-primary"
