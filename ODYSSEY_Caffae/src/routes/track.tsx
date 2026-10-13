@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { api } from "@/lib/api-client";
@@ -42,6 +43,7 @@ type TrackedOrder = {
   status: string;
   total: number;
   delivery_charge: number;
+  transaction_id?: string | null;
   created_at: string;
   order_items: { id: string; item_name: string; quantity: number; unit_price: number }[];
 };
@@ -51,9 +53,11 @@ function TrackPage() {
   const [code, setCode] = useState(initialCode ?? "");
   const [name, setName] = useState("");
   const [table, setTable] = useState("");
+  const [searchTab, setSearchTab] = useState<"code" | "details">("code");
   const [orders, setOrders] = useState<TrackedOrder[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const lookup = async (by: "code" | "details") => {
     setLoading(true);
@@ -65,9 +69,18 @@ function TrackPage() {
           : await api.orders.getByCustomerAndTable(name.trim(), table.trim());
 
       setOrders(data as TrackedOrder[]);
-      if (!data || data.length === 0) setMessage("No order found with those details.");
+      if (!data || data.length === 0) {
+        setMessage("No order found with those details.");
+        toast.error("No order found");
+      } else {
+        toast.success(`Found ${data.length} order${data.length > 1 ? "s" : ""}`);
+        setTimeout(() => {
+          resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
     } catch {
       setMessage("Something went wrong. Please try again.");
+      toast.error("Could not fetch order");
     } finally {
       setLoading(false);
     }
@@ -88,83 +101,143 @@ function TrackPage() {
           Use your 6-character order ID, or your name and table number.
         </p>
 
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          {/* By Order ID */}
-          <form
-            className="voyage-panel rounded-md border border-border bg-card p-4 sm:p-5 shadow-[var(--shadow-card)]"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void lookup("code");
-            }}
-          >
-            <h2 className="font-display text-sm font-bold uppercase tracking-wider">By order ID</h2>
-            <div className="mt-3 grid gap-1.5">
-              <Label htmlFor="code" className="text-xs">Order ID</Label>
-              <Input
-                id="code"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="e.g. CF8DH2"
-                className="h-9 uppercase tracking-widest font-mono"
-              />
-            </div>
-            <Button className="mt-3.5 w-full font-semibold" size="sm" type="submit" disabled={loading || !code.trim()}>
-              <Search className="size-3.5" /> Find order
-            </Button>
-          </form>
-
-          {/* By Name & Table */}
-          <form
-            className="voyage-panel rounded-md border border-border bg-card p-4 sm:p-5 shadow-[var(--shadow-card)]"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void lookup("details");
-            }}
-          >
-            <h2 className="font-display text-sm font-bold uppercase tracking-wider">By name &amp; table</h2>
-            <div className="mt-3 grid gap-2.5">
-              <div className="grid gap-1">
-                <Label htmlFor="t-name" className="text-xs">Full name</Label>
-                <Input
-                  id="t-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Rahul Sharma"
-                  className="h-9"
-                />
-              </div>
-              <div className="grid gap-1">
-                <Label htmlFor="t-table" className="text-xs">Table number</Label>
-                <Input
-                  id="t-table"
-                  value={table}
-                  onChange={(e) => setTable(e.target.value)}
-                  placeholder="e.g. 12"
-                  className="h-9"
-                />
-              </div>
-            </div>
-            <Button
-              className="mt-3.5 w-full font-semibold"
-              size="sm"
-              type="submit"
-              disabled={loading || !name.trim() || !table.trim()}
+        {/* Search Mode Toggle Tabs */}
+        <div className="mt-5 flex items-center justify-center">
+          <div className="grid w-full max-w-md grid-cols-2 gap-1 rounded-lg border border-border/80 bg-secondary/50 p-1">
+            <button
+              type="button"
+              onClick={() => setSearchTab("code")}
+              className={`rounded-md py-2 px-3 text-xs sm:text-sm font-bold transition-all ${
+                searchTab === "code"
+                  ? "bg-primary text-primary-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
             >
-              <Search className="size-3.5" /> Find orders
-            </Button>
-          </form>
+              By Order ID
+            </button>
+            <button
+              type="button"
+              onClick={() => setSearchTab("details")}
+              className={`rounded-md py-2 px-3 text-xs sm:text-sm font-bold transition-all ${
+                searchTab === "details"
+                  ? "bg-primary text-primary-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              By Name &amp; Table
+            </button>
+          </div>
         </div>
 
-        {message ? (
-          <div className="mt-6 rounded-md border border-border bg-secondary/30 p-4 text-center text-xs sm:text-sm text-muted-foreground">
-            {message}
-          </div>
-        ) : null}
+        <div className="mt-4 max-w-md mx-auto">
+          {/* By Order ID */}
+          {searchTab === "code" ? (
+            <form
+              className="voyage-panel rounded-md border border-border bg-card p-4 sm:p-5 shadow-[var(--shadow-card)]"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void lookup("code");
+              }}
+            >
+              <h2 className="font-display text-sm font-bold uppercase tracking-wider text-primary">Enter Order ID</h2>
+              <div className="mt-3 grid gap-1.5">
+                <Label htmlFor="code" className="text-xs">Order ID (6 characters)</Label>
+                <Input
+                  id="code"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="e.g. N889ST"
+                  className="h-10 uppercase tracking-widest font-mono font-bold text-base"
+                  autoFocus
+                />
+              </div>
+              <Button
+                className="mt-4 w-full font-bold h-10 shadow-sm"
+                type="submit"
+                disabled={loading || !code.trim()}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin mr-2" /> Finding order…
+                  </>
+                ) : (
+                  <>
+                    <Search className="size-4 mr-2" /> Find order
+                  </>
+                )}
+              </Button>
+            </form>
+          ) : (
+            /* By Name & Table */
+            <form
+              className="voyage-panel rounded-md border border-border bg-card p-4 sm:p-5 shadow-[var(--shadow-card)]"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void lookup("details");
+              }}
+            >
+              <h2 className="font-display text-sm font-bold uppercase tracking-wider text-primary">Search by Details</h2>
+              <div className="mt-3 grid gap-2.5">
+                <div className="grid gap-1">
+                  <Label htmlFor="t-name" className="text-xs">Full name</Label>
+                  <Input
+                    id="t-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. Rahul Sharma"
+                    className="h-9"
+                    autoFocus
+                  />
+                </div>
+                <div className="grid gap-1">
+                  <Label htmlFor="t-table" className="text-xs">Table number</Label>
+                  <Input
+                    id="t-table"
+                    value={table}
+                    onChange={(e) => setTable(e.target.value)}
+                    placeholder="e.g. 12 or B04"
+                    className="h-9"
+                  />
+                </div>
+              </div>
+              <Button
+                className="mt-4 w-full font-bold h-10 shadow-sm"
+                type="submit"
+                disabled={loading || !name.trim() || !table.trim()}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin mr-2" /> Finding orders…
+                  </>
+                ) : (
+                  <>
+                    <Search className="size-4 mr-2" /> Find orders
+                  </>
+                )}
+              </Button>
+            </form>
+          )}
+        </div>
 
-        <div className="mt-6 space-y-4">
-          {(orders ?? []).map((order) => (
-            <OrderCard key={order.id} order={order} />
-          ))}
+        {/* Results anchor */}
+        <div ref={resultsRef} className="scroll-mt-24">
+          {message ? (
+            <div className="mt-6 rounded-md border border-border bg-secondary/30 p-4 text-center text-xs sm:text-sm text-muted-foreground">
+              {message}
+            </div>
+          ) : null}
+
+          {orders && orders.length > 0 ? (
+            <div className="mt-6 space-y-4">
+              <div className="flex items-center justify-between border-b border-border/80 pb-2">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-primary">Order Result</h3>
+                <span className="text-xs text-muted-foreground">{orders.length} order found</span>
+              </div>
+              {orders.map((order) => (
+                <OrderCard key={order.id} order={order} />
+              ))}
+            </div>
+          ) : null}
         </div>
       </main>
     </div>
